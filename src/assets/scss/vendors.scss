@@ -1,0 +1,67 @@
+@import url('https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&subset=cyrillic');
+
+@import "_variables";
+@import "~font-awesome/scss/font-awesome";
+@import "~element-ui/packages/theme-chalk/src/index";
+// theme css
+@import '~codemirror/theme/solarized';
+
+/** CODEMIRROR **/
+.cm-s-solarized.CodeMirror {
+  box-shadow: none !important;
+}
+
+/** ELEMENT UI **/
+.el-table th > .cell {
+  font-weight: 400;
+}
+
+.el-form-item__label {
+  text-align: left;
+}
+
+.el-button + .el-button {
+    margin-left: 6px;
+}
+
+.el-button {
+  text-transform: uppercase;
+}
+
+.el-table__empty-block {
+  padding: 50px 0;
+}
+
+.el-form-item {
+  // margin-bottom: 8px;
+}
+
+.el-tabs {
+  .el-tabs__item {
+    color: #4f5051;
+    font-weight: 400;
+
+    &.is-active,
+    &:hover {
+      color: #0486fe;
+    }
+  }
+}
+
+.el-message-box__btns {
+  text-align: center;
+}
+
+.el-loading-mask {
+  z-index: 1999;
+}
+
+.el-dialog__body {
+  padding: 15px 15px;
+}
+
+.el-dialog__header {
+  border-bottom: 1px solid #ebeef5;
+  margin: 0 15px;
+  padding: 15px 0;
+}

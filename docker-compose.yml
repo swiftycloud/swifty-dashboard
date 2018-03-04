@@ -1,0 +1,12 @@
+version: '3'
+
+services:
+  swifty:
+    image: nginx
+    container_name: nginx
+    restart: always
+    volumes:
+      - ./swifty.conf:/etc/nginx/conf.d/swifty.conf
+      - ./html:/html
+    ports: 
+      - 80:8080

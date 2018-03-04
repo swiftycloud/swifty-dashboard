@@ -1,0 +1,371 @@
+@import "_variables";
+
+body, html, #app, .el-container {
+  width: 100%;
+  height: 100% !important;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: "Roboto", "Helvetica Neue",Helvetica,Arial,sans-serif;
+  color: #303133;
+}
+
+a, a:hover, a:visited, a:focus {
+  color: #303133;
+}
+
+hr {
+  height: 1px;
+  background-color: #ebeef5;
+  border: none;
+}
+
+.el-main {
+  padding: 0;
+  padding-top: $navbar-height;
+}
+
+.page-content {
+  padding: 24px;
+
+  p:first-child {
+    margin-top: 0;
+    margin-bottom: 24px;
+  }
+}
+
+.clearfix::after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+/** LOADING **/
+.app-loading {
+  width: 100%;
+  height: 100%;
+  background: #fff;
+  position: fixed;
+  z-index: 100000;
+  display: table;
+  text-align: center;
+
+  .app-loading-content {
+    display: table-cell;
+    vertical-align: middle;
+    color: $navbar-background;
+
+    .fa-spin {
+      font-size: 48px;
+    }
+
+    .brand {
+      margin: 0;
+      font-size: 24px;
+      font-weight: bold;
+      letter-spacing: 2px;
+    }
+  }
+}
+
+.fade-enter-active, .fade-leave-active {
+  transition: opacity .5s;
+}
+.fade-enter, .fade-leave-to /* .fade-leave-active до версии 2.1.8 */ {
+  opacity: 0;
+}
+
+/** NAVBAR **/
+.navbar {
+  height: $navbar-height;
+  width: 100%;
+  z-index: 2000;
+
+  position: fixed;
+  top: 0;
+
+  background-color: $navbar-background;
+
+  .navbar-brand-block {
+    width: $sidebar-width;
+    height: $navbar-height;
+    position: relative;
+
+    display: inline-block;
+    float: left;
+
+    text-align: center;
+    line-height: $navbar-height;
+    font-size: 18px;
+
+    .sidebar-shower {
+      position: absolute;
+      left: 0;
+      margin-left: 16px;
+      color: #ffffff;
+    }
+
+    .sidebar-hidder {
+      display: none;
+      position: absolute;
+      right: 0;
+      margin-right: 16px;
+      color: $navbar-background;
+    }
+
+    .navbar-brand {
+      color: #ffffff;
+      text-decoration: none;
+      font-size: 24px;
+      font-weight: bold;
+      letter-spacing: 1px;
+    }
+
+    &.sidebar-showed {
+      background: $sidebar-background;
+
+      .sidebar-shower {
+        display: none;
+      }
+
+      .sidebar-hidder {
+        display: inline-block;
+      }
+
+      .navbar-brand {
+        color: $navbar-background;
+      }
+    }
+  }
+
+  .el-breadcrumb {
+    display: inline-block;
+    height: $navbar-height;
+    padding-left: 24px;
+
+    line-height: $navbar-height;
+
+    .el-breadcrumb__item {
+      font-size: 18px;
+      font-weight: none;
+
+      span, span:hover {
+        font-weight: 400;
+        color: #fff;
+      }
+    }
+  }
+
+  .navbar-forms {
+    height: $navbar-height;
+    padding: 12px 0;
+
+    display: inline-block;
+    float: right;
+
+    .search-form, .project-form {
+      display: inline-block;
+
+      label {
+        color: #fff;
+      }
+    }
+  }
+}
+
+/** SIDEBAR **/
+.el-aside {
+  width: $sidebar-width;
+  height: 100%;
+  padding-top: $navbar-height + 96px;
+
+  overflow: hidden;
+  z-index: 1030;
+
+  .sidebar-user-block {
+    width: $sidebar-width;
+    height: 96px;
+    background: #494a4c;
+
+    position: absolute;
+    top: $navbar-height;
+
+    .user-photo {
+      width: 64px;
+      height: 64px;
+      background: #fff;
+      border-radius: 50%;
+      margin: 15px;
+    }
+
+    .user-info {
+      color: #fff;
+      display: inline-block;
+      margin-top: 30px;
+
+      p {
+        margin: 0;
+        text-overflow: ellipsis;
+        overflow: hidden;
+      }
+
+      .user-name {
+        font-size: 16px;
+      }
+      .user-description {
+        font-size: 14px;
+      }
+    }
+
+    .el-dropdown {
+      padding: 0px 16px;
+      position: absolute;
+      top: 75px;
+      width: 9px;
+      height: 10px;
+      right: 0;
+
+      .caret-down {
+        color: #fff;
+        position: absolute;
+        cursor: pointer;
+      }
+    }
+  }
+
+  .sidebar-menu {
+    height: 100%;
+    overflow-y: auto;
+
+    background: $sidebar-background;
+    border-right: solid 1px #dcdfe6;
+
+    .nav-link {
+      display: block;
+      padding: 0 16px;
+
+      line-height: 48px;
+      font-size: 14px;
+      text-decoration: none;
+
+      color: rgba(48, 49, 51, 0.87);
+
+      &:first-child {
+        margin-top: 8px;
+      }
+
+      .fa {
+        margin-right: 38px;
+        color: rgba(0, 0, 0, 0.87);
+        font-size: 18px;
+      }
+    }
+
+    .divider {
+      border-top: solid 1px #dcdfe6;
+      height: 1px;
+    }
+  }
+}
+
+/** SIGN PAGE **/
+.sign-card {
+  width: 496px;
+  padding: 0 !important;
+  margin: 0 auto;
+  margin-top: 50px;
+
+  .el-card__body {
+    padding: 0;
+
+    .el-tabs__nav {
+      width: 100%;
+      height: 46px;
+
+      .el-tabs__active-bar {
+        display: none;
+      }
+
+      .el-tabs__item {
+        width: 50%;
+        height: 46px;
+        padding: 0;
+
+        text-align: center;
+        font-size: 16px;
+        text-transform: uppercase;
+        line-height: 46px;
+
+        &#tab-0 {
+          border-right: solid 1px #dcdfe6;
+        }
+
+        &.is-active {
+          border-bottom: solid 2px #409EFF;
+        }
+      }
+    }
+
+    .el-tab-pane {
+      padding: 10px 40px;
+    }
+  }
+}
+
+/** SIGN IN/OUT FORMS **/
+.sign-in-form, .sign-out-form {
+  .social-buttons, .sign-in-button {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+
+    text-align: center;
+    list-style: none;
+
+    li {
+      margin-bottom: 10px;
+
+      .el-button {
+        width: 250px;
+        text-transform: uppercase;
+      }
+    }
+  }
+
+  .sign-in-button {
+    margin-bottom: 17px;
+  }
+
+  .el-form {
+    margin-top: 30px;
+    margin-bottom: 20px;
+  }
+
+  .sign-in-links {
+    list-style: none;
+    text-align: center;
+    margin: 24px 0 0 0;
+    padding: 0;
+
+    li {
+      font-size: 18px;
+      height: 36px;
+
+      small {
+        font-size: 16px;
+      }
+
+      a, a:hover, a:active, a:visited {
+        color: #000;
+        text-decoration: none;
+      }
+    }
+  }
+}
+
+/** OTHER **/
+.actions-block {
+  margin-bottom: 10px;
+}
