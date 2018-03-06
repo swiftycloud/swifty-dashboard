@@ -17,7 +17,11 @@ function transformToTestFunc (data) {
 export default {
   state: {
     functions: [],
-    currentFunction: null,
+    currentFunction: {
+      mware: [],
+      s3buckets: [],
+      version: null
+    },
     functionStats: null,
     languages: []
   },
