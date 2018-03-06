@@ -65,9 +65,9 @@
               <el-tooltip 
                 v-if="scope.row.lastcall"
                 effect="dark" 
-                :content="[ scope.row.lastcall, 'ddd MMM DD HH:mm:ss [MSK] YYYY' ] | moment('YYYY-MM-DD HH:mm:ss')" 
+                :content="scope.row.lastcall | moment('YYYY-MM-DD HH:mm:ss')" 
                 placement="right">
-                <span v-if="'lastcall' in scope.row">{{ [ scope.row.lastcall, 'ddd MMM DD HH:mm:ss [MSK] YYYY' ] | moment('from', 'now') }}</span>
+                <span v-if="'lastcall' in scope.row">{{ scope.row.lastcall | moment('from', 'now') }}</span>
               </el-tooltip>
               <span v-if="scope.row.lastcall === undefined">never</span>
             </template>
