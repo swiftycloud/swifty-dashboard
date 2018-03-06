@@ -69,6 +69,11 @@ export default new Router({
       component: BucketViewPage
     },
     {
+      path: '/storage/bucket/:name/:prefix',
+      name: 'bucket.view.prefix',
+      component: BucketViewPage
+    },
+    {
       path: '/mariadb',
       name: 'mariadb',
       component: MariaDBPage
