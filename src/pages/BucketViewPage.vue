@@ -44,9 +44,11 @@
         prop="Key"
         label="Name"
         sortable>
-        <template slot-scope="scope">
-          <a href="#" @click.prevent="openFolder(scope.row.Key)" v-if="scope.row.Folder">{{ scope.row.Key.replace(prefix, '') }}</a>
-          <span v-if="scope.row.Folder === undefined">{{ scope.row.Key.replace(prefix, '') }}</span>
+        <template slot-scope="scope" class="bucket-object-name">
+          <a style="text-decoration: none" href="#" @click.prevent="openFolder(scope.row.Key)" v-if="scope.row.Folder">
+            <i class="fa fa-folder"></i> {{ scope.row.Key.replace(prefix, '') }}
+          </a>
+          <span v-if="scope.row.Folder === undefined"><i class="fa fa-file"></i> {{ scope.row.Key.replace(prefix, '') }}</span>
         </template>
       </el-table-column>
       <el-table-column
@@ -310,5 +312,10 @@ export default {
         font-weight: normal !important;
       }
     }
+  }
+
+  .el-table .cell .fa {
+    width: 14px !important;
+    display: inline-block;
   }
 </style>
