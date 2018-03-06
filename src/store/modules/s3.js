@@ -31,12 +31,17 @@ export default {
       return api.s3('deleteBucket', project, { Bucket: bucket })
     },
 
-    fetchS3BucketListObjects ({ commit }, { project, bucket }) {
-      return api.s3('listObjectsV2', project, { Bucket: bucket }, bucket)
+    fetchS3BucketListObjects ({ commit }, { project, bucket, prefix }) {
+      return api.s3('listObjectsV2', project, { Prefix: prefix, Bucket: bucket, Delimiter: '/' }, bucket)
     },
 
-    uploadS3Object ({ dispatch }, { project, bucket, file }) {
-      return api.s3('upload', project, { Bucket: bucket, Body: file, Key: file.name }, bucket)
+    uploadS3Object ({ dispatch }, { project, bucket, file, prefix }) {
+      return api.s3('upload', project, { Bucket: bucket, Body: file, Key: prefix + file.name }, bucket)
+    },
+
+    createS3Folder ({ dispatch }, { project, bucket, name, prefix }) {
+      prefix = prefix || ''
+      return api.s3('putObject', project, { Bucket: bucket, Key: prefix + name + '/' }, bucket)
     },
 
     deleteS3Object ({ dispatch }, { project, bucket, object }) {
