@@ -177,7 +177,7 @@ export default {
 
       this.aws.instance = new AWS.S3({
         credentials: this.aws.credentials,
-        endpoint: 'http://' + response.data.endpoint,
+        endpoint: 'https://' + response.data.endpoint,
         apiVersion: '2006-03-01',
         s3ForcePathStyle: true
       })

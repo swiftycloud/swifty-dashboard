@@ -19,7 +19,7 @@
 
     <el-row>
       <el-col :span="24">
-        <p class="trigger-post-url">POST http://{{ url }}  <el-button size="mini" type="primary" v-clipboard:copy="'http://' + url" class="fa fa-copy" plain></el-button></p>
+        <p class="trigger-post-url">POST https://{{ url }}  <el-button size="mini" type="primary" v-clipboard:copy="'https://' + url" class="fa fa-copy" plain></el-button></p>
       </el-col>
     </el-row>
 
