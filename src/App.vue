@@ -5,6 +5,7 @@
         <div class="app-loading-content">
           <i class="fa fa-cog fa-spin"></i>
           <p class="brand">swifty.</p>
+          <p>ver: 2018-04-02</p>
         </div>
       </div>
     </transition>
