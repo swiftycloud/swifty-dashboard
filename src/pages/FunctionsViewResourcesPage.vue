@@ -12,7 +12,7 @@
       title="Memory Limit"
       width="400"
       trigger="hover"
-      content="Though I speak with the tongues of men and of angels, and have not charity, I am become as sounding brass, or a tinkling cymbal.">
+      content="Maximum amount of RAM available for the function.">
     </el-popover>
 
     <el-popover
@@ -21,10 +21,10 @@
       title="Timeout"
       width="400"
       trigger="hover"
-      content="Though I speak with the tongues of men and of angels, and have not charity, I am become as sounding brass, or a tinkling cymbal.">
+      content="If the function has not completed by the timeout duration, then the function will be terminated. The default is 60 seconds.">
     </el-popover>
 
-    <el-popover
+    <!--<el-popover
       ref="rpspopover"
       placement="right"
       title="Request per second"
@@ -32,6 +32,7 @@
       trigger="hover"
       content="Though I speak with the tongues of men and of angels, and have not charity, I am become as sounding brass, or a tinkling cymbal.">
     </el-popover>
+  -->
 
     <el-row>
       <el-col :span="24">
@@ -58,7 +59,7 @@
               </span>
             </a>
           </el-form-item>
-          <el-form-item label="Requests per second">
+          <!--<el-form-item label="Requests per second">
             <el-select placeholder="Requests per second" v-model="form.rate">
               <el-option v-for="(value, label) in $store.getters.getFunctionResources.rps" :label="label" :value="value" :key="value"></el-option>
             </el-select>
@@ -69,6 +70,7 @@
               </span>
             </a>
           </el-form-item>
+        -->
         </el-form>
       </el-col>
     </el-row>
