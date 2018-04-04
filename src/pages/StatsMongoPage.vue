@@ -24,9 +24,8 @@
         </el-table>
       </el-col>
     </el-row>
-    
+
     <div class="actions-block">
-      <p>Recommendations: <span class="text-red">upgrade plan</span>.</p>
       <el-button type="primary">Upgrade Plan</el-button>
     </div>
   </div>

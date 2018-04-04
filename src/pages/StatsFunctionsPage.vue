@@ -24,7 +24,7 @@
         </el-table>
       </el-col>
     </el-row>
-  
+
     <el-row v-if="showFunctionDetails">
       <el-col :span="24">
         <el-table
@@ -45,7 +45,7 @@
           </el-table-column>
           <el-table-column
             property="called"
-            label="Requests, M"
+            label="Requests"
             sortable
             show-overflow-tooltip>
           </el-table-column>
