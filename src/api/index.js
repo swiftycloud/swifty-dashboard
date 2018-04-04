@@ -50,6 +50,14 @@ export default {
     })
   },
 
+  /** STATS METHODS **/
+
+  stats (periods) {
+    return axios.post(config.API_GATE_ENDPOINT + '/stats', {
+      periods: periods
+    })
+  },
+
   /** FUNCTION METHODS **/
 
   functionWait (project, name, timeout, version) {
