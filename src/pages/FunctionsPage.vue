@@ -104,11 +104,11 @@ export default {
   },
 
   methods: {
-    tableRowClassName({row, rowIndex}) {
-      if (row.state == 'deactivated') {
-        return 'deactivated-func';
+    tableRowClassName ({ row, rowIndex }) {
+      if (row.state === 'deactivated') {
+        return 'deactivated-func'
       }
-      return '';
+      return ''
     },
     toggleSelection (rows) {
       if (rows) {
