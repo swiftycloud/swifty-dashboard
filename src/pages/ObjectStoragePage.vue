@@ -1,6 +1,6 @@
 <template>
   <div class="page-content" v-loading="loading">
-    <p>Here you can manage your object storage</p>
+    <p>Here you can manage your buckets</p>
 
     <div class="actions-block">
       <el-button type="primary" size="medium" @click="openCreateBucketForm">Create Bucket</el-button>
@@ -54,6 +54,9 @@
         </el-form-item>
         <el-form-item label="Secret Access Key:" style="margin-bottom: 0" v-if="credentials.secret">
           <code>{{ credentials.secret }}</code>
+        </el-form-item>
+        <el-form-item label="API Endpoint:" style="margin-bottom: 0" v-if="credentials.secret">
+          <code>https://api.swifty.cloud:8787</code>
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer text-left">

@@ -12,9 +12,9 @@
       <el-col :span="12">
         <p class="trigger-post-url-label">REST API</p>
       </el-col>
-      <el-col :span="12">
-        <!--<el-button type="primary" plain size="medium">Disable API</el-button>-->
-      </el-col>
+      <!--<el-col :span="12">
+        <el-button type="primary" plain size="medium">Disable API</el-button>
+      </el-col>-->
     </el-row>
 
     <el-row>

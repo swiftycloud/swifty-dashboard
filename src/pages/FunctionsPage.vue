@@ -6,11 +6,18 @@
       <div class="col">
         <div class="actions-block">
           <el-button type="primary" size="medium" @click="$router.push({ name: 'functions.create' })">New function</el-button>
-          <el-button 
-            type="primary" 
-           size="medium" 
-           plain 
-           @click="disableSelected()" 
+          <el-button
+          type="primary"
+           size="medium"
+           plain
+           @click="enableSelected()"
+           :disabled="this.multipleSelection.length === 0">
+          Enable
+          </el-button>
+          <el-button
+           size="medium"
+           plain
+           @click="disableSelected()"
            :disabled="this.multipleSelection.length === 0">
             Disable
           </el-button>
@@ -64,10 +71,10 @@
             label="Last Run"
             sortable>
             <template slot-scope="scope">
-              <el-tooltip 
+              <el-tooltip
                 v-if="scope.row.lastcall"
-                effect="dark" 
-                :content="scope.row.lastcall | moment('YYYY-MM-DD HH:mm:ss')" 
+                effect="dark"
+                :content="scope.row.lastcall | moment('YYYY-MM-DD HH:mm:ss')"
                 placement="right">
                 <span v-if="'lastcall' in scope.row">{{ scope.row.lastcall | moment('from', 'now') }}</span>
               </el-tooltip>
@@ -121,6 +128,42 @@ export default {
     },
     handleSelectionChange (val) {
       this.multipleSelection = val
+    },
+    enableSelected () {
+      if (this.multipleSelection.length === 0) {
+        return false
+      }
+
+      this.$confirm('Selected function will be enabled', 'Warning', {
+        confirmButtonText: 'OK',
+        cancelButtonText: 'Cancel',
+        type: 'warning'
+      }).then(() => {
+        this.loading = true
+
+        var promises = []
+        this.multipleSelection.forEach((self) => {
+          promises.push(
+            this.$store.dispatch('enableFunction', {
+              project: this.$store.getters.currentProject,
+              name: self.name
+            }).catch(error => {
+              this.$notify.error({
+                title: 'Error',
+                message: error.response.data.message
+              })
+            })
+          )
+        })
+
+        return Promise.all(promises)
+      }).then(() => {
+        return this.$store.dispatch('fetchFunctions', this.$store.getters.currentProject)
+      }).catch(() => {
+        // ...
+      }).finally(() => {
+        this.loading = false
+      })
     },
     disableSelected () {
       if (this.multipleSelection.length === 0) {

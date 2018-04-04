@@ -1,6 +1,6 @@
 <template>
   <div class="page-content" v-loading="loading">
-    <p>Here you can manage your files</p>
+    <p>Here you can manage your objects</p>
 
     <div class="actions-block">
       <el-button type="primary" size="medium" @click="$router.push({ name: 'storage' })">Back to Buckets</el-button>
@@ -10,13 +10,11 @@
       <el-dropdown trigger="click" placement="bottom-start">
         <el-button plain size="medium">More <i class="fa fa-angle-down"></i></el-button>
         <el-dropdown-menu slot="dropdown" class="bucket-menu">
-          <el-dropdown-item>Get size</el-dropdown-item>
           <el-dropdown-item>Download as</el-dropdown-item>
           <el-dropdown-item>Rename</el-dropdown-item>
           <el-dropdown-item>Copy</el-dropdown-item>
           <el-dropdown-item>Past</el-dropdown-item>
           <el-dropdown-item>Cut</el-dropdown-item>
-          <el-dropdown-item>Open</el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
     </div>
