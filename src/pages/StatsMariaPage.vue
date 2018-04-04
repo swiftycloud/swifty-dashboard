@@ -24,9 +24,10 @@
         </el-table>
       </el-col>
     </el-row>
-
-    <hr>
-    <el-button type="primary">Upgrade Plan</el-button>
+    
+    <div class="actions-block">
+      <el-button type="primary">Upgrade Plan</el-button>
+    </div>
   </div>
 </template>
 
@@ -55,5 +56,13 @@ export default {
     .period {
       padding: 0 17px;
     }
+  }
+
+  .text-red {
+    color: #d0021b;
+  }
+
+  .actions-block {
+    margin-top: 40px;
   }
 </style>
