@@ -10,6 +10,7 @@ import auth from './modules/auth'
 import projects from './modules/projects'
 import templates from './modules/templates'
 import middlewares from './modules/middlewares'
+import stats from './modules/stats'
 
 Vue.use(Vuex)
 
@@ -23,6 +24,7 @@ export default new Vuex.Store({
     auth,
     projects,
     templates,
-    middlewares
+    middlewares,
+    stats
   }
 })
