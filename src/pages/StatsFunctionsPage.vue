@@ -63,7 +63,7 @@
           </el-table-column>
           <el-table-column
             property="traffic"
-            label="Outbound traffic, GB"
+            label="Outbound traffic, MB"
             sortable
             show-overflow-tooltip>
           </el-table-column>
@@ -125,7 +125,7 @@ export default {
         this.funcStats = [
           { name: 'Requests', period: response.data.stats[0].called, limit: '' },
           { name: 'GB-s', period: response.data.stats[0].gbs, limit: '' },
-          { name: 'Outbound Traffic, GB', period: response.data.stats[0].bytesout, limit: '' }
+          { name: 'Outbound Traffic, MB', period: (response.data.stats[0].bytesout / 1048576), limit: '' }
         ]
       })
     },
@@ -147,9 +147,9 @@ export default {
           name: item.name,
           memory: response.data.size.memory,
           called: response.data.stats.called,
-          time: response.data.stats.time,
+          time: (response.data.stats.time / 1000000000),
           gbs: (response.data.size.memory / 1000) * (response.data.stats.time / 1024),
-          traffic: response.data.stats.bytesout
+          traffic: (response.data.stats.bytesout / 1048576)
         })
       }
 
