@@ -14,7 +14,6 @@
 <script>
 export default {
   created () {
-    this.$store.dispatch('setParentPage', { name: 'stats', title: 'Statistics' })
     this.$store.dispatch('setPageTitle', 'Statistics')
   },
   computed: {
