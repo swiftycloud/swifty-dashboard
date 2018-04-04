@@ -28,7 +28,7 @@ export default {
   },
   methods: {
     handleClick (tab, event) {
-      this.$router.push({ name: 'stats.' + tab.name, params: { name: this.$route.params.name } })
+      this.$router.push({ name: 'stats.' + tab.name })
     }
   }
 }

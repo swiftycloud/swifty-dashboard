@@ -17,6 +17,9 @@ import MariaDBPage from '@/pages/MariaDBPage'
 import MongoDBPage from '@/pages/MongoDBPage'
 import StatsPage from '@/pages/StatsPage'
 import StatsFunctionsPage from '@/pages/StatsFunctionsPage'
+import StatsObjectStoragePage from '@/pages/StatsObjectStoragePage'
+import StatsMongoPage from '@/pages/StatsMongoPage'
+import StatsMariaPage from '@/pages/StatsMariaPage'
 
 Vue.use(Router)
 
@@ -89,9 +92,9 @@ export default new Router({
       component: StatsPage,
       children: [
         { path: 'func', name: 'stats.func', component: StatsFunctionsPage },
-        { path: 'storage', name: 'stats.storage', component: StatsFunctionsPage },
-        { path: 'mariadb', name: 'stats.mariadb', component: StatsFunctionsPage },
-        { path: 'mongodb', name: 'stats.mongodb', component: StatsFunctionsPage }
+        { path: 'storage', name: 'stats.storage', component: StatsObjectStoragePage },
+        { path: 'mariadb', name: 'stats.mariadb', component: StatsMariaPage },
+        { path: 'mongodb', name: 'stats.mongodb', component: StatsMongoPage }
       ]
     }
   ]
