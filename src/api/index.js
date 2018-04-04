@@ -119,6 +119,12 @@ export default {
     })
   },
 
+  functionState (project, name, state) {
+    return axios.post(config.API_GATE_ENDPOINT + '/function/state', {
+      project: project, name: name, state: state
+    })
+  },
+
   /** MIDDLEWARE **/
 
   middlewareList (project) {
