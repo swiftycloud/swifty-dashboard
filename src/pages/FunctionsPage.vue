@@ -31,7 +31,8 @@
           ref="multipleTable"
           :data="userFunctions"
           style="width: 100%"
-          @selection-change="handleSelectionChange">
+          @selection-change="handleSelectionChange"
+          :row-class-name="tableRowClassName">
           <div slot="empty">
               <p>You don’t have any functions</p>
               <el-button type="primary" size="mini" round @click="$router.push({ name: 'functions.create' })">Create</el-button>
@@ -46,9 +47,10 @@
             sortable
             width="160">
             <template slot-scope="scope">
-              <router-link :to="{ name: 'functions.view.code', params: { name: scope.row.name } }">
+              <router-link :to="{ name: 'functions.view.code', params: { name: scope.row.name } }" v-if="scope.row.state != 'deactivated'">
                 {{ scope.row.name }}
               </router-link>
+              <span v-else>{{ scope.row.name }}</span>
             </template>
           </el-table-column>
           <el-table-column
@@ -102,6 +104,12 @@ export default {
   },
 
   methods: {
+    tableRowClassName({row, rowIndex}) {
+      if (row.state == 'deactivated') {
+        return 'deactivated-func';
+      }
+      return '';
+    },
     toggleSelection (rows) {
       if (rows) {
         rows.forEach(row => {
@@ -115,8 +123,39 @@ export default {
       this.multipleSelection = val
     },
     disableSelected () {
-      this.multipleSelection.forEach((self) => {
-        this.$store.dispatch('disableFunction', self.id)
+      if (this.multipleSelection.length === 0) {
+        return false
+      }
+
+      this.$confirm('Selected function will be disabled', 'Warning', {
+        confirmButtonText: 'OK',
+        cancelButtonText: 'Cancel',
+        type: 'warning'
+      }).then(() => {
+        this.loading = true
+
+        var promises = []
+        this.multipleSelection.forEach((self) => {
+          promises.push(
+            this.$store.dispatch('disableFunction', {
+              project: this.$store.getters.currentProject,
+              name: self.name
+            }).catch(error => {
+              this.$notify.error({
+                title: 'Error',
+                message: error.response.data.message
+              })
+            })
+          )
+        })
+
+        return Promise.all(promises)
+      }).then(() => {
+        return this.$store.dispatch('fetchFunctions', this.$store.getters.currentProject)
+      }).catch(() => {
+        // ...
+      }).finally(() => {
+        this.loading = false
       })
     },
     removeSelected () {
@@ -158,3 +197,10 @@ export default {
   }
 }
 </script>
+
+<style lang="scss">
+  .deactivated-func td,
+  .deactivated-func td a {
+    color: #c3c3c3;
+  }
+</style>

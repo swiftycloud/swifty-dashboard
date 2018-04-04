@@ -113,6 +113,17 @@ export default {
       return dispatch('updateFunction', transformToTestFunc(data))
     },
 
+    // disable function
+    disableFunction ({ dispatch }, { project, name }) {
+      return api.functionState(project, name, 'deactivated').then(response => {
+        const data = transformToTestFunc({
+          project: project,
+          name: name
+        })
+        return api.functionState(data.project, data.name, 'deactivated')
+      })
+    },
+
     // running functions
     runFunction ({ commit, state }, { project, name, args }) {
       return api.functionRun(project, name, args)
