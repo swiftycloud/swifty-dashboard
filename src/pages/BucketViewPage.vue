@@ -108,15 +108,15 @@ export default {
     }
   },
   created () {
-    this.$store.dispatch('setParentPage', { name: 'storage', title: 'Object Storage' })
     this.$store.dispatch('setPageTitle', this.$route.params.name)
+    this.$store.dispatch('setParentPage', { name: 'storage', title: 'Object Storage' })
     this.prefix = this.$route.params.prefix
     this.fetchListObjects()
   },
   watch: {
     '$route': function () {
-      this.$store.dispatch('setParentPage', { name: 'storage', title: 'Object Storage' })
       this.$store.dispatch('setPageTitle', this.$route.params.name)
+      this.$store.dispatch('setParentPage', { name: 'storage', title: 'Object Storage' })
 
       this.prefix = this.$route.params.prefix
       this.fetchListObjects()
