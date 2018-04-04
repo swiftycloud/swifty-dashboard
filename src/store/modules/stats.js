@@ -13,7 +13,7 @@ export default {
   },
 
   actions: {
-    getStats ({ commit }, periods) {
+    getStats ({ commit }, { periods }) {
       return api.stats(periods)
     }
   },

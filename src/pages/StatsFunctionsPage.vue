@@ -6,7 +6,7 @@
       <el-col :span="24">
         <el-form label-width="170px" class="timeline-form">
           <el-form-item label="Timeline">
-            <el-select placeholder="Timeline" v-model="period">
+            <el-select placeholder="Timeline" v-model="periods">
               <el-option v-for="(value, label) in $store.getters.getPeriods" :label="label" :value="value" :key="value"></el-option>
             </el-select>
             <span class="period">from 04/05/2018 to 05/05/2018</span>
@@ -88,7 +88,7 @@ export default {
       loading: true,
       showFunctionDetails: false,
 
-      period: 0,
+      periods: 0,
       funcStats: [],
 
       functions: [],
@@ -100,29 +100,38 @@ export default {
 
   created () {
     this.fetchFunctions()
-    this.$store.dispatch('getStats', { periods: 0 }).then(response => {
-      console.log(response)
-    })
+    this.fetchStats()
   },
 
-  computed: {
-
+  watch: {
+    'periods': function () {
+      this.fetchStats()
+    }
   },
+
   methods: {
     totalCost () {
       var gbsSum = 0
       for (var i = 0; i < this.functions.length; i++) {
         gbsSum += this.functions[i].gbs
         this.sum = gbsSum * this.price
-        console.log(this.sum)
         this.showCost = true
       }
     },
 
+    fetchStats () {
+      this.$store.dispatch('getStats', { periods: this.periods }).then(response => {
+        console.log(response.data)
+        this.funcStats = [
+          { name: 'Requests', period: response.data.stats[0].called, limit: '' },
+          { name: 'GB-s', period: response.data.stats[0].gbs, limit: '' },
+          { name: 'Outbound Traffic, GB', period: response.data.stats[0].bytesout, limit: '' }
+        ]
+      })
+    },
+
     fetchFunctions () {
       this.$store.dispatch('fetchFunctions', this.$store.getters.currentProject).then(() => {
-        // this.loading = false
-        console.log('test1')
         return this.fetchFunctionStats()
       })
     },
@@ -133,8 +142,6 @@ export default {
           project: this.$store.getters.currentProject,
           name: item.name
         })
-
-        console.log(response)
 
         this.functionsTemp.push({
           name: item.name,
