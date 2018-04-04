@@ -1,9 +1,32 @@
 <template>
   <div v-loading="loading">
-    <p>Usage statistics for your functions</p>
+    <p>Usage stats for your functions</p>
 
-    <div class="row" v-loading="loading">
-      <div class="col">
+    <el-row>
+      <el-col :span="24">
+        <el-form label-width="170px" class="timeline-form">
+          <el-form-item label="Timeline">
+            <el-select placeholder="Timeline" v-model="period">
+              <el-option v-for="(value, label) in $store.getters.getPeriods" :label="label" :value="value" :key="value"></el-option>
+            </el-select>
+            <span class="period">from 04/05/2018 to 05/05/2018</span>
+          </el-form-item>
+        </el-form>
+      </el-col>
+    </el-row>
+
+    <el-row v-if="!showFunctionDetails">
+      <el-col :span="24">
+        <el-table :data="funcStats" style="width: 100%">
+          <el-table-column prop="name" label=""></el-table-column>
+          <el-table-column prop="period" label="Chosen Period"></el-table-column>
+          <el-table-column prop="limit" label="Tariff Plan Limit"></el-table-column>
+        </el-table>
+      </el-col>
+    </el-row>
+  
+    <el-row v-if="showFunctionDetails">
+      <el-col :span="24">
         <el-table
           :data="functions"
           show-summary
@@ -12,24 +35,23 @@
           <el-table-column
             prop="name"
             label="Function Name"
-            sortable
-            width="200">
+            sortable>
           </el-table-column>
           <el-table-column
             prop="memory"
-            label="RAM"
+            label="RAM, MB"
             sortable
             show-overflow-tooltip>
           </el-table-column>
           <el-table-column
             property="called"
-            label="Requests"
+            label="Requests, M"
             sortable
             show-overflow-tooltip>
           </el-table-column>
           <el-table-column
             property="time"
-            label="Execution Time, ms"
+            label="Execution Time, s"
             sortable
             show-overflow-tooltip>
           </el-table-column>
@@ -40,22 +62,23 @@
             show-overflow-tooltip>
           </el-table-column>
           <el-table-column
-            property="lastcall"
-            label="Last Call"
+            property="traffic"
+            label="Outbound traffic, GB"
             sortable
             show-overflow-tooltip>
           </el-table-column>
         </el-table>
-      </div>
-    </div>
-    <br>
-    <br>
-    <div v-if="showCost">
-      <p>Price per GB-s: ${{ price }}</p>
-      <p>Total cost: ${{ sum }}</p>
-    </div>
-  </div>
+      </el-col>
+    </el-row>
 
+    <div class="actions-block">
+      <el-button size="small" type="text" v-if="!showFunctionDetails" @click="showFunctionDetails = true">Show Function Details</el-button>
+      <el-button size="small" type="text" v-if="showFunctionDetails" @click="showFunctionDetails = false">Hide Function Details</el-button>
+    </div>
+
+    <hr>
+    <el-button type="primary">Upgrade Plan</el-button>
+  </div>
 </template>
 
 <script>
@@ -63,17 +86,23 @@ export default {
   data () {
     return {
       loading: true,
+      showFunctionDetails: false,
+
+      period: 0,
+      funcStats: [],
+
       functions: [],
       functionList: [],
       functionsTemp: [],
-      price: 0.00001667,
-      sum: 0,
       showCost: false
     }
   },
 
   created () {
     this.fetchFunctions()
+    this.$store.dispatch('getStats', { periods: 0 }).then(response => {
+      console.log(response)
+    })
   },
 
   computed: {
@@ -100,19 +129,20 @@ export default {
 
     async fetchFunctionStats () {
       for (const item of this.$store.getters.getFunctions) {
-        await this.$store.dispatch('fetchFunctionInfo', {
+        var response = await this.$store.dispatch('fetchFunctionInfo', {
           project: this.$store.getters.currentProject,
           name: item.name
-        }).then(response => {
-          console.log(response.data.called)
-          this.functionsTemp.push({
-            name: item.name,
-            memory: response.data.size.memory,
-            called: response.data.stats.called,
-            time: response.data.stats.time,
-            gbs: (response.data.size.memory / 1000) * (response.data.stats.time / 1024),
-            lastcall: response.data.stats.lastcall
-          })
+        })
+
+        console.log(response)
+
+        this.functionsTemp.push({
+          name: item.name,
+          memory: response.data.size.memory,
+          called: response.data.stats.called,
+          time: response.data.stats.time,
+          gbs: (response.data.size.memory / 1000) * (response.data.stats.time / 1024),
+          traffic: response.data.stats.bytesout
         })
       }
 
@@ -124,6 +154,14 @@ export default {
 }
 </script>
 
-<style lang="css">
+<style lang="scss" scoped>
+  .timeline-form {
+    .period {
+      padding: 0 17px;
+    }
+  }
 
+  .actions-block {
+    margin-top: 10px;
+  }
 </style>
