@@ -24,7 +24,7 @@
         </el-table>
       </el-col>
     </el-row>
-    
+
     <div class="actions-block">
       <el-button type="primary">Upgrade Plan</el-button>
     </div>
@@ -39,7 +39,7 @@ export default {
 
       periods: 0,
       mariaStats: [
-        { name: 'Used Storage, GB', period: 8, limit: 10 },
+        { name: 'Used Storage, GB', period: 0.008, limit: 1 },
         { name: 'Number of databases', period: 1, limit: 5 }
       ]
     }

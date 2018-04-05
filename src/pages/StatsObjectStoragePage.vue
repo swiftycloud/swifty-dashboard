@@ -24,7 +24,7 @@
         </el-table>
       </el-col>
     </el-row>
-  
+
     <div class="actions-block">
       <el-button type="primary">Upgrade Plan</el-button>
     </div>
@@ -39,8 +39,8 @@ export default {
 
       periods: 0,
       storageStats: [
-        { name: 'Used Storage, GB', period: 8, limit: 10 },
-        { name: 'Outbound Traffic, GB', period: 120, limit: 200 }
+        { name: 'Used Storage, GB', period: 0.012, limit: 10 },
+        { name: 'Outbound Traffic, GB', period: 0.211, limit: 200 }
       ]
     }
   },

@@ -39,7 +39,7 @@ export default {
 
       periods: 0,
       mongoStats: [
-        { name: 'Used Storage, GB', period: 8, limit: 10 },
+        { name: 'Used Storage, GB', period: 0.027, limit: 1 },
         { name: 'Number of databases', period: 1, limit: 5 }
       ]
     }

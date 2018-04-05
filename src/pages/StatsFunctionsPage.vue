@@ -123,9 +123,9 @@ export default {
       this.$store.dispatch('getStats', { periods: this.periods }).then(response => {
         console.log(response.data)
         this.funcStats = [
-          { name: 'Requests', period: response.data.stats[0].called, limit: '' },
-          { name: 'GB-s', period: response.data.stats[0].gbs, limit: '' },
-          { name: 'Outbound Traffic, MB', period: (response.data.stats[0].bytesout / 1048576), limit: '' }
+          { name: 'Requests', period: response.data.stats[0].called, limit: 'no limit' },
+          { name: 'GB-s', period: response.data.stats[0].gbs.toLocaleString(undefined, { minimumFractionDigits: 6 }), limit: '40.000' },
+          { name: 'Outbound Traffic, MB', period: (response.data.stats[0].bytesout / 1048576).toLocaleString(undefined, { minimumFractionDigits: 6 }), limit: '5.000' }
         ]
       })
     },
@@ -147,9 +147,9 @@ export default {
           name: item.name,
           memory: response.data.size.memory,
           called: response.data.stats.called,
-          time: (response.data.stats.time / 1000000000),
+          time: (response.data.stats.time / 1000000000).toLocaleString(undefined, { minimumFractionDigits: 6 }),
           gbs: (response.data.size.memory / 1000) * (response.data.stats.time / 1024),
-          traffic: (response.data.stats.bytesout / 1048576)
+          traffic: (response.data.stats.bytesout / 1048576).toLocaleString(undefined, { minimumFractionDigits: 6 })
         })
       }
 
