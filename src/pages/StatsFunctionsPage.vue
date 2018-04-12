@@ -95,6 +95,7 @@ export default {
   },
 
   created () {
+    this.$store.dispatch('setStatsActiveTab', 'func')
     this.fetchFunctions()
     this.fetchStats()
   },
