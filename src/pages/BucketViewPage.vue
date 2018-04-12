@@ -42,9 +42,9 @@
         prop="Key"
         label="Name"
         sortable>
-        <template slot-scope="scope" class="bucket-object-name">
+        <template slot-scope="scope" class="bucket-object-name" v-if="!loading">
           <a style="text-decoration: none" href="#" @click.prevent="openFolder(scope.row.Key)" v-if="scope.row.Folder">
-            <i class="fa fa-folder"></i> {{ scope.row.Key.replace(prefix, '') }}
+            <i class="fa fa-folder"></i> {{ scope.row.Key.replace(prefix, '').replace('/', '') }}
           </a>
           <span v-if="scope.row.Folder === undefined"><i class="fa fa-file"></i> {{ scope.row.Key.replace(prefix, '') }}</span>
         </template>
