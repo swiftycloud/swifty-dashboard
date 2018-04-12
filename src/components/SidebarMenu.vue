@@ -8,7 +8,7 @@
     <!--<a href="#" class="nav-link"><i class="fa fa-square"></i> <span>PostgreSQL</span></a>-->
     <router-link to="/mongodb" class="nav-link" active-class="active" exact><a><i class="fa el-icon-arrow-right"></i>Mongo Database</a></router-link>
     <div class="divider"></div>
-    <router-link :to="{ name: 'stats.func', params: { name: 'Functions' } }" class="nav-link" active-class="active" exact><a><i class="fa el-icon-arrow-right"></i>Statistics</a></router-link>
+    <router-link :to="{ name: 'stats.func' }" class="nav-link" active-class="active" exact><a><i class="fa el-icon-arrow-right"></i>Statistics</a></router-link>
     <!--<router-link to="/settings" class="nav-link" active-class="active" exact><a><i class="fa el-icon-arrow-right"></i>Settings</a></router-link>-->
   </nav>
 </template>
