@@ -75,6 +75,12 @@ export default {
     })
   },
 
+  functionListInfo (project, periods) {
+    return axios.post(config.API_GATE_ENDPOINT + '/function/list/info', {
+      project: project, periods: periods
+    })
+  },
+
   functionAdd (data) {
     return axios.post(config.API_GATE_ENDPOINT + '/function/add', data)
   },
