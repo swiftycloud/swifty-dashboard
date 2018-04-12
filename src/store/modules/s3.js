@@ -35,6 +35,10 @@ export default {
       return api.s3('listObjectsV2', project, { Prefix: prefix, Bucket: bucket, Delimiter: '/' }, bucket)
     },
 
+    getS3Object ({ dispatch }, { project, bucket, filename, prefix }) {
+      return api.s3('getObject', project, { Bucket: bucket, Key: prefix + filename }, bucket)
+    },
+
     uploadS3Object ({ dispatch }, { project, bucket, file, prefix }) {
       return api.s3('upload', project, { Bucket: bucket, Body: file, Key: prefix + file.name }, bucket)
     },
