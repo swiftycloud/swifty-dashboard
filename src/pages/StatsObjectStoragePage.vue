@@ -1,6 +1,6 @@
 <template>
   <div v-loading="loading">
-    <p>Usage stats for your functions</p>
+    <p>Usage stats for storage</p>
 
     <el-row>
       <el-col :span="24">

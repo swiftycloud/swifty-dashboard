@@ -1,6 +1,5 @@
 <template>
   <div v-loading="loading">
-    <p>Usage stats for your functions</p>
 
     <el-row>
       <el-col :span="24">
@@ -14,6 +13,7 @@
         </el-form>
       </el-col>
     </el-row>
+    <p>Usage stats for MariaDB</p>
 
     <el-row>
       <el-col :span="24">
