@@ -60,6 +60,11 @@ export default {
         commit(SAVE_FUNCTIONS_LIST, response.data)
       })
     },
+    fetchFunctionListInfo ({ state, getters, commit }, { project, periods }) {
+      return api.functionListInfo(project, periods).then(response => {
+        return response
+      })
+    },
     fetchFunctionInfo ({ state, getters, commit }, { project, name }) {
       return api.functionInfo(project, name).then(response => {
         if (project !== 'test') {
