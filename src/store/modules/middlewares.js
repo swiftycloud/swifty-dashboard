@@ -44,6 +44,9 @@ export default {
         }
       })
     },
+    fetchMiddlewareListInfo ({ commit }, project) {
+      return api.middlewareListInfo(project)
+    },
     fetchMiddlewareTypes ({ commit }) {
       return api.infoMiddlewares().then(response => {
         commit(SAVE_MIDDLEWARE_TYPES, response.data)

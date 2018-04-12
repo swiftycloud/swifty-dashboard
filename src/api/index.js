@@ -139,6 +139,12 @@ export default {
     })
   },
 
+  middlewareListInfo (project) {
+    return axios.post(config.API_GATE_ENDPOINT + '/mware/list/info', {
+      project: project
+    })
+  },
+
   middlewareAdd (project, id, type) {
     return axios.post(config.API_GATE_ENDPOINT + '/mware/add', {
       project: project, id: id, type: type
