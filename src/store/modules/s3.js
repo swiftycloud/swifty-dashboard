@@ -39,6 +39,17 @@ export default {
       return api.s3('getObject', project, { Bucket: bucket, Key: prefix + filename }, bucket)
     },
 
+    renameS3Object ({ dispatch }, { project, bucket, oldName, newName, prefix }) {
+      prefix = prefix || ''
+      return api.s3('copyObject', project, {
+        Bucket: bucket,
+        CopySource: '/' + bucket + '/' + prefix + oldName,
+        Key: prefix + newName
+      }, bucket).then(response => {
+        return dispatch('deleteS3Object', { project: project, bucket: bucket, object: prefix + oldName })
+      })
+    },
+
     uploadS3Object ({ dispatch }, { project, bucket, file, prefix }) {
       return api.s3('upload', project, { Bucket: bucket, Body: file, Key: prefix + file.name }, bucket)
     },

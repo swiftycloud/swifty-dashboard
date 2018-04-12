@@ -57,7 +57,7 @@
             <el-dropdown-menu slot="dropdown" class="bucket-menu">
               <el-dropdown-item>Cut</el-dropdown-item>
               <el-dropdown-item @click.native="downloadObject(scope.row.Key.replace(prefix, ''))">Download</el-dropdown-item>
-              <el-dropdown-item>Rename</el-dropdown-item>
+              <el-dropdown-item @click.native="renameObject(scope.row.Key.replace(prefix, ''))">Rename</el-dropdown-item>
               <el-dropdown-item>Copy</el-dropdown-item>
               <el-dropdown-item>Past</el-dropdown-item>
             </el-dropdown-menu>
@@ -192,6 +192,32 @@ export default {
       })
     },
 
+    renameObject (filename) {
+      this.$prompt('New name', 'Enter new name for the ' + filename, {
+        confirmButtonText: 'Save',
+        cancelButtonText: 'Cancel',
+        inputErrorMessage: 'Name is invalid',
+        inputValue: filename
+      }).then(value => {
+        return this.$store.dispatch('renameS3Object', {
+          project: this.$store.getters.currentProject,
+          bucket: this.$route.params.name,
+          oldName: filename,
+          newName: value.value,
+          prefix: this.prefix
+        })
+      }).then(response => {
+        return this.fetchListObjects()
+      }).catch(error => {
+        if (error.message) {
+          this.$notify.error({
+            title: 'Error',
+            message: error.message
+          })
+        }
+      })
+    },
+
     downloadObject (filename) {
       this.$store.dispatch('getS3Object', {
         project: this.$store.getters.currentProject,
@@ -222,7 +248,7 @@ export default {
       this.$store.dispatch('uploadS3Object', {
         project: this.$store.getters.currentProject,
         bucket: this.$route.params.name,
-        filename: option.file,
+        file: option.file,
         prefix: this.prefix
       }).then(response => {
         option.onSuccess(response.Location)
@@ -350,5 +376,6 @@ export default {
   .bucket-file-link:hover,
   .bucket-file-link:focus {
     color: #303133;
+    text-transform: none;
   }
 </style>
