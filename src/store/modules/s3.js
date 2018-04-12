@@ -40,7 +40,6 @@ export default {
     },
 
     renameS3Object ({ dispatch }, { project, bucket, oldName, newName, prefix }) {
-      prefix = prefix || ''
       return api.s3('copyObject', project, {
         Bucket: bucket,
         CopySource: '/' + bucket + '/' + prefix + oldName,
