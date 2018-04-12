@@ -204,7 +204,7 @@ export default {
           bucket: this.$route.params.name,
           oldName: filename,
           newName: value.value,
-          prefix: this.prefix
+          prefix: this.prefix !== undefined ? this.prefix : ''
         })
       }).then(response => {
         return this.fetchListObjects()
@@ -223,7 +223,7 @@ export default {
         project: this.$store.getters.currentProject,
         bucket: this.$route.params.name,
         filename: filename,
-        prefix: this.prefix
+        prefix: this.prefix !== undefined ? this.prefix : ''
       }).then(response => {
         var file = new File([response.Body], filename, { type: response.ContentType })
         FileSaver.saveAs(file)
@@ -249,7 +249,7 @@ export default {
         project: this.$store.getters.currentProject,
         bucket: this.$route.params.name,
         file: option.file,
-        prefix: this.prefix
+        prefix: this.prefix !== undefined ? this.prefix : ''
       }).then(response => {
         option.onSuccess(response.Location)
         this.$notify.success({
