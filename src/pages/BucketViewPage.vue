@@ -46,7 +46,22 @@
           <a style="text-decoration: none" href="#" @click.prevent="openFolder(scope.row.Key)" v-if="scope.row.Folder">
             <i class="fa fa-folder"></i> {{ scope.row.Key.replace(prefix, '').replace('/', '') }}
           </a>
-          <span v-if="scope.row.Folder === undefined" @click="downloadObject(scope.row.Key.replace(prefix, ''))"><i class="fa fa-file"></i> {{ scope.row.Key.replace(prefix, '') }}</span>
+
+          <el-dropdown 
+            trigger="click" 
+            placement="bottom-start" 
+            v-if="scope.row.Folder === undefined">
+            <el-button type="text" size="medium" class="bucket-file-link">
+              <i class="fa fa-file"></i> {{ scope.row.Key.replace(prefix, '') }}
+            </el-button>
+            <el-dropdown-menu slot="dropdown" class="bucket-menu">
+              <el-dropdown-item>Cut</el-dropdown-item>
+              <el-dropdown-item @click.native="downloadObject(scope.row.Key.replace(prefix, ''))">Download</el-dropdown-item>
+              <el-dropdown-item>Rename</el-dropdown-item>
+              <el-dropdown-item>Copy</el-dropdown-item>
+              <el-dropdown-item>Past</el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
         </template>
       </el-table-column>
       <el-table-column
@@ -329,5 +344,11 @@ export default {
   .el-table .cell .fa {
     width: 14px !important;
     display: inline-block;
+  }
+
+  .bucket-file-link, 
+  .bucket-file-link:hover,
+  .bucket-file-link:focus {
+    color: #303133;
   }
 </style>
