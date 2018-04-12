@@ -90,11 +90,7 @@ export default {
 
       periods: 0,
       funcStats: [],
-
-      functions: [],
-      functionList: [],
-      functionsTemp: [],
-      showCost: false
+      functions: []
     }
   },
 
@@ -105,23 +101,14 @@ export default {
 
   watch: {
     'periods': function () {
+      this.fetchFunctions()
       this.fetchStats()
     }
   },
 
   methods: {
-    totalCost () {
-      var gbsSum = 0
-      for (var i = 0; i < this.functions.length; i++) {
-        gbsSum += this.functions[i].gbs
-        this.sum = gbsSum * this.price
-        this.showCost = true
-      }
-    },
-
     fetchStats () {
       this.$store.dispatch('getStats', { periods: this.periods }).then(response => {
-        console.log(response.data)
         this.funcStats = [
           { name: 'Requests', period: response.data.stats[0].called, limit: 'no limit' },
           { name: 'GB-s', period: response.data.stats[0].gbs.toLocaleString(undefined, { minimumFractionDigits: 6 }), limit: '40.000' },
@@ -136,26 +123,38 @@ export default {
       })
     },
 
-    async fetchFunctionStats () {
-      for (const item of this.$store.getters.getFunctions) {
-        var response = await this.$store.dispatch('fetchFunctionInfo', {
-          project: this.$store.getters.currentProject,
-          name: item.name
+    fetchFunctionStats () {
+      this.$store.dispatch('fetchFunctionListInfo', {
+        project: this.$store.getters.currentProject,
+        periods: this.periods
+      }).then(response => {
+        let data = []
+
+        response.data.forEach((item) => {
+          let called = 0
+          let time = 0
+          let bytesout = 0
+
+          item.stats.forEach((stats) => {
+            called += stats.called
+            time += stats.time
+            bytesout += stats.bytesout
+          })
+
+          data.push({
+            name: item.name,
+            memory: item.size.memory,
+            called: called,
+            time: (time / 1000000000).toLocaleString(undefined, { minimumFractionDigits: 6 }),
+            gbs: (item.size.memory / 1000) * (time / 1024),
+            traffic: (bytesout / 1048576).toLocaleString(undefined, { minimumFractionDigits: 6 })
+          })
         })
 
-        this.functionsTemp.push({
-          name: item.name,
-          memory: response.data.size.memory,
-          called: response.data.stats.called,
-          time: (response.data.stats.time / 1000000000).toLocaleString(undefined, { minimumFractionDigits: 6 }),
-          gbs: (response.data.size.memory / 1000) * (response.data.stats.time / 1024),
-          traffic: (response.data.stats.bytesout / 1048576).toLocaleString(undefined, { minimumFractionDigits: 6 })
-        })
-      }
-
-      this.loading = false
-      this.functions = this.functionsTemp
-      this.totalCost()
+        this.functions = data
+      }).finally(() => {
+        this.loading = false
+      })
     }
   }
 }
