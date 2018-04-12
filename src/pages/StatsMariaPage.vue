@@ -1,25 +1,12 @@
 <template>
   <div v-loading="loading">
-
-    <el-row>
-      <el-col :span="24">
-        <el-form label-width="170px" class="timeline-form">
-          <el-form-item label="Timeline">
-            <el-select placeholder="Timeline" v-model="periods">
-              <el-option v-for="(value, label) in $store.getters.getPeriods" :label="label" :value="value" :key="value"></el-option>
-            </el-select>
-            <span class="period">from 04/05/2018 to 05/05/2018</span>
-          </el-form-item>
-        </el-form>
-      </el-col>
-    </el-row>
     <p>Usage stats for MariaDB</p>
 
     <el-row>
       <el-col :span="24">
         <el-table :data="mariaStats" style="width: 100%">
           <el-table-column prop="name" label=""></el-table-column>
-          <el-table-column prop="period" label="Chosen Period"></el-table-column>
+          <el-table-column prop="period" label="All Period"></el-table-column>
           <el-table-column prop="limit" label="Tariff Plan Limit"></el-table-column>
         </el-table>
       </el-col>
@@ -36,8 +23,6 @@ export default {
   data () {
     return {
       loading: false,
-
-      periods: 0,
       mariaStats: [
         { name: 'Used Storage, GB', period: 0, limit: null },
         { name: 'Number of databases', period: 0, limit: null }
