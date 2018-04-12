@@ -46,7 +46,7 @@
           <a style="text-decoration: none" href="#" @click.prevent="openFolder(scope.row.Key)" v-if="scope.row.Folder">
             <i class="fa fa-folder"></i> {{ scope.row.Key.replace(prefix, '').replace('/', '') }}
           </a>
-          <span v-if="scope.row.Folder === undefined"><i class="fa fa-file"></i> {{ scope.row.Key.replace(prefix, '') }}</span>
+          <span v-if="scope.row.Folder === undefined" @click="downloadObject(scope.row.Key.replace(prefix, ''))"><i class="fa fa-file"></i> {{ scope.row.Key.replace(prefix, '') }}</span>
         </template>
       </el-table-column>
       <el-table-column
@@ -94,6 +94,8 @@
 </template>
 
 <script>
+import FileSaver from 'file-saver'
+
 export default {
   data () {
     return {
@@ -175,6 +177,18 @@ export default {
       })
     },
 
+    downloadObject (filename) {
+      this.$store.dispatch('getS3Object', {
+        project: this.$store.getters.currentProject,
+        bucket: this.$route.params.name,
+        filename: filename,
+        prefix: this.prefix
+      }).then(response => {
+        var file = new File([response.Body], filename, { type: response.ContentType })
+        FileSaver.saveAs(file)
+      })
+    },
+
     handleSelectionChange (val) {
       this.multipleSelection = val
     },
@@ -193,7 +207,7 @@ export default {
       this.$store.dispatch('uploadS3Object', {
         project: this.$store.getters.currentProject,
         bucket: this.$route.params.name,
-        file: option.file,
+        filename: option.file,
         prefix: this.prefix
       }).then(response => {
         option.onSuccess(response.Location)
