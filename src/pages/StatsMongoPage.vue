@@ -39,14 +39,31 @@ export default {
 
       periods: 0,
       mongoStats: [
-        { name: 'Used Storage, GB', period: 0.027, limit: 1 },
-        { name: 'Number of databases', period: 1, limit: 5 }
+        { name: 'Used Storage, GB', period: 0, limit: null },
+        { name: 'Number of databases', period: 0, limit: null }
       ]
     }
   },
 
   created () {
     this.$store.dispatch('setStatsActiveTab', 'mongodb')
+    this.fetchMwareStats()
+  },
+
+  methods: {
+    fetchMwareStats () {
+      this.loading = true
+      this.$store.dispatch('fetchMiddlewareListInfo', this.$store.getters.currentProject).then(response => {
+        response.data.forEach(item => {
+          if (item.type === 'mongo') {
+            this.mongoStats[0].period += item.disk_usage || 0
+            this.mongoStats[1].period += 1
+          }
+        })
+      }).finally(() => {
+        this.loading = false
+      })
+    }
   }
 }
 </script>

@@ -39,14 +39,31 @@ export default {
 
       periods: 0,
       mariaStats: [
-        { name: 'Used Storage, GB', period: 0.008, limit: 1 },
-        { name: 'Number of databases', period: 1, limit: 5 }
+        { name: 'Used Storage, GB', period: 0, limit: null },
+        { name: 'Number of databases', period: 0, limit: null }
       ]
     }
   },
 
   created () {
     this.$store.dispatch('setStatsActiveTab', 'mariadb')
+    this.fetchMwareStats()
+  },
+
+  methods: {
+    fetchMwareStats () {
+      this.loading = true
+      this.$store.dispatch('fetchMiddlewareListInfo', this.$store.getters.currentProject).then(response => {
+        response.data.forEach(item => {
+          if (item.type === 'maria') {
+            this.mariaStats[0].period += item.disk_usage || 0
+            this.mariaStats[1].period += 1
+          }
+        })
+      }).finally(() => {
+        this.loading = false
+      })
+    }
   }
 }
 </script>
