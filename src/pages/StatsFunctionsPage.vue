@@ -120,7 +120,7 @@ export default {
           { name: 'Outbound Traffic, MB', period: (response.data.stats[0].bytesout / 1048576).toLocaleString(undefined, { minimumFractionDigits: 6 }), limit: '5.000' }
         ]
 
-        this.periodFrom = response.data.stats[0].from ? response.data.stats[0].from : this.$store.getters.getUserInfo.created
+        this.periodFrom = response.data.stats[0].from ? response.data.stats[0].from : this.$store.state.auth.user.created
         this.periodTill = response.data.stats[0].till ? response.data.stats[0].till : new Date()
       }).finally(() => {
         this.loading = false
