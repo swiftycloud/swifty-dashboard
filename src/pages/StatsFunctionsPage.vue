@@ -9,7 +9,7 @@
             <el-select placeholder="Timeline" v-model="periods">
               <el-option v-for="(value, label) in $store.getters.getPeriods" :label="label" :value="value" :key="value"></el-option>
             </el-select>
-            <span class="period">from 04/05/2018 to 05/05/2018</span>
+            <span class="period">from {{ periodFrom | moment('L') }} to {{ periodTill | moment('L') }}</span>
           </el-form-item>
         </el-form>
       </el-col>
@@ -89,6 +89,9 @@ export default {
       showFunctionDetails: false,
 
       periods: 0,
+      periodFrom: null,
+      periodTill: null,
+
       funcStats: [],
       functions: []
     }
@@ -116,6 +119,9 @@ export default {
           { name: 'GB-s', period: response.data.stats[0].gbs.toLocaleString(undefined, { minimumFractionDigits: 6 }), limit: '40.000' },
           { name: 'Outbound Traffic, MB', period: (response.data.stats[0].bytesout / 1048576).toLocaleString(undefined, { minimumFractionDigits: 6 }), limit: '5.000' }
         ]
+
+        this.periodFrom = response.data.stats[0].from ? response.data.stats[0].from : this.$store.getters.getUserInfo.created
+        this.periodTill = response.data.stats[0].till ? response.data.stats[0].till : new Date()
       }).finally(() => {
         this.loading = false
       })
