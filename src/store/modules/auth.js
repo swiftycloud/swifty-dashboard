@@ -10,7 +10,8 @@ export default {
   state: {
     user: {
       id: null,
-      name: null
+      name: null,
+      created: null
     },
     token: null,
     expires: null
@@ -122,6 +123,7 @@ export default {
     [SAVE_USER_INFO] (state, user) {
       state.user.id = user.id
       state.user.name = user.name
+      state.user.created = user.created
     },
     [SAVE_AUTH_TOKEN] (state, payload) {
       state.token = payload.token
