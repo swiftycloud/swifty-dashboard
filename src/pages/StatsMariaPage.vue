@@ -39,12 +39,14 @@ export default {
     fetchMwareStats () {
       this.loading = true
       this.$store.dispatch('fetchMiddlewareListInfo', this.$store.getters.currentProject).then(response => {
-        response.data.forEach(item => {
-          if (item.type === 'maria') {
-            this.mariaStats[0].period += item.disk_usage || 0
-            this.mariaStats[1].period += 1
-          }
-        })
+        if (response.data !== null) {
+          response.data.forEach(item => {
+            if (item.type === 'maria') {
+              this.mariaStats[0].period += item.disk_usage || 0
+              this.mariaStats[1].period += 1
+            }
+          })
+        }
       }).finally(() => {
         this.loading = false
       })
