@@ -96,35 +96,33 @@ export default {
 
   created () {
     this.$store.dispatch('setStatsActiveTab', 'func')
-    this.fetchFunctions()
+    this.fetchFunctionStats()
     this.fetchStats()
   },
 
   watch: {
     'periods': function () {
-      this.fetchFunctions()
+      this.fetchFunctionStats()
       this.fetchStats()
     }
   },
 
   methods: {
     fetchStats () {
+      this.loading = true
       this.$store.dispatch('getStats', { periods: this.periods }).then(response => {
         this.funcStats = [
           { name: 'Requests', period: response.data.stats[0].called, limit: 'no limit' },
           { name: 'GB-s', period: response.data.stats[0].gbs.toLocaleString(undefined, { minimumFractionDigits: 6 }), limit: '40.000' },
           { name: 'Outbound Traffic, MB', period: (response.data.stats[0].bytesout / 1048576).toLocaleString(undefined, { minimumFractionDigits: 6 }), limit: '5.000' }
         ]
-      })
-    },
-
-    fetchFunctions () {
-      this.$store.dispatch('fetchFunctions', this.$store.getters.currentProject).then(() => {
-        return this.fetchFunctionStats()
+      }).finally(() => {
+        this.loading = false
       })
     },
 
     fetchFunctionStats () {
+      this.loading = true
       this.$store.dispatch('fetchFunctionListInfo', {
         project: this.$store.getters.currentProject,
         periods: this.periods
