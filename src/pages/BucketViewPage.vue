@@ -84,7 +84,6 @@
               <el-dropdown-item @click.native="downloadObject(scope.row.Key.replace(prefix, ''))">Download</el-dropdown-item>
               <el-dropdown-item @click.native="renameObject(scope.row.Key.replace(prefix, ''))">Rename</el-dropdown-item>
               <el-dropdown-item @click.native="copyObjectToBuffer(scope.row.Key)">Copy</el-dropdown-item>
-              <el-dropdown-item>Paste</el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>
         </template>
