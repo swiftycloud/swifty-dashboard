@@ -10,11 +10,9 @@
       <el-dropdown trigger="click" placement="bottom-start">
         <el-button plain size="medium">More <i class="fa fa-angle-down"></i></el-button>
         <el-dropdown-menu slot="dropdown" class="bucket-menu">
-          <el-dropdown-item>Download as</el-dropdown-item>
-          <el-dropdown-item>Rename</el-dropdown-item>
+          <el-dropdown-item>Cut</el-dropdown-item>
           <el-dropdown-item>Copy</el-dropdown-item>
           <el-dropdown-item>Past</el-dropdown-item>
-          <el-dropdown-item>Cut</el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
     </div>
