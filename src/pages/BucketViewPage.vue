@@ -48,9 +48,30 @@
           <el-dropdown 
             trigger="click" 
             placement="bottom-start" 
-            v-if="scope.row.Folder === undefined">
-            <el-button type="text" size="medium" class="bucket-file-link">
-              <i class="fa fa-file"></i> {{ scope.row.Key.replace(prefix, '') }}
+            v-if="scope.row.Folder"
+            class="bucket-object-link-dropdown">
+            <el-button type="text" size="medium" class="bucket-object-link">
+              <i class="fa fa-ellipsis-h"></i>
+            </el-button>
+            <el-dropdown-menu slot="dropdown" class="bucket-menu">
+              <el-dropdown-item>Cut</el-dropdown-item>
+              <el-dropdown-item>Copy</el-dropdown-item>
+              <el-dropdown-item>Past</el-dropdown-item>
+              <el-dropdown-item @click.native="renameObject(scope.row.Key.replace(prefix, ''))">Rename</el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
+
+          <span v-if="scope.row.Folder === undefined">
+            <i class="fa fa-file"></i> {{ scope.row.Key.replace(prefix, '') }}
+          </span>
+
+          <el-dropdown 
+            trigger="click" 
+            placement="bottom-start" 
+            v-if="scope.row.Folder === undefined"
+            class="bucket-object-link-dropdown">
+            <el-button type="text" size="medium" class="bucket-object-link">
+              <i class="fa fa-ellipsis-h"></i>
             </el-button>
             <el-dropdown-menu slot="dropdown" class="bucket-menu">
               <el-dropdown-item>Cut</el-dropdown-item>
@@ -370,9 +391,15 @@ export default {
     display: inline-block;
   }
 
-  .bucket-file-link, 
-  .bucket-file-link:hover,
-  .bucket-file-link:focus {
+  .bucket-object-link-dropdown {
+    float: right;
+    width: 32px;
+    text-align: center;
+  }
+
+  .bucket-object-link, 
+  .bucket-object-link:hover,
+  .bucket-object-link:focus {
     color: #303133;
     text-transform: none;
     padding: 0;
