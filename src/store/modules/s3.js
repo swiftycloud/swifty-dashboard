@@ -49,6 +49,14 @@ export default {
       })
     },
 
+    copyS3Object ({ dispatch }, { project, bucket, oldPath, newPath }) {
+      return api.s3('copyObject', project, {
+        Bucket: bucket,
+        CopySource: '/' + bucket + '/' + oldPath,
+        Key: newPath
+      }, bucket)
+    },
+
     uploadS3Object ({ dispatch }, { project, bucket, file, prefix }) {
       return api.s3('upload', project, { Bucket: bucket, Body: file, Key: prefix + file.name }, bucket)
     },

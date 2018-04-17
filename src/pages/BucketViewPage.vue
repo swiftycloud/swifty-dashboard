@@ -12,7 +12,7 @@
         <el-dropdown-menu slot="dropdown" class="bucket-menu">
           <el-dropdown-item>Cut</el-dropdown-item>
           <el-dropdown-item>Copy</el-dropdown-item>
-          <el-dropdown-item>Past</el-dropdown-item>
+          <el-dropdown-item @click.native="pasteObject">Paste</el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
     </div>
@@ -62,16 +62,16 @@
             <el-dropdown-menu slot="dropdown" class="bucket-menu">
               <el-dropdown-item>Cut</el-dropdown-item>
               <el-dropdown-item>Copy</el-dropdown-item>
-              <el-dropdown-item>Past</el-dropdown-item>
+              <el-dropdown-item>Paste</el-dropdown-item>
               <el-dropdown-item @click.native="renameObject(scope.row.Key.replace(prefix, ''))">Rename</el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>
 
-          <span v-if="scope.row.Folder === undefined">
+          <span v-if="scope.row.Folder === undefined" :class="{ buffered : isCopyOrCut(scope.row.Key) }">
             {{ scope.row.Key.replace(prefix, '') }}
           </span>
 
-          <el-dropdown 
+          <el-dropdown
             trigger="click" 
             placement="bottom-start" 
             v-if="scope.row.Folder === undefined"
@@ -80,11 +80,11 @@
               <i class="fa fa-ellipsis-h"></i>
             </el-button>
             <el-dropdown-menu slot="dropdown" class="bucket-menu">
-              <el-dropdown-item>Cut</el-dropdown-item>
+              <el-dropdown-item @click.native="cutObjectToBuffer(scope.row.Key)">Cut</el-dropdown-item>
               <el-dropdown-item @click.native="downloadObject(scope.row.Key.replace(prefix, ''))">Download</el-dropdown-item>
               <el-dropdown-item @click.native="renameObject(scope.row.Key.replace(prefix, ''))">Rename</el-dropdown-item>
-              <el-dropdown-item>Copy</el-dropdown-item>
-              <el-dropdown-item>Past</el-dropdown-item>
+              <el-dropdown-item @click.native="copyObjectToBuffer(scope.row.Key)">Copy</el-dropdown-item>
+              <el-dropdown-item>Paste</el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>
         </template>
@@ -144,7 +144,9 @@ export default {
       uploadDialogVisible: false,
       multipleSelection: [],
       loading: true,
-      uploading: false
+      uploading: false,
+      copyBuffer: null,
+      cutBuffer: null
     }
   },
   created () {
@@ -182,6 +184,20 @@ export default {
     }
   },
   methods: {
+    isCopyOrCut (objectPath) {
+      return this.copyBuffer === objectPath || this.cutBuffer === objectPath
+    },
+
+    copyObjectToBuffer (objectPath) {
+      this.cutBuffer = null
+      this.copyBuffer = objectPath
+    },
+
+    cutObjectToBuffer (objectPath) {
+      this.copyBuffer = null
+      this.cutBuffer = objectPath
+    },
+
     fetchListObjects () {
       this.loading = true
       return this.$store.dispatch('fetchS3BucketListObjects', {
@@ -215,6 +231,43 @@ export default {
       }).finally(() => {
         this.loading = false
       })
+    },
+
+    pasteObject () {
+      let isCopy = this.copyBuffer !== null
+      let objectPath = this.copyBuffer !== null ? this.copyBuffer : this.cutBuffer
+
+      if (objectPath !== null) {
+        let re = /(?:\/|([^/]+))?$/
+        let name = re.exec(objectPath)[1]
+
+        this.$store.dispatch('copyS3Object', {
+          project: this.$store.getters.currentProject,
+          bucket: this.$route.params.name,
+          oldPath: objectPath,
+          newPath: this.prefix !== undefined ? this.prefix + name : name
+        }).then(response => {
+          if (isCopy === false) {
+            this.$store.dispatch('deleteS3Object', {
+              project: this.$store.state.projects.currentProject,
+              bucket: this.$route.params.name,
+              object: objectPath
+            })
+          }
+
+          this.copyBuffer = null
+          this.cutBuffer = null
+
+          return this.fetchListObjects()
+        }).catch(error => {
+          if (error.message) {
+            this.$notify.error({
+              title: 'Error',
+              message: error.message
+            })
+          }
+        })
+      }
     },
 
     renameObject (filename) {
@@ -409,5 +462,9 @@ export default {
     color: #303133;
     text-transform: none;
     padding: 0;
+  }
+
+  .buffered {
+    color: #909399;
   }
 </style>
