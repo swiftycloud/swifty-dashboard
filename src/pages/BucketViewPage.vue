@@ -36,13 +36,19 @@
         type="selection"
         width="55">
       </el-table-column>
+      <el-table-column width="34">
+        <template slot-scope="scope">
+          <i class="fa fa-folder" v-if="scope.row.Folder"></i>
+          <i class="fa fa-file" v-if="scope.row.Folder === undefined"></i>
+        </template>
+      </el-table-column>
       <el-table-column
         prop="Key"
         label="Name"
         sortable>
         <template slot-scope="scope" class="bucket-object-name" v-if="!loading">
           <a style="text-decoration: none" href="#" @click.prevent="openFolder(scope.row.Key)" v-if="scope.row.Folder">
-            <i class="fa fa-folder"></i> {{ scope.row.Key.replace(prefix, '').replace('/', '') }}
+            {{ scope.row.Key.replace(prefix, '').replace('/', '') }}
           </a>
 
           <el-dropdown 
@@ -62,7 +68,7 @@
           </el-dropdown>
 
           <span v-if="scope.row.Folder === undefined">
-            <i class="fa fa-file"></i> {{ scope.row.Key.replace(prefix, '') }}
+            {{ scope.row.Key.replace(prefix, '') }}
           </span>
 
           <el-dropdown 
