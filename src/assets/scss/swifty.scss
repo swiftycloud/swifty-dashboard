@@ -203,7 +203,7 @@ hr {
     .user-info {
       color: #fff;
       display: inline-block;
-      margin-top: 30px;
+      margin-top: 27px;
 
       p {
         margin: 0;
@@ -216,6 +216,11 @@ hr {
       }
       .user-description {
         font-size: 14px;
+      }
+
+      .user-email {
+        font-size: 14px;
+        font-weight: 300;
       }
     }
 
