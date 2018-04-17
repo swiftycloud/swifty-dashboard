@@ -377,5 +377,6 @@ export default {
   .bucket-file-link:focus {
     color: #303133;
     text-transform: none;
+    padding: 0;
   }
 </style>
