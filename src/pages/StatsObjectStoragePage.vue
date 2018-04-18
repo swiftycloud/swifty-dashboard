@@ -47,6 +47,42 @@ export default {
 
   created () {
     this.$store.dispatch('setStatsActiveTab', 'storage')
+    this.fetchObjectStats()
+  },
+
+  methods: {
+    async fetchObjectStats () {
+      let data = await this.$store.dispatch('fetchS3ListBuckets', {
+        project: this.$store.getters.currentProject
+      })
+
+      for (var k in data.Buckets) {
+        let bucket = data.Buckets[k]
+        let bytes = await this.$store.dispatch('getMetricStatistics', {
+          project: this.$store.getters.currentProject,
+          data: {
+            Namespace: 'AWS/S3',
+            MetricName: 'NumberOfObjects',
+            StartTime: 0,
+            EndTime: new Date(),
+            Period: 86400,
+            Statistics: ['Average'],
+            Unit: 'Count',
+            Dimensions: [
+              {
+                'Name': 'BucketName',
+                'Value': bucket.Name
+              }, {
+                'Name': 'StorageType',
+                'Value': 'AllStorageTypes'
+              }
+            ]
+          }
+        })
+
+        console.log(bytes)
+      }
+    }
   }
 }
 </script>
