@@ -10,9 +10,9 @@
       <el-dropdown trigger="click" placement="bottom-start">
         <el-button plain size="medium">More <i class="fa fa-angle-down"></i></el-button>
         <el-dropdown-menu slot="dropdown" class="bucket-menu">
-          <el-dropdown-item>Cut</el-dropdown-item>
-          <el-dropdown-item>Copy</el-dropdown-item>
-          <el-dropdown-item @click.native="pasteObject">Paste</el-dropdown-item>
+          <el-dropdown-item @click.native="cutSelected">Cut</el-dropdown-item>
+          <el-dropdown-item @click.native="copySelected">Copy</el-dropdown-item>
+          <el-dropdown-item @click.native="pasteObjects">Paste</el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
     </div>
@@ -38,8 +38,8 @@
       </el-table-column>
       <el-table-column width="34">
         <template slot-scope="scope">
-          <i class="fa fa-folder" v-if="scope.row.Folder"></i>
-          <i class="fa fa-file" v-if="scope.row.Folder === undefined"></i>
+          <i class="fa fa-folder" v-if="scope.row.Folder" :class="{ buffered : isCopyOrCut(scope.row.Key) }"></i>
+          <i class="fa fa-file" v-if="scope.row.Folder === undefined" :class="{ buffered : isCopyOrCut(scope.row.Key) }"></i>
         </template>
       </el-table-column>
       <el-table-column
@@ -144,8 +144,8 @@ export default {
       multipleSelection: [],
       loading: true,
       uploading: false,
-      copyBuffer: null,
-      cutBuffer: null
+      copyBuffer: [],
+      cutBuffer: []
     }
   },
   created () {
@@ -183,18 +183,47 @@ export default {
     }
   },
   methods: {
+    clearBuffer () {
+      this.copyBuffer = []
+      this.cutBuffer = []
+    },
+
     isCopyOrCut (objectPath) {
-      return this.copyBuffer === objectPath || this.cutBuffer === objectPath
+      return this.copyBuffer.indexOf(objectPath) >= 0 || this.cutBuffer.indexOf(objectPath) >= 0
     },
 
     copyObjectToBuffer (objectPath) {
-      this.cutBuffer = null
-      this.copyBuffer = objectPath
+      this.clearBuffer()
+      this.copyBuffer.push(objectPath)
     },
 
     cutObjectToBuffer (objectPath) {
-      this.copyBuffer = null
-      this.cutBuffer = objectPath
+      this.clearBuffer()
+      this.cutBuffer.push(objectPath)
+    },
+
+    copySelected () {
+      if (this.multipleSelection.length === 0) {
+        return false
+      }
+
+      this.clearBuffer()
+
+      this.multipleSelection.forEach(object => {
+        this.copyBuffer.push(object.Key)
+      })
+    },
+
+    cutSelected () {
+      if (this.multipleSelection.length === 0) {
+        return false
+      }
+
+      this.clearBuffer()
+
+      this.multipleSelection.forEach(object => {
+        this.cutBuffer.push(object.Key)
+      })
     },
 
     fetchListObjects () {
@@ -232,31 +261,35 @@ export default {
       })
     },
 
-    pasteObject () {
-      let isCopy = this.copyBuffer !== null
-      let objectPath = this.copyBuffer !== null ? this.copyBuffer : this.cutBuffer
+    pasteObjects () {
+      if (this.copyBuffer.length > 0 || this.cutBuffer.length > 0) {
+        let promises = []
+        let isCopy = this.copyBuffer.length > 0
+        let objects = this.copyBuffer.length > 0 ? this.copyBuffer : this.cutBuffer
 
-      if (objectPath !== null) {
-        let re = /(?:\/|([^/]+))?$/
-        let name = re.exec(objectPath)[1]
+        objects.forEach(objectPath => {
+          let re = /(?:\/|([^/]+))?$/
+          let name = re.exec(objectPath)[1]
 
-        this.$store.dispatch('copyS3Object', {
-          project: this.$store.getters.currentProject,
-          bucket: this.$route.params.name,
-          oldPath: objectPath,
-          newPath: this.prefix !== undefined ? this.prefix + name : name
-        }).then(response => {
-          if (isCopy === false) {
-            this.$store.dispatch('deleteS3Object', {
-              project: this.$store.state.projects.currentProject,
+          promises.push(
+            this.$store.dispatch('copyS3Object', {
+              project: this.$store.getters.currentProject,
               bucket: this.$route.params.name,
-              object: objectPath
+              oldPath: objectPath,
+              newPath: this.prefix !== undefined ? this.prefix + name : name
+            }).then(response => {
+              if (isCopy) return null
+              return this.$store.dispatch('deleteS3Object', {
+                project: this.$store.state.projects.currentProject,
+                bucket: this.$route.params.name,
+                object: objectPath
+              })
             })
-          }
+          )
+        })
 
-          this.copyBuffer = null
-          this.cutBuffer = null
-
+        Promise.all(promises).then(result => {
+          this.clearBuffer()
           return this.fetchListObjects()
         }).catch(error => {
           if (error.message) {
