@@ -20,6 +20,7 @@ export default {
     fetchS3ListBuckets ({ dispatch, commit }, { project }) {
       return api.s3('listBuckets', project).then(data => {
         commit(SAVE_BUCKETS, data.Buckets)
+        return data
       })
     },
 
@@ -68,6 +69,10 @@ export default {
 
     deleteS3Object ({ dispatch }, { project, bucket, object }) {
       return api.s3('deleteObject', project, { Bucket: bucket, Key: object }, bucket)
+    },
+
+    getMetricStatistics ({ dispatch }, { project, data }) {
+      return api.cw('getMetricStatistics', project, data)
     }
   },
 
