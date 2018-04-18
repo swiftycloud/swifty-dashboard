@@ -2,9 +2,15 @@ import axios from 'axios'
 import AWS from 'aws-sdk'
 import * as config from '@/api/config'
 
+AWS.config.update({ region: 'us-west-2' })
+
 export default {
   axios: axios,
   aws: {
+    instance: null,
+    credentials: null
+  },
+  cloudwatch: {
     instance: null,
     credentials: null
   },
@@ -197,7 +203,7 @@ export default {
         secretAccessKey: response.data.secret
       })
 
-      this.aws.credentials.expiryWindow = 5
+      this.aws.credentials.expiryWindow = 10
       this.aws.credentials.expireTime = AWS.util.date.getDate().getTime() + (response.data.expires * 1000)
       this.aws.credentials.bucketName = bucket
 
@@ -220,6 +226,45 @@ export default {
         }
 
         s3[method](data, (err, data) => err ? reject(err) : resolve(data))
+      })
+    })
+  },
+
+  cwGetInstance (project, bucket) {
+    if (this.cloudwatch.credentials !== null && !this.cloudwatch.credentials.needsRefresh() && this.cloudwatch.credentials.bucketName === bucket) {
+      return new Promise((resolve, reject) => {
+        resolve(this.cloudwatch.instance)
+      })
+    }
+
+    return this.middlewareAccessS3(project, bucket, undefined, ['hidden']).then(response => {
+      this.cloudwatch.credentials = new AWS.Credentials({
+        accessKeyId: response.data.key,
+        secretAccessKey: response.data.secret
+      })
+
+      this.cloudwatch.credentials.expiryWindow = 10
+      this.cloudwatch.credentials.expireTime = AWS.util.date.getDate().getTime() + (response.data.expires * 1000)
+      this.cloudwatch.credentials.bucketName = bucket
+
+      this.cloudwatch.instance = new AWS.CloudWatch({
+        credentials: this.cloudwatch.credentials,
+        endpoint: 'https://' + response.data.endpoint,
+        apiVersion: '2010-08-01'
+      })
+
+      return this.cloudwatch.instance
+    })
+  },
+
+  cw (method, project, data, bucket) {
+    return this.cwGetInstance(project, bucket).then(cw => {
+      return new Promise((resolve, reject) => {
+        if (cw[method] === undefined) {
+          return reject(new Error(method + ': this method is not exists'))
+        }
+
+        cw[method](data, (err, data) => err ? reject(err) : resolve(data))
       })
     })
   }
