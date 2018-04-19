@@ -35,12 +35,12 @@
 export default {
   data () {
     return {
-      loading: false,
+      loading: true,
 
       periods: 0,
       storageStats: [
-        { name: 'Used Storage, GB', period: 0.012, limit: 10 },
-        { name: 'Outbound Traffic, GB', period: 0.211, limit: 200 }
+        { name: 'Used Storage, GB', period: 0, limit: 10 },
+        { name: 'Outbound Traffic, GB', period: 0, limit: 200 }
       ]
     }
   },
@@ -58,30 +58,38 @@ export default {
 
       for (var k in data.Buckets) {
         let bucket = data.Buckets[k]
+
         let bytes = await this.$store.dispatch('getMetricStatistics', {
           project: this.$store.getters.currentProject,
           data: {
             Namespace: 'AWS/S3',
-            MetricName: 'NumberOfObjects',
+            MetricName: 'BucketSizeBytes',
             StartTime: 0,
-            EndTime: new Date(),
+            EndTime: 0,
             Period: 86400,
             Statistics: ['Average'],
-            Unit: 'Count',
+            Unit: 'Bytes',
             Dimensions: [
               {
                 'Name': 'BucketName',
                 'Value': bucket.Name
               }, {
                 'Name': 'StorageType',
-                'Value': 'AllStorageTypes'
+                'Value': 'StandardStorage'
               }
             ]
           }
         })
 
-        console.log(bytes)
+        for (var i in bytes.Datapoints) {
+          let datapoint = bytes.Datapoints[i]
+          this.storageStats[0].period += (datapoint.Average / 1073741824)
+        }
       }
+
+      this.storageStats[0].period = this.storageStats[0].period.toLocaleString(undefined, { minimumFractionDigits: 6 })
+
+      this.loading = false
     }
   }
 }
