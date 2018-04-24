@@ -11,7 +11,8 @@ export default {
     typeNames: {
       maria: 'MariaDB',
       s3: 'Object Storage',
-      mongo: 'MongoDB'
+      mongo: 'MongoDB',
+      authjwt: 'Auth Database'
     }
   },
 

@@ -20,6 +20,7 @@ import StatsFunctionsPage from '@/pages/StatsFunctionsPage'
 import StatsObjectStoragePage from '@/pages/StatsObjectStoragePage'
 import StatsMongoPage from '@/pages/StatsMongoPage'
 import StatsMariaPage from '@/pages/StatsMariaPage'
+import AuthServicePage from '@/pages/AuthServicePage'
 
 Vue.use(Router)
 
@@ -96,6 +97,11 @@ export default new Router({
         { path: 'mariadb', name: 'stats.mariadb', component: StatsMariaPage },
         { path: 'mongodb', name: 'stats.mongodb', component: StatsMongoPage }
       ]
+    },
+    {
+      path: '/auth',
+      name: 'auth',
+      component: AuthServicePage
     }
   ]
 })

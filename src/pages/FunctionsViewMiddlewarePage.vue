@@ -17,6 +17,7 @@
           <el-button type="primary" size="mini" round @click="$router.push({ name: 'storage' })">Create Object Storage</el-button>
           <el-button type="primary" size="mini" round @click="$router.push({ name: 'mariadb' })">Create Maria Database</el-button>
           <el-button type="primary" size="mini" round @click="$router.push({ name: 'mongodb' })">Create Mongo Database</el-button>
+          <el-button type="primary" size="mini" round @click="$router.push({ name: 'auth' })">Create Auth Database</el-button>
       </div>
       <el-table-column
         type="selection"
