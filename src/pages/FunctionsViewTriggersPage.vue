@@ -3,43 +3,33 @@
     <p>Here you can manage your triggers</p>
 
     <div class="actions-block">
-      <el-button type="primary" size="medium" @click="openCreateTriggerDialog">Add Trigger</el-button>
+      <el-dropdown trigger="click" placement="bottom-start">
+        <el-button type="primary" size="medium">Add Trigger <i class="fa fa-angle-down"></i></el-button>
+        <el-dropdown-menu slot="dropdown">
+          <el-dropdown-item :disabled="urlTriggerCreatingDisabled" @click.native="addUrlTrigger">REST API (URL)</el-dropdown-item>
+          <el-dropdown-item :disabled="cronTriggerCreatingDisabled" @click.native="openAddCronTrigger">Scheduled Action</el-dropdown-item>
+          <el-dropdown-item :disabled="s3TriggerCreatingDisabled" @click.native="triggerS3CreationDialog = true">Object Storage</el-dropdown-item>
+        </el-dropdown-menu>
+      </el-dropdown>
     </div>
 
     <hr>
 
-    <el-row v-if="url">
-      <el-col :span="12">
-        <p class="trigger-post-url-label">REST API</p>
-      </el-col>
-      <!--<el-col :span="12">
-        <el-button type="primary" plain size="medium">Disable API</el-button>
-      </el-col>-->
-    </el-row>
-
-    <el-row v-if="url">
-      <el-col :span="24">
-        <p class="trigger-post-url">POST https://{{ url }}  <el-button size="mini" type="primary" v-clipboard:copy="'https://' + url" class="fa fa-copy" plain></el-button></p>
-      </el-col>
-    </el-row>
-
     <el-table
-      :data="cron"
+      :data="triggers"
       style="width: 100%">
-      <div slot="empty" class="middleware-empty-message">
-          <p>You don’t have any triggers attached to the function</p>
-          <el-button type="primary" size="mini" round @click="triggerCreationDialog = true">Attach</el-button>
-      </div>
       <el-table-column
-        prop="tab"
-        label="Expression"
-        sortable>
+        prop="name"
+        label="Name"
+        sortable
+        width="250px">
         <template slot-scope="scope">
-          <span>{{ scope.row.tab }}</span>
+          <span>{{ scope.row.name }}</span>
           <el-dropdown 
             trigger="click" 
             placement="bottom-start"
-            class="trigger-link-dropdown">
+            class="trigger-link-dropdown"
+            v-if="scope.row.type === 'cron'">
             <el-button type="text" size="medium" class="trigger-link">
               <i class="fa fa-ellipsis-h"></i>
             </el-button>
@@ -51,30 +41,59 @@
         </template>
       </el-table-column>
       <el-table-column
-        prop="args"
-        label="JSON Workload"
-        sortable>
-        <template slot-scope="scope">
-          <code>{{ JSON.stringify(scope.row.args) }}</code>
-        </template>
+        prop="type"
+        label="Type"
+        sortable
+        width="200px">
       </el-table-column>
       <el-table-column
-        label="Type"
+        prop="data"
+        label="Data"
         sortable>
         <template slot-scope="scope">
-          cron
+          <code v-if="scope.row.type === 'cron'">{{ JSON.stringify(scope.row.data) }}</code>
+          <span v-else>{{ scope.row.data }}</span>
         </template>
       </el-table-column>
     </el-table>
 
     <el-dialog
-      title="Create new scheduled trigger"
-      :visible.sync="triggerCreationDialog"
+      title="Create new object storage trigger"
+      :visible.sync="triggerS3CreationDialog"
       width="600px">
-      <el-form v-model="form" @submit="submitCreateTriggerForm">
-        <el-form-item label="Trigger name" label-width="120px">
-          <el-input v-model="form.name"></el-input>
+      <el-form v-model="cronForm" @submit="submitCreateS3TriggerForm">
+        <el-form-item label="Bucket" label-width="120px">
+          <el-select v-model="s3Form.bucket" placeholder="Select bucket" style="width: 450px">
+            <el-option v-for="(bucket, k) in $store.getters.getS3Buckets" :key="k" :value="bucket.Name" :label="bucket.Name"></el-option>
+          </el-select>
         </el-form-item>
+
+        <el-form-item label="Event type" label-width="120px">
+          <el-select multiple v-model="s3Form.eventTypes" placeholder="Select event type" style="width: 450px">
+            <el-option value="put" label="Object Created - PUT"></el-option>
+            <el-option value="delete" label="Object Deleted - DELETE"></el-option>
+          </el-select>
+        </el-form-item>
+
+        <el-form-item label="Path to object" label-width="120px">
+          <el-input v-model="s3Form.pathToObject" placeholder="folder1/"></el-input>
+        </el-form-item>
+
+        <el-form-item label="Filter" label-width="120px">
+          <el-input v-model="s3Form.filter" placeholder="*.img"></el-input>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="triggerS3CreationDialog = false">Cancel</el-button>
+        <el-button type="primary" @click="submitCreateS3TriggerForm">Save</el-button>
+      </span>
+    </el-dialog>
+
+    <el-dialog
+      title="Create new scheduled trigger"
+      :visible.sync="triggerCronCreationDialog"
+      width="600px">
+      <el-form v-model="cronForm" @submit="submitCreateCronTriggerForm">
         <el-form-item label="Timer settings" label-width="120px">
           <el-radio-group v-model="timerSettingValue">
             <el-radio-button label="Visual"></el-radio-button>
@@ -84,13 +103,13 @@
         <hr>
         <span v-if="timerSettingValue == 'Visual'">
           <el-form-item label="Select weekdays" label-width="120px">
-            <el-select multiple v-model="form.weekdays" placeholder="Select weekdays" style="width: 450px">
+            <el-select multiple v-model="cronForm.weekdays" placeholder="Select weekdays" style="width: 450px">
               <el-option v-for="(day, key) in weekdays" :key="key" :value="key" :label="day"></el-option>
             </el-select>
           </el-form-item>
           <el-form-item label="Select time" label-width="120px">
             <el-time-select
-              v-model="form.time"
+              v-model="cronForm.time"
               :picker-options="times"
               placeholder="Select time">
             </el-time-select>
@@ -98,28 +117,25 @@
         </span>
         <span v-else>
           <el-form-item label="Cron expression" label-width="120px">
-            <el-input v-model="form.expression" placeholder="23 * * * * *"></el-input>
+            <el-input v-model="cronForm.expression" placeholder="23 * * * * *"></el-input>
           </el-form-item>
         </span>
         <el-form-item label="JSON Workload">
           <br>
-          <codemirror id="input" v-model="form.json" :options="cmOptions"></codemirror>
+          <codemirror id="input" v-model="cronForm.json" :options="cmOptions"></codemirror>
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
-        <el-button @click="triggerCreationDialog = false">Cancel</el-button>
-        <el-button type="primary" @click="submitCreateTriggerForm">Save</el-button>
+        <el-button @click="triggerCronCreationDialog = false">Cancel</el-button>
+        <el-button type="primary" @click="submitCreateCronTriggerForm">Save</el-button>
       </span>
     </el-dialog>
 
     <el-dialog
       title="Edit scheduled trigger"
-      :visible.sync="triggerEditionDialog"
+      :visible.sync="triggerCronEditionDialog"
       width="600px">
-      <el-form v-model="form" @submit="submitEditTriggerForm">
-        <el-form-item label="Trigger name" label-width="120px">
-          <el-input v-model="form.name"></el-input>
-        </el-form-item>
+      <el-form v-model="cronForm" @submit="submitEditCronTriggerForm">
         <el-form-item label="Timer settings" label-width="120px">
           <el-radio-group v-model="timerSettingValue">
             <el-radio-button label="Visual"></el-radio-button>
@@ -129,13 +145,13 @@
         <hr>
         <span v-if="timerSettingValue == 'Visual'">
           <el-form-item label="Select weekdays" label-width="120px">
-            <el-select multiple v-model="form.weekdays" placeholder="Select weekdays" style="width: 450px">
+            <el-select multiple v-model="cronForm.weekdays" placeholder="Select weekdays" style="width: 450px">
               <el-option v-for="(day, key) in weekdays" :key="key" :value="key" :label="day"></el-option>
             </el-select>
           </el-form-item>
           <el-form-item label="Select time" label-width="120px">
             <el-time-select
-              v-model="form.time"
+              v-model="cronForm.time"
               :picker-options="times"
               placeholder="Select time">
             </el-time-select>
@@ -143,17 +159,17 @@
         </span>
         <span v-else>
           <el-form-item label="Cron expression" label-width="120px">
-            <el-input v-model="form.expression" placeholder="23 * * * * *"></el-input>
+            <el-input v-model="cronForm.expression" placeholder="23 * * * * *"></el-input>
           </el-form-item>
         </span>
         <el-form-item label="JSON Workload">
           <br>
-          <codemirror id="input" v-model="form.json" :options="cmOptions"></codemirror>
+          <codemirror id="input" v-model="cronForm.json" :options="cmOptions"></codemirror>
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
-        <el-button @click="triggerEditionDialog = false">Cancel</el-button>
-        <el-button type="primary" @click="submitEditTriggerForm">Save</el-button>
+        <el-button @click="triggerCronEditionDialog = false">Cancel</el-button>
+        <el-button type="primary" @click="submitEditCronTriggerForm">Save</el-button>
       </span>
     </el-dialog>
   </div>
@@ -171,19 +187,26 @@ export default {
   components: { codemirror },
   data () {
     return {
-      triggerCreationDialog: false,
-      triggerEditionDialog: false,
+      triggerCronCreationDialog: false,
+      triggerCronEditionDialog: false,
+      triggerS3CreationDialog: false,
       timerSettingValue: 'Visual',
-      form: {
+      cronForm: {
         id: null,
-        name: null,
         weekdays: [],
         time: null,
         expression: '* * * * * *',
         json: ''
       },
+      s3Form: {
+        bucket: null,
+        eventTypes: [],
+        pathToObject: null,
+        filter: null
+      },
       cron: [],
-      url: null,
+      triggers: [],
+      triggersSource: null,
       loading: true,
       weekdays: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
       times: { start: '00:00', step: '00:15', end: '23:45' },
@@ -198,32 +221,58 @@ export default {
       }
     }
   },
+  computed: {
+    urlTriggerCreatingDisabled: function () {
+      if (this.triggers.length === 0) {
+        return false
+      }
+
+      return true
+    },
+    s3TriggerCreatingDisabled: function () {
+      if (this.triggersSource === 'url' || this.triggersSource === 's3' || this.triggers.length === 0) {
+        return false
+      }
+
+      return true
+    },
+    cronTriggerCreatingDisabled: function () {
+      if (this.triggersSource === 'url' || this.triggersSource === 'cron' || this.triggers.length === 0) {
+        return false
+      }
+
+      return true
+    }
+  },
   created () {
     this.$store.dispatch('setParentPage', { name: 'functions', title: 'Functions' })
     this.$store.dispatch('setFunctionActiveTab', 'triggers')
     this.fetchTriggerList()
+    this.$store.dispatch('fetchS3ListBuckets', {
+      project: this.$store.getters.currentProject
+    })
   },
   methods: {
     updateExpression () {
-      let expr = this.form.expression.split(' ')
+      let expr = this.cronForm.expression.split(' ')
 
-      let time = this.form.time !== null ? this.form.time.split(':') : ['*', '*']
+      let time = this.cronForm.time !== null ? this.cronForm.time.split(':') : ['*', '*']
 
       let min = parseInt(time[1]) >= 0 ? parseInt(time[1]) : '*'
       let hour = parseInt(time[0]) >= 0 ? parseInt(time[0]) : '*'
 
-      let weekdays = this.form.weekdays.length ? this.form.weekdays.join(',') : ['*']
+      let weekdays = this.cronForm.weekdays.length ? this.cronForm.weekdays.join(',') : ['*']
 
-      this.form.expression = [min, hour, expr[2], expr[3], weekdays, expr[5]].join(' ')
+      this.cronForm.expression = [min, hour, expr[2], expr[3], weekdays, expr[5]].join(' ')
     },
 
     updateFormByExpr (newVal) {
       let expr = newVal.split(' ')
 
       if (parseInt(expr[0]) >= 0 && parseInt(expr[1]) >= 0) {
-        this.form.time = parseInt(expr[1]) + ':' + parseInt(expr[0])
+        this.cronForm.time = parseInt(expr[1]) + ':' + parseInt(expr[0])
       } else {
-        this.form.time = null
+        this.cronForm.time = null
       }
 
       if (parseInt(expr[4]) >= 0) {
@@ -234,7 +283,7 @@ export default {
           }
         }
 
-        this.form.weekdays = weekdays
+        this.cronForm.weekdays = weekdays
       }
     },
 
@@ -244,9 +293,8 @@ export default {
 
     resetForm () {
       this.timerSettingValue = 'Visual'
-      this.form = {
+      this.cronForm = {
         id: null,
-        name: null,
         weekdays: [],
         time: null,
         expression: '* * * * * *',
@@ -290,32 +338,32 @@ export default {
 
     openEditTriggerDialog (scope) {
       this.resetForm()
-      this.form.id = scope.row.id
-      this.form.json = JSON.stringify(scope.row.args)
-      this.form.expression = scope.row.tab
-      this.updateFormByExpr(scope.row.tab)
+      this.cronForm.id = scope.row.id
+      this.cronForm.json = JSON.stringify(scope.row.data)
+      this.cronForm.expression = scope.row.name
+      this.updateFormByExpr(scope.row.name)
 
-      this.triggerEditionDialog = true
+      this.triggerCronEditionDialog = true
     },
 
-    openCreateTriggerDialog () {
+    openAddCronTrigger () {
       this.resetForm()
-      this.triggerCreationDialog = true
+      this.triggerCronCreationDialog = true
     },
 
-    submitEditTriggerForm () {
+    submitEditCronTriggerForm () {
       if (this.timerSettingValue === 'Visual') {
         this.updateExpression()
       }
 
       var args = {}
       try {
-        args = JSON.parse(this.form.json)
+        args = JSON.parse(this.cronForm.json)
       } catch (e) {}
 
       for (var k in this.cron) {
-        if (this.cron[k].id === this.form.id) {
-          this.cron[k].tab = this.form.expression
+        if (this.cron[k].id === this.cronForm.id) {
+          this.cron[k].tab = this.cronForm.expression
           this.cron[k].args = args
         }
       }
@@ -328,7 +376,7 @@ export default {
           cron: this.cron
         }
       }).then(response => {
-        this.triggerEditionDialog = false
+        this.triggerCronEditionDialog = false
         return this.fetchTriggerList()
       }).catch(error => {
         this.$notify.error({
@@ -338,19 +386,19 @@ export default {
       })
     },
 
-    submitCreateTriggerForm () {
+    submitCreateCronTriggerForm () {
       if (this.timerSettingValue === 'Visual') {
         this.updateExpression()
       }
 
       var args = {}
       try {
-        args = JSON.parse(this.form.json)
+        args = JSON.parse(this.cronForm.json)
       } catch (e) {}
 
       this.cron.push({
         id: this.cron.length + 1,
-        tab: this.form.expression,
+        tab: this.cronForm.expression,
         args: args
       })
 
@@ -362,7 +410,28 @@ export default {
           cron: this.cron
         }
       }).then(response => {
-        this.triggerCreationDialog = false
+        this.triggerCronCreationDialog = false
+        return this.fetchTriggerList()
+      }).catch(error => {
+        this.$notify.error({
+          title: 'Error',
+          message: error.response.data.message || 'Unknown error'
+        })
+      })
+    },
+
+    submitCreateS3TriggerForm () {
+      this.triggerS3CreationDialog = false
+    },
+
+    addUrlTrigger () {
+      this.$store.dispatch('updateFunction', {
+        project: this.$store.getters.currentProject,
+        name: this.$route.params.name,
+        event: {
+          source: 'url'
+        }
+      }).then(response => {
         return this.fetchTriggerList()
       }).catch(error => {
         this.$notify.error({
@@ -374,19 +443,35 @@ export default {
 
     fetchTriggerList () {
       this.loading = true
+      this.triggers = []
+
       this.$store.dispatch('fetchFunctionInfo', {
         project: this.$store.getters.currentProject,
         name: this.$route.params.name
       }).then(response => {
-        this.url = response.data.url
-        if (response.data.event !== undefined && response.data.event.cron !== undefined) {
+        this.triggersSource = response.data.event.source
+
+        if (response.data.event !== undefined && response.data.event.source === 'cron' && response.data.event.cron !== undefined) {
           this.cron = []
           for (var k in response.data.event.cron) {
             this.cron.push({
               id: k,
               ...response.data.event.cron[k]
             })
+
+            this.triggers.push({
+              id: k,
+              name: response.data.event.cron[k].tab,
+              type: 'cron',
+              data: response.data.event.cron[k].args
+            })
           }
+        } else if (response.data.event !== undefined && response.data.event.source === 'url') {
+          this.triggers.push({
+            name: 'REST API (URL)',
+            type: 'url',
+            data: 'POST https://' + response.data.url
+          })
         }
       }).finally(() => {
         this.loading = false
