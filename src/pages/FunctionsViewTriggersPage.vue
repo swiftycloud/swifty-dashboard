@@ -264,7 +264,10 @@ export default {
       }).then(response => {
         this.triggers = response.data
       }).catch(error => {
-        console.log(error)
+        this.$notify.error({
+          title: 'Error',
+          message: error.response.data.message || 'Unknown error'
+        })
       }).finally(() => {
         this.loading = false
       })
