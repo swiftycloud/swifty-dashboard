@@ -28,6 +28,7 @@ export default {
 
   getters: {
     getFunctions: state => state.functions,
+    getFunctionID: state => state.currentFunction.id,
     getCurrentFunctionVersion: state => state.currentFunction.version,
     getFunctionLangs: state => state.languages,
     getFunctionMwares: state => state.currentFunction.mware,
