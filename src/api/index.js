@@ -34,6 +34,14 @@ export default {
     credentials: null
   },
 
+  functions: resource(config.API_GATE_ENDPOINT + '/functions', {
+    one: (fid) => {
+      return {
+        triggers: resource(config.API_GATE_ENDPOINT + '/functions/' + fid + '/events')
+      }
+    }
+  }),
+
   requestApiToken () {
     return axios.post(config.API_ADMD_ENDPOINT + '/login', {
       username: config.API_USERNAME,
