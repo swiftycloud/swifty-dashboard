@@ -4,6 +4,25 @@ import * as config from '@/api/config'
 
 AWS.config.update({ region: 'us-west-2' })
 
+var resource = (path, ac = {}, ax = axios) => {
+  // support invoking like: `resource('/api', axios)`
+  // and `resource('/api', null, axios)`
+  let http = ax
+  let actions = ac
+  if (actions && actions.Axios) {
+    http = actions
+    actions = {}
+  }
+  const resource = {
+    get: params => http.get(path, { params }),
+    find: id => http.get(path + '/' + id),
+    create: data => http.post(path, data),
+    update: (id, data) => http.put(path + '/' + id, data),
+    delete: id => http.delete(path + '/' + id)
+  }
+  return Object.assign(resource, actions)
+}
+
 export default {
   axios: axios,
   aws: {
