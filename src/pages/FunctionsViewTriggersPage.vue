@@ -6,7 +6,7 @@
       <el-dropdown trigger="click" placement="bottom-start">
         <el-button type="primary" size="medium">Add Trigger <i class="fa fa-angle-down"></i></el-button>
         <el-dropdown-menu slot="dropdown">
-          <el-dropdown-item>REST API (URL)</el-dropdown-item>
+          <el-dropdown-item @click.native="createUrlEventTrigger">REST API (URL)</el-dropdown-item>
           <el-dropdown-item @click.native="openCronCreationDialog">Scheduled Action</el-dropdown-item>
           <el-dropdown-item @click.native="openS3CreationDialog">Object Storage</el-dropdown-item>
         </el-dropdown-menu>
@@ -345,6 +345,20 @@ export default {
     openS3CreationDialog () {
       this.resetForms()
       this.dialogS3CreationVisibility = true
+    },
+
+    createUrlEventTrigger () {
+      api.functions.one(this.currentFunctionId).triggers.create({
+        name: 'REST API',
+        source: 'url'
+      }).then(response => {
+        this.fetchEventTriggers()
+      }).catch(error => {
+        this.$notify.error({
+          title: 'Error',
+          message: error.response.data.message || 'Unknown error'
+        })
+      })
     },
 
     createCronEventTrigger () {
