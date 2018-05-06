@@ -16,9 +16,11 @@
         </el-dropdown-menu>
       </el-dropdown>
     </div>
-
+  
     <el-breadcrumb separator="/">
-      <el-breadcrumb-item :to="{ name: 'bucket.view', params: { name: $route.params.name } }">{{ $route.params.name }}</el-breadcrumb-item>
+      <el-breadcrumb-item :to="{ name: 'bucket.view', params: { name: $route.params.name } }">
+        <i class="fa fa-folder"></i> {{ $route.params.name }}
+      </el-breadcrumb-item>
       <el-breadcrumb-item v-for="data in prefixArray" :key="data.name" :to="{ name: 'bucket.view.prefix', params: { name: $route.params.name, prefix: data.prefix } }">{{ data.name }}</el-breadcrumb-item>
     </el-breadcrumb>
 
@@ -39,7 +41,7 @@
       <el-table-column width="34">
         <template slot-scope="scope">
           <i class="fa fa-folder" v-if="scope.row.Folder" :class="{ buffered : isCopyOrCut(scope.row.Key) }"></i>
-          <i class="fa fa-file" v-if="scope.row.Folder === undefined" :class="{ buffered : isCopyOrCut(scope.row.Key) }"></i>
+          <i class="fa fa-file-o" v-if="scope.row.Folder === undefined" :class="{ buffered : isCopyOrCut(scope.row.Key) }"></i>
         </template>
       </el-table-column>
       <el-table-column
