@@ -458,6 +458,8 @@ export default {
         }
       }).then(response => {
         this.dialogS3CreationVisibility = false
+      }).then(response => {
+        this.fetchEventTriggers()
       }).catch(error => {
         this.$notify.error({
           title: 'Error',
