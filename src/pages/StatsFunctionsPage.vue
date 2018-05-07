@@ -129,22 +129,24 @@ export default {
 
     fetchFunctionStats () {
       this.loading = true
-      this.$store.dispatch('fetchFunctionListInfo', {
-        project: this.$store.getters.currentProject,
+      this.$store.dispatch('fetchFunctions', {
+        project: this.$store.getters.project,
         periods: this.periods
-      }).then(response => {
+      }).then(functions => {
         let data = []
 
-        response.data.forEach((item) => {
+        functions.forEach((item) => {
           let called = 0
           let time = 0
           let bytesout = 0
 
-          item.stats.forEach((stats) => {
-            called += stats.called
-            time += stats.time
-            bytesout += stats.bytesout
-          })
+          if (item.stats !== null) {
+            item.stats.forEach((stats) => {
+              called += stats.called
+              time += stats.time
+              bytesout += stats.bytesout
+            })
+          }
 
           data.push({
             name: item.name,

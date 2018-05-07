@@ -24,7 +24,7 @@
           <el-button
             size="medium"
             plain
-            @click="removeSelected()"
+            @click="deleteSelected()"
             :disabled="this.multipleSelection.length === 0">
             Delete
           </el-button>
@@ -36,7 +36,7 @@
       <div class="col">
         <el-table
           ref="multipleTable"
-          :data="userFunctions"
+          :data="$store.getters.functions"
           style="width: 100%"
           @selection-change="handleSelectionChange"
           :row-class-name="tableRowClassName">
@@ -54,7 +54,7 @@
             sortable
             width="160">
             <template slot-scope="scope">
-              <router-link :to="{ name: 'functions.view.code', params: { name: scope.row.name } }" v-if="scope.row.state != 'deactivated'">
+              <router-link :to="{ name: 'functions.view.code', params: { fid: scope.row.id } }" v-if="scope.row.state != 'deactivated'">
                 {{ scope.row.name }}
               </router-link>
               <span v-else>{{ scope.row.name }}</span>
@@ -99,15 +99,9 @@ export default {
   created () {
     this.$store.dispatch('setPageTitle', 'Functions')
 
-    this.$store.dispatch('fetchFunctions', this.$store.getters.currentProject).then(() => {
+    this.$store.dispatch('fetchFunctions').then(() => {
       this.loading = false
     })
-  },
-
-  computed: {
-    userFunctions () {
-      return this.$store.getters.getFunctions
-    }
   },
 
   methods: {
@@ -143,24 +137,26 @@ export default {
 
         var promises = []
         this.multipleSelection.forEach((self) => {
-          promises.push(
-            this.$store.dispatch('enableFunction', {
-              project: this.$store.getters.currentProject,
-              name: self.name
-            }).catch(error => {
-              this.$notify.error({
-                title: 'Error',
-                message: error.response.data.message
+          if (self.state !== 'ready') {
+            promises.push(
+              this.$store.dispatch('enableFunctionByID', self.id).catch(error => {
+                this.$notify.error({
+                  title: 'Error',
+                  message: error.response.data.message
+                })
               })
-            })
-          )
+            )
+          }
         })
 
         return Promise.all(promises)
       }).then(() => {
         return this.$store.dispatch('fetchFunctions', this.$store.getters.currentProject)
-      }).catch(() => {
-        // ...
+      }).catch(error => {
+        this.$notify.error({
+          title: 'Error',
+          message: error.response.data.message
+        })
       }).finally(() => {
         this.loading = false
       })
@@ -179,29 +175,31 @@ export default {
 
         var promises = []
         this.multipleSelection.forEach((self) => {
-          promises.push(
-            this.$store.dispatch('disableFunction', {
-              project: this.$store.getters.currentProject,
-              name: self.name
-            }).catch(error => {
-              this.$notify.error({
-                title: 'Error',
-                message: error.response.data.message
+          if (self.state !== 'deactivated') {
+            promises.push(
+              this.$store.dispatch('disableFunctionByID', self.id).catch(error => {
+                this.$notify.error({
+                  title: 'Error',
+                  message: error.response.data.message
+                })
               })
-            })
-          )
+            )
+          }
         })
 
         return Promise.all(promises)
       }).then(() => {
         return this.$store.dispatch('fetchFunctions', this.$store.getters.currentProject)
-      }).catch(() => {
-        // ...
+      }).catch(error => {
+        this.$notify.error({
+          title: 'Error',
+          message: error.response.data.message
+        })
       }).finally(() => {
         this.loading = false
       })
     },
-    removeSelected () {
+    deleteSelected () {
       if (this.multipleSelection.length === 0) {
         return false
       }
@@ -215,11 +213,9 @@ export default {
 
         var promises = []
         this.multipleSelection.forEach((self) => {
+          console.log(self)
           promises.push(
-            this.$store.dispatch('removeFunction', {
-              project: this.$store.state.projects.currentProject,
-              name: self.name
-            }).catch(error => {
+            this.$store.dispatch('deleteFunctionByID', self.id).catch(error => {
               this.$notify.error({
                 title: 'Error',
                 message: error.response.data.message

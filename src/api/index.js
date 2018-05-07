@@ -17,7 +17,7 @@ var resource = (path, ac = {}, ax = axios) => {
     get: params => http.get(path, { params }),
     find: id => http.get(path + '/' + id),
     create: data => http.post(path, data),
-    update: (id, data) => http.put(path + '/' + id, data),
+    update: (id, data) => http.put(path + (id !== null ? '/' + id : ''), data),
     delete: id => http.delete(path + '/' + id)
   }
   return Object.assign(resource, actions)
@@ -37,10 +37,23 @@ export default {
   functions: resource(config.API_GATE_ENDPOINT + '/functions', {
     one: (fid) => {
       return {
-        triggers: resource(config.API_GATE_ENDPOINT + '/functions/' + fid + '/events')
+        triggers: resource(config.API_GATE_ENDPOINT + '/functions/' + fid + '/triggers'),
+        sources: resource(config.API_GATE_ENDPOINT + '/functions/' + fid + '/sources'),
+        size: resource(config.API_GATE_ENDPOINT + '/functions/' + fid + '/size'),
+        middleware: resource(config.API_GATE_ENDPOINT + '/functions/' + fid + '/middleware'),
+        state: resource(config.API_GATE_ENDPOINT + '/functions/' + fid + '/state'),
+        s3buckets: resource(config.API_GATE_ENDPOINT + '/functions/' + fid + '/s3buckets'),
+
+        // actions
+        run: data => axios.post(config.API_GATE_ENDPOINT + '/functions/' + fid + '/run', data),
+        wait: data => axios.post(config.API_GATE_ENDPOINT + '/functions/' + fid + '/wait', data)
       }
     }
   }),
+
+  middleware: resource(config.API_GATE_ENDPOINT + '/middleware'),
+
+  auths: resource(config.API_GATE_ENDPOINT + '/auths'),
 
   requestApiToken () {
     return axios.post(config.API_ADMD_ENDPOINT + '/login', {
@@ -197,7 +210,7 @@ export default {
   },
 
   middlewareAccessS3 (project, bucket, lifetime, access) {
-    return axios.post(config.API_GATE_ENDPOINT + '/mware/access/s3', {
+    return axios.post(config.API_GATE_ENDPOINT + '/s3/access', {
       project: project,
       bucket: bucket,
       lifetime: lifetime,

@@ -38,7 +38,10 @@ export default {
   methods: {
     fetchMwareStats () {
       this.loading = true
-      this.$store.dispatch('fetchMiddlewareListInfo', this.$store.getters.currentProject).then(response => {
+      this.$store.dispatch('fetchMiddlewareList', {
+        type: 'mongo',
+        project: this.$store.getters.project
+      }).then(response => {
         if (response.data !== null) {
           response.data.forEach(item => {
             if (item.type === 'mongo') {

@@ -52,7 +52,7 @@ export default new Router({
       component: FunctionsCreatePage
     },
     {
-      path: '/functions/view/:name',
+      path: '/functions/view/:fid',
       name: 'functions.view',
       component: FunctionsViewPage,
       children: [

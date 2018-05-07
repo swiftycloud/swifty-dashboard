@@ -12,7 +12,8 @@ export default {
 
   getters: {
     getProjects: state => state.projects,
-    currentProject: state => state.currentProject
+    currentProject: state => state.currentProject,
+    project: state => state.currentProject
   },
 
   actions: {

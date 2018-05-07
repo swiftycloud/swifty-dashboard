@@ -3,8 +3,8 @@
     <p>Please add your code, test and save it here</p>
 
     <div class="actions-block">
-        <el-button type="primary" size="medium" @click="saveAndRunFunctionCode('test')" :disabled="loading">Test</el-button>
-        <el-button type="primary" size="medium" @click="saveAndRunFunctionCode()" :disabled="loading">Save</el-button>
+        <el-button type="primary" size="medium" @click="testFunctionCode" :disabled="loading">Test</el-button>
+        <el-button type="primary" size="medium" @click="saveFunctionCode" :disabled="loading">Save</el-button>
         <div class="status-block" :class="{ success: runStatus == 'success', failed: runStatus == 'failed' }">
           <i class="fa fa-circle status-icon">
           </i>
@@ -61,6 +61,8 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex'
+
 import { codemirror } from 'vue-codemirror'
 import 'codemirror/lib/codemirror.css'
 // language js
@@ -112,20 +114,34 @@ export default {
   },
 
   created () {
-    this.$store.dispatch('setParentPage', { name: 'functions', title: 'Functions' })
-    this.$store.dispatch('setFunctionActiveTab', 'code')
-    this.fetchFunctionInfo().then(response => {
-      if (response.data.userdata !== '') {
+    this.setParentPage({ name: 'functions', title: 'Functions' })
+    this.setFunctionActiveTab('code')
+
+    this.fetchFunctionByID(this.$route.params.fid).then(response => {
+      if ('userdata' in response.data && response.data.userdata !== '') {
         this.args = JSON.parse(response.data.userdata)
         this.argsTmp = response.data.userdata
       }
-      return this.fetchFunctionCode(response.data.version)
-    }).then(() => {
+      return this.fetchFunctionCode()
+    }).then(response => {
       this.loading = false
     })
   },
 
   methods: {
+    ...mapActions([
+      'setParentPage',
+      'setFunctionActiveTab',
+      'fetchFunctionByID',
+      'fetchFunctionSourcesByID',
+      'findTestFunctionByID',
+      'updateFunctionSources',
+      'runFunctionCode',
+      'waitFunctionVersion',
+      'getFunctionByID',
+      'updateFunction'
+    ]),
+
     fetchFunctionInfo () {
       return this.$store.dispatch('fetchFunctionInfo', {
         project: this.$store.getters.currentProject,
@@ -133,16 +149,10 @@ export default {
       })
     },
 
-    fetchFunctionCode (version) {
-      return this.$store.dispatch('fetchFunctionCode', {
-        project: this.$store.getters.currentProject,
-        name: this.$route.params.name,
-        version: version
-      }).then(response => {
+    fetchFunctionCode () {
+      return this.fetchFunctionSourcesByID(this.$route.params.fid).then(response => {
         if ('code' in response.data && response.data.code !== '') {
           this.code = atob(response.data.code)
-        } else {
-          console.log(response)
         }
       })
     },
@@ -152,56 +162,84 @@ export default {
       this.runStatusText = title
     },
 
-    saveAndRunFunctionCode (project) {
+    testFunctionCode () {
       this.loading = true
-      project = (project || this.$store.getters.currentProject)
-      console.log(project)
+      var testFunction = {}
 
-      this.$store.dispatch(project === 'test' ? 'updateTestFunction' : 'updateFunction', {
-        project: this.$store.getters.currentProject,
-        name: this.$route.params.name,
-        code: btoa(this.code),
-        userdata: JSON.stringify(this.args)
-      }).then(response => {
-        this.saved = (project === 'test' ? this.saved : true)
-        return this.$store.dispatch(project === 'test' ? 'fetchTestFunctionInfo' : 'fetchFunctionInfo', {
-          project: this.$store.getters.currentProject,
-          name: this.$route.params.name
+      // fetch test function for current function
+      this.findTestFunctionByID(this.$route.params.fid).then(func => {
+        testFunction = func
+        // save code to test function
+        return this.updateFunctionSources({
+          fid: testFunction.id,
+          data: {
+            type: 'code',
+            code: btoa(this.code)
+          }
         })
       }).then(response => {
-        if (project === 'test') {
-          return this.$store.dispatch('waitTestFunction', {
-            project: this.$store.getters.currentProject,
-            name: this.$route.params.name,
+        // fetch test function version
+        return this.getFunctionByID(testFunction.id)
+      }).then(response => {
+        // wait
+        return this.waitFunctionVersion({
+          fid: response.data.id,
+          data: {
             timeout: 30000,
             version: response.data.version
-          })
-        } else { console.log('test1') }
-      }).then(response => {
-        if (project === 'test') {
-          return this.$store.dispatch('runTestFunction', {
-            project: this.$store.getters.currentProject,
-            name: this.$route.params.name,
-            args: this.args
-          })
-        } else { console.log('test2') }
-      }).then(response => {
-        if (project === 'default') {
-          console.log('defaul project')
-        } else {
-          this.logs = '------ stdout -----\n' +
-                      (response.data.stdout || 'None') +
-                      '\n------ stderr -----\n' +
-                      (response.data.stderr || 'None')
-
-          this.result = response.data.return
-
-          if (response.data.code === 0) {
-            this.setRunStatus('success', 'Success')
-          } else {
-            this.setRunStatus('failed', 'Failed')
           }
+        })
+      }).then(response => {
+        // and run
+        return this.runFunctionCode({
+          fid: testFunction.id,
+          data: {
+            args: this.args
+          }
+        })
+      }).then(response => {
+        // show logs
+        this.logs = '------ stdout -----\n' +
+                    (response.data.stdout || 'None') +
+                    '\n------ stderr -----\n' +
+                    (response.data.stderr || 'None')
+
+        this.result = response.data.return
+
+        if (response.data.code === 0) {
+          this.setRunStatus('success', 'Success')
+        } else {
+          this.setRunStatus('failed', 'Failed')
         }
+      }).catch(error => {
+        this.setRunStatus('failed', 'Failed')
+        this.$notify.error({
+          title: 'Error',
+          message: error.response.data.message || 'Unknown error'
+        })
+      }).finally(() => {
+        this.loading = false
+      })
+    },
+
+    saveFunctionCode () {
+      this.loading = true
+
+      this.updateFunctionSources({
+        fid: this.$route.params.fid,
+        data: {
+          type: 'code',
+          code: btoa(this.code)
+        }
+      }).then(response => {
+        return this.updateFunction({
+          fid: this.$route.params.fid,
+          data: {
+            userdata: JSON.stringify(this.args)
+          }
+        })
+      }).then(response => {
+        this.saved = true
       }).catch(error => {
         this.setRunStatus('failed', 'Failed')
         this.$notify.error({

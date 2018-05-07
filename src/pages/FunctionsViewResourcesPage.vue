@@ -78,13 +78,14 @@
 </template>
 
 <script>
+import api from '@/api'
+
 export default {
   data () {
     return {
       form: {
         memory: null,
-        timeout: null,
-        rate: null
+        timeout: null
       },
       loading: true
     }
@@ -92,11 +93,8 @@ export default {
   created () {
     this.$store.dispatch('setParentPage', { name: 'functions', title: 'Functions' })
     this.$store.dispatch('setFunctionActiveTab', 'resources')
-    this.$store.dispatch('fetchFunctionInfo', {
-      project: this.$store.getters.currentProject,
-      name: this.$route.params.name
-    }).then(response => {
-      this.form = response.data.size
+    api.functions.one(this.$route.params.fid).size.get().then(response => {
+      this.form = response.data
     }).finally(() => {
       this.loading = false
     })
@@ -104,11 +102,8 @@ export default {
   methods: {
     updateResources () {
       this.loading = true
-      this.$store.dispatch('updateFunction', {
-        project: this.$store.getters.currentProject,
-        name: this.$route.params.name,
-        size: this.form
-      }).then(response => {
+
+      api.functions.one(this.$route.params.fid).size.update(null, this.form).then(response => {
         this.$notify.success({
           title: 'Success',
           message: 'Resources saved'

@@ -27,7 +27,7 @@
             width="55">
           </el-table-column>
           <el-table-column
-            prop="id"
+            prop="name"
             label="Instance name"
             sortable
             width="160">
@@ -56,14 +56,17 @@ export default {
   created () {
     this.$store.dispatch('setPageTitle', 'Mongo Database')
 
-    this.$store.dispatch('fetchMiddlewareList', this.$store.getters.currentProject).finally(() => {
+    this.$store.dispatch('fetchMiddlewareList', {
+      project: this.$store.getters.project,
+      type: 'mongo'
+    }).finally(() => {
       this.loading = false
     })
   },
 
   computed: {
     middlewares () {
-      return this.$store.getters.getMiddlewaresByType('mongo')
+      return this.$store.getters.getMiddlewares
     }
   },
 
@@ -94,7 +97,10 @@ export default {
           type: 'mongo'
         })
       }).then(() => {
-        return this.$store.dispatch('fetchMiddlewareList', this.$store.getters.currentProject)
+        return this.$store.dispatch('fetchMiddlewareList', {
+          project: this.$store.getters.project,
+          type: 'mongo'
+        })
       }).then(() => {
         this.$notify.success({
           title: 'Success',
@@ -140,7 +146,10 @@ export default {
 
         return Promise.all(promises)
       }).then(() => {
-        return this.$store.dispatch('fetchMiddlewareList', this.$store.getters.currentProject)
+        return this.$store.dispatch('fetchMiddlewareList', {
+          project: this.$store.getters.project,
+          type: 'mongo'
+        })
       }).finally(() => {
         this.loading = false
       })

@@ -6,7 +6,7 @@
       <el-dropdown trigger="click" placement="bottom-start">
         <el-button type="primary" size="medium">Add Trigger <i class="fa fa-angle-down"></i></el-button>
         <el-dropdown-menu slot="dropdown">
-          <el-dropdown-item @click.native="createUrlEventTrigger">REST API (URL)</el-dropdown-item>
+          <el-dropdown-item @click.native="createUrlEventTrigger" :disabled="disabledUrlTriggerButton">REST API (URL)</el-dropdown-item>
           <el-dropdown-item @click.native="openCronCreationDialog">Scheduled Action</el-dropdown-item>
           <el-dropdown-item @click.native="openS3CreationDialog">Object Storage</el-dropdown-item>
         </el-dropdown-menu>
@@ -51,6 +51,7 @@
         sortable>
         <template slot-scope="scope">
           <code v-if="scope.row.source === 'cron'">{{ scope.row.cron.tab }}</code>
+          <span v-if="scope.row.source === 'url'">POST https://{{ scope.row.url }}</span>
           <span v-else>{{ scope.row.data }}</span>
         </template>
       </el-table-column>
@@ -252,13 +253,22 @@ export default {
     this.fetchEventTriggers()
   },
 
+  computed: {
+    disabledUrlTriggerButton: function () {
+      for (var k in this.triggers) {
+        if (this.triggers[k].source === 'url') {
+          return true
+        }
+      }
+
+      return false
+    }
+  },
+
   methods: {
     fetchEventTriggers () {
       this.loading = true
-      this.$store.dispatch('fetchFunctionInfo', {
-        project: this.$store.getters.currentProject,
-        name: this.$route.params.name
-      }).then(response => {
+      this.$store.dispatch('fetchFunctionByID', this.$route.params.fid).then(response => {
         this.currentFunctionId = response.data.id
         return api.functions.one(this.currentFunctionId).triggers.get()
       }).then(response => {
@@ -443,7 +453,8 @@ export default {
         source: 's3',
         s3: {
           bucket: this.forms.s3.bucket,
-          ops: this.forms.s3.events.join(' ')
+          ops: this.forms.s3.events.join(','),
+          pattern: this.forms.s3.filter
         }
       }).then(response => {
         this.dialogS3CreationVisibility = false

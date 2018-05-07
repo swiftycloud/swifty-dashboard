@@ -2,7 +2,7 @@
   <div class="page-content">
     <p>Please create new function from scratch or based on a template</p>
 
-    <el-form ref="functionForm" label-width="160px" :model="form" :rules="rules" v-loading="loading">
+    <el-form ref="functionForm" label-width="160px" :model="form" :rules="rules" v-loading="loading" @submit="submitFunctionForm">
       <el-row :gutter="20">
         <el-col :xs="24" :sm="18" :md="14" :lg="10">
           <el-form-item label="Name" prop="name">
@@ -33,7 +33,7 @@
       <el-row>
         <el-col :span="24">
           <el-button @click="$router.push({ name: 'functions' })">Cancel</el-button>
-          <el-button type="primary" class="create-function-button" @click="createFunction">Create</el-button>
+          <el-button type="primary" class="create-function-button" @click="submitFunctionForm">Create</el-button>
         </el-col>
       </el-row>
     </el-form>
@@ -74,6 +74,12 @@ export default {
       templates: []
     }
   },
+  created () {
+    this.setParentPage({ name: 'functions', title: 'Functions' })
+    this.setPageTitle('New Function')
+    this.templates = this.$store.getters.getFunctionTemplatesByLang(this.form.code.lang)
+    this.$store.dispatch('fetchFunctionLangs')
+  },
   watch: {
     selectedTemplate: function (val) {
       this.form.sources.code = btoa(val.source)
@@ -83,25 +89,24 @@ export default {
       this.templates = this.$store.getters.getFunctionTemplatesByLang(val)
     }
   },
-  created () {
-    this.$store.dispatch('setParentPage', { name: 'functions', title: 'Functions' })
-    this.setPageTitle('New Function')
-    // this.templates = this.$store.getters.getFunctionTemplates
-    this.templates = this.$store.getters.getFunctionTemplatesByLang(this.form.code.lang)
-    this.$store.dispatch('fetchFunctionLangs')
-  },
   methods: {
-    createFunction () {
+    ...mapActions([
+      'setParentPage',
+      'setPageTitle',
+      'createFunction',
+      'createTestFunction',
+      'fetchFunctionLangs'
+    ]),
+
+    submitFunctionForm () {
       this.$refs.functionForm.validate((valid) => {
         if (valid) {
           this.loading = true
 
-          this.$store.dispatch('createFunction', this.form).then(response => {
-            return this.$store.dispatch('createTestFunction', this.form)
-          }).then(response => {
-            this.$router.push({ name: 'functions.view.code', params: { name: this.form.name } })
+          this.createFunction(this.form).then(response => {
+            this.$router.push({ name: 'functions.view.code', params: { fid: response.data } })
           }).catch((error) => {
-            this.form.project = this.$store.getters.currentProject
+            this.form.project = this.$store.getters.project
             this.$notify.error({
               title: 'Error',
               message: error.response.data.message || 'Function creating was failed'
@@ -111,10 +116,7 @@ export default {
           })
         }
       })
-    },
-    ...mapActions([
-      'setPageTitle'
-    ])
+    }
   }
 }
 </script>

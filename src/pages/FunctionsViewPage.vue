@@ -14,8 +14,10 @@
 <script>
 export default {
   created () {
-    this.$store.dispatch('setParentPage', { name: 'functions', title: 'Functions' })
-    this.$store.dispatch('setPageTitle', this.$route.params.name)
+    this.$store.dispatch('fetchFunctionByID', this.$route.params.fid).then(response => {
+      this.$store.dispatch('setParentPage', { name: 'functions', title: 'Functions' })
+      this.$store.dispatch('setPageTitle', this.$store.getters.function.name)
+    })
   },
   computed: {
     activeTab: {

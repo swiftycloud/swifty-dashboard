@@ -9,7 +9,7 @@
 
     <el-table
       ref="multipleTable"
-      :data="$store.getters.getFunctionMwaresAndBuckets"
+      :data="mwareList"
       style="width: 100%"
       @selection-change="handleSelectionChange">
       <div slot="empty" class="middleware-empty-message">
@@ -17,14 +17,13 @@
           <el-button type="primary" size="mini" round @click="$router.push({ name: 'storage' })">Create Object Storage</el-button>
           <el-button type="primary" size="mini" round @click="$router.push({ name: 'mariadb' })">Create Maria Database</el-button>
           <el-button type="primary" size="mini" round @click="$router.push({ name: 'mongodb' })">Create Mongo Database</el-button>
-          <el-button type="primary" size="mini" round @click="$router.push({ name: 'auth' })">Create Auth Database</el-button>
       </div>
       <el-table-column
         type="selection"
         width="55">
       </el-table-column>
       <el-table-column
-        prop="id"
+        prop="name"
         label="Name"
         sortable>
       </el-table-column>
@@ -52,7 +51,7 @@
         <el-form-item label="Instance name">
           <el-select v-model="form.id" placeholder="Instance name" style="width: 100%">
             <el-option v-for="mware in middlewares"
-                       :label="mware.id"
+                       :label="mware.name"
                        :value="mware.id"
                        :key="mware.id">
             </el-option>
@@ -68,6 +67,8 @@
 </template>
 
 <script>
+import api from '@/api'
+
 export default {
   data () {
     return {
@@ -75,6 +76,7 @@ export default {
         type: 's3',
         id: null
       },
+      mwareList: [],
       loading: true,
       multipleSelection: [],
       addMiddlewareDialogVisible: false
@@ -83,16 +85,14 @@ export default {
   created () {
     this.$store.dispatch('setParentPage', { name: 'functions', title: 'Functions' })
     this.$store.dispatch('setFunctionActiveTab', 'middleware')
-    this.$store.dispatch('fetchFunctionInfo', {
-      project: this.$store.getters.currentProject,
-      name: this.$route.params.name
-    }).then(response => {
-      this.loading = false
-      return this.$store.dispatch('fetchMiddlewareList', this.$store.getters.currentProject)
+    this.fetchMiddlewareList().then(response => {
+      return this.$store.dispatch('fetchMiddlewareList', {
+        project: this.$store.getters.project
+      })
     }).then(response => {
       return this.$store.dispatch('fetchMiddlewareTypes')
     }).then(response => {
-      this.$store.dispatch('fetchS3ListBuckets', this.$store.getters.currentProject)
+      this.$store.dispatch('fetchS3ListBuckets', this.$store.getters.project)
     }).catch(() => {
       // ..
     }).finally(() => {
@@ -124,57 +124,32 @@ export default {
     handleSelectionChange (val) {
       this.multipleSelection = val
     },
+    fetchMiddlewareList () {
+      this.mwareList = []
+      return api.functions.one(this.$route.params.fid).middleware.get().then(response => {
+        this.mwareList = response.data != null ? response.data : []
+        return api.functions.one(this.$route.params.fid).s3buckets.get()
+      }).then(response => {
+        response.data.forEach(item => {
+          this.mwareList.push({
+            id: item,
+            name: item,
+            type: 's3'
+          })
+        })
+      })
+    },
+
     attach () {
-      if (this.form.id != null) {
-        var data = {
-          project: this.$store.getters.currentProject,
-          name: this.$route.params.name
-        }
+      let type = this.form.type === 's3' ? 's3buckets' : 'middleware'
 
-        if (this.form.type === 's3') {
-          var buckets = [...this.$store.getters.getFunctionBuckets]
-          if (buckets.indexOf(this.form.id) === -1) {
-            buckets.push(this.form.id)
-          } else {
-            return this.$notify.error({
-              title: 'Error',
-              message: 'This bucket already attached'
-            })
-          }
-          data.s3buckets = buckets
-        } else {
-          var mwares = [...this.$store.getters.getFunctionMwares]
-          if (mwares.indexOf(this.form.id) === -1) {
-            mwares.push(this.form.id)
-          } else {
-            return this.$notify.error({
-              title: 'Error',
-              message: 'This middleware already attached'
-            })
-          }
-          data.mware = mwares
-        }
-
-        this.$store.dispatch('updateFunction', data).then(response => {
-          // this.addMiddlewareDialogVisible = false
-          this.loading = true
-          return this.$store.dispatch('fetchFunctionInfo', {
-            project: this.$store.getters.currentProject,
-            name: this.$route.params.name
-          })
-        })
-
-        this.$store.dispatch('updateTestFunction', data).then(response => {
-          this.addMiddlewareDialogVisible = false
-          // this.loading = true
-          return this.$store.dispatch('fetchTestFunctionInfo', {
-            project: this.$store.getters.currentProject,
-            name: this.$route.params.name
-          })
-        }).finally(() => {
-          this.loading = false
-        })
-      }
+      api.functions.one(this.$route.params.fid)[type].create('"' + this.form.id + '"').then(response => {
+        this.loading = true
+        this.addMiddlewareDialogVisible = false
+        return this.fetchMiddlewareList()
+      }).finally(() => {
+        this.loading = false
+      })
     },
 
     deattach () {
@@ -189,39 +164,25 @@ export default {
       }).then(() => {
         this.loading = true
 
-        var middlewareList = [...this.$store.getters.getFunctionMwares]
+        var promises = []
         this.multipleSelection.forEach((self) => {
-          if (self.type !== 's3') {
-            var index = middlewareList.indexOf(self.id)
-            if (index > -1) {
-              middlewareList.splice(index, 1)
-            }
-          }
-        })
-
-        var bucketList = [...this.$store.getters.getFunctionBuckets]
-        this.multipleSelection.forEach((self) => {
-          if (self.type === 's3') {
-            var index = bucketList.indexOf(self.id)
-            if (index > -1) {
-              bucketList.splice(index, 1)
-            }
-          }
-        })
-
-        return this.$store.dispatch('updateFunction', {
-          project: this.$store.getters.currentProject,
-          name: this.$route.params.name,
-          mware: middlewareList,
-          s3buckets: bucketList
+          let type = self.type === 's3' ? 's3buckets' : 'middleware'
+          promises.push(
+            api.functions.one(this.$route.params.fid)[type].delete(self.id).catch(error => {
+              this.$notify.error({
+                title: 'Error',
+                message: error.response.data.message
+              })
+            })
+          )
         })
       }).then(() => {
-        return this.$store.dispatch('fetchFunctionInfo', {
-          project: this.$store.getters.currentProject,
-          name: this.$route.params.name
+        return this.fetchMiddlewareList()
+      }).catch(error => {
+        this.$notify.error({
+          title: 'Error',
+          message: error.response.data.message
         })
-      }).catch(() => {
-        // ..
       }).finally(() => {
         this.loading = false
       })

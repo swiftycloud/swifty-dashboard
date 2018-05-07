@@ -15,7 +15,7 @@
       <div class="col">
         <el-table
           ref="multipleTable"
-          :data="middlewares"
+          :data="auths"
           style="width: 100%"
           @selection-change="handleSelectionChange">
           <div slot="empty">
@@ -27,16 +27,9 @@
             width="55">
           </el-table-column>
           <el-table-column
-            prop="id"
-            label="Instance name"
-            sortable
-            width="160">
-          </el-table-column>
-          <el-table-column
-            property="type"
-            label="Middleware type"
-            sortable
-            show-overflow-tooltip>
+            prop="name"
+            label="Name"
+            sortable>
           </el-table-column>
         </el-table>
       </div>
@@ -45,20 +38,20 @@
 </template>
 
 <script>
+import api from '@/api'
+
 export default {
   data () {
     return {
       loading: false,
-      multipleSelection: []
+      multipleSelection: [],
+      auths: []
     }
   },
 
   created () {
     this.$store.dispatch('setPageTitle', 'Authentication Service')
-
-    this.$store.dispatch('fetchMiddlewareList', this.$store.getters.currentProject).finally(() => {
-      this.loading = false
-    })
+    this.fetchAuthService()
   },
 
   computed: {
@@ -68,6 +61,16 @@ export default {
   },
 
   methods: {
+    fetchAuthService () {
+      this.loading = true
+      return api.auths.get({
+        project: this.$store.getters.project
+      }).then(response => {
+        this.auths = response.data !== null ? response.data : []
+      }).finally(() => {
+        this.loading = false
+      })
+    },
     toggleSelection (rows) {
       if (rows) {
         rows.forEach(row => {
@@ -88,13 +91,13 @@ export default {
         inputErrorMessage: 'Invalid instance name'
       }).then(input => {
         this.loading = false
-        return this.$store.dispatch('addMiddleware', {
-          project: this.$store.getters.currentProject,
-          id: input.value,
-          type: 'authjwt'
+        return api.auths.create({
+          project: this.$store.getters.project,
+          name: input.value,
+          type: 'jwt'
         })
       }).then(() => {
-        return this.$store.dispatch('fetchMiddlewareList', this.$store.getters.currentProject)
+        return this.fetchAuthService()
       }).then(() => {
         this.$notify.success({
           title: 'Success',
@@ -126,10 +129,7 @@ export default {
         var promises = []
         this.multipleSelection.forEach((self) => {
           promises.push(
-            this.$store.dispatch('removeMiddleware', {
-              project: this.$store.state.projects.currentProject,
-              id: self.id
-            }).catch(error => {
+            api.auths.delete(self.id).catch(error => {
               this.$notify.error({
                 title: 'Error',
                 message: error.response.data.message
@@ -140,7 +140,7 @@ export default {
 
         return Promise.all(promises)
       }).then(() => {
-        return this.$store.dispatch('fetchMiddlewareList', this.$store.getters.currentProject)
+        return this.fetchAuthService()
       }).finally(() => {
         this.loading = false
       })
