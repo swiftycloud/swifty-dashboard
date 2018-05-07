@@ -52,6 +52,7 @@
         <template slot-scope="scope">
           <code v-if="scope.row.source === 'cron'">{{ scope.row.cron.tab }}</code>
           <span v-if="scope.row.source === 'url'">POST https://{{ scope.row.url }}</span>
+          <span v-if="scope.row.source === 's3'">{{ scope.row.s3.ops.split(',').join(', ') }}</span>
           <span v-else>{{ scope.row.data }}</span>
         </template>
       </el-table-column>
