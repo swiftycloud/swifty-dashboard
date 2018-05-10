@@ -55,6 +55,8 @@ export default {
 
   auths: resource(config.API_GATE_ENDPOINT + '/auths'),
 
+  deployments: resource(config.API_GATE_ENDPOINT + '/deployments'),
+
   requestApiToken () {
     return axios.post(config.API_ADMD_ENDPOINT + '/login', {
       username: config.API_USERNAME,
