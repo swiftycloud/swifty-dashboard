@@ -64,7 +64,8 @@ export default {
   actions: {
     fetchFunctions ({ getters, commit }) {
       return api.functions.get({
-        project: getters.project
+        project: getters.project,
+        details: true
       }).then(response => {
         commit(SAVE_FUNCTIONS_LIST, response.data)
         return response.data
