@@ -34,6 +34,7 @@
             </el-button>
             <el-dropdown-menu slot="dropdown" class="trigger-menu">
               <el-dropdown-item v-if="scope.row.source === 'cron'" @click.native="openCronEditionDialog(scope.row.id)">Edit Trigger</el-dropdown-item>
+              <el-dropdown-item v-if="scope.row.source === 's3'" @click.native="openS3EditionDialog(scope.row.id)">Edit Trigger</el-dropdown-item>
               <el-dropdown-item @click.native="deleteEventTrigger(scope.row.id)">Delete</el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>
@@ -183,6 +184,38 @@
         <el-button type="primary" @click="createS3EventTrigger" v-loading="formLoading">Save</el-button>
       </span>
     </el-dialog>
+
+    <el-dialog
+      title="Edit object storage trigger"
+      :visible.sync="dialogS3EditionVisibility"
+      width="600px">
+      <el-form v-model="forms.s3" @submit="updateS3EventTrigger">
+        <el-form-item label="Bucket" label-width="120px">
+          <el-select v-model="forms.s3.bucket" placeholder="Select bucket" style="width: 450px">
+            <el-option v-for="(bucket, k) in $store.getters.getS3Buckets" :key="k" :value="bucket.Name" :label="bucket.Name"></el-option>
+          </el-select>
+        </el-form-item>
+
+        <el-form-item label="Event type" label-width="120px">
+          <el-select multiple v-model="forms.s3.events" placeholder="Select event type" style="width: 450px">
+            <el-option value="put" label="Object Created - PUT"></el-option>
+            <el-option value="delete" label="Object Deleted - DELETE"></el-option>
+          </el-select>
+        </el-form-item>
+
+        <el-form-item label="Path to object" label-width="120px">
+          <el-input v-model="forms.s3.path" placeholder="folder1/"></el-input>
+        </el-form-item>
+
+        <el-form-item label="Filter" label-width="120px">
+          <el-input v-model="forms.s3.filter" placeholder="*.img"></el-input>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="dialogS3EditionVisibility = false">Cancel</el-button>
+        <el-button type="primary" @click="updateS3EventTrigger" v-loading="formLoading">Save</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -202,6 +235,7 @@ export default {
       dialogCronCreationVisibility: false,
       dialogCronEditionVisibility: false,
       dialogS3CreationVisibility: false,
+      dialogS3EditionVisibility: false,
       currentFunctionId: null,
 
       triggers: [],
@@ -217,6 +251,7 @@ export default {
           json: ''
         },
         s3: {
+          id: null,
           bucket: null,
           events: [],
           path: null,
@@ -338,6 +373,7 @@ export default {
           json: ''
         },
         s3: {
+          id: null,
           bucket: null,
           events: [],
           path: null,
@@ -375,6 +411,24 @@ export default {
     openS3CreationDialog () {
       this.resetForms()
       this.dialogS3CreationVisibility = true
+    },
+
+    openS3EditionDialog (id) {
+      this.resetForms()
+      this.forms.s3.id = id
+
+      api.functions.one(this.currentFunctionId).triggers.find(id).then(response => {
+        this.forms.s3.bucket = response.data.s3.bucket
+        this.forms.s3.events = response.data.s3.ops.split(',')
+        this.forms.s3.path = response.data.s3.path
+        this.forms.s3.filter = response.data.s3.pattern
+
+        this.dialogS3EditionVisibility = true
+      }).catch(() => {
+        this.$notify.error({
+          title: 'Error', message: 'Something wrong'
+        })
+      })
     },
 
     createUrlEventTrigger () {
@@ -475,7 +529,29 @@ export default {
         }
       }).then(response => {
         this.dialogS3CreationVisibility = false
+        this.fetchEventTriggers()
+      }).catch(error => {
+        this.$notify.error({
+          title: 'Error',
+          message: error.response.data.message || 'Unknown error'
+        })
+      }).finally(() => {
+        this.formLoading = false
+      })
+    },
+
+    updateS3EventTrigger () {
+      this.formLoading = true
+      api.functions.one(this.currentFunctionId).triggers.update(this.forms.s3.id, {
+        name: this.forms.s3.bucket,
+        source: 's3',
+        s3: {
+          bucket: this.forms.s3.bucket,
+          ops: this.forms.s3.events.join(','),
+          pattern: this.forms.s3.filter
+        }
       }).then(response => {
+        this.dialogS3CreationVisibility = false
         this.fetchEventTriggers()
       }).catch(error => {
         this.$notify.error({
