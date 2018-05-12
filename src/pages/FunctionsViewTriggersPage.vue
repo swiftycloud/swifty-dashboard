@@ -51,7 +51,11 @@
         sortable>
         <template slot-scope="scope">
           <code v-if="scope.row.source === 'cron'">{{ scope.row.cron.tab }}</code>
-          <span v-if="scope.row.source === 'url'">POST https://{{ scope.row.url }}</span>
+          <span v-if="scope.row.source === 'url'">
+            <span style="padding-right: 10px">POST https://{{ scope.row.url }}</span>
+            <el-button size="mini" type="primary" plain @click="copyToClipboard()">{{ copyButtonText }}</el-button>
+            <input type="text" class="copy-text-input" id="copyText" :value="'POST https://' + scope.row.url">
+          </span>
           <span v-if="scope.row.source === 's3'">{{ scope.row.s3.ops.split(',').join(', ') }}</span>
           <span v-else>{{ scope.row.data }}</span>
         </template>
@@ -240,7 +244,9 @@ export default {
         lineNumbers: true,
         line: true,
         styleActiveLine: true
-      }
+      },
+
+      copyButtonText: 'Copy'
     }
   },
 
@@ -267,6 +273,16 @@ export default {
   },
 
   methods: {
+    copyToClipboard () {
+      let copyText = document.getElementById('copyText')
+      copyText.select()
+      document.execCommand('Copy')
+      this.copyButtonText = 'Copied'
+      setTimeout(() => {
+        this.copyButtonText = 'Copy'
+      }, 2000)
+    },
+
     fetchEventTriggers () {
       this.loading = true
       this.$store.dispatch('fetchFunctionByID', this.$route.params.fid).then(response => {
@@ -513,5 +529,11 @@ export default {
   color: #303133;
   text-transform: none;
   padding: 0;
+}
+
+.copy-text-input {
+  opacity: 0;
+  width: 1px;
+  height: 1px;
 }
 </style>
