@@ -11,8 +11,8 @@ const FunctionsViewCodePage = () => import(/* webpackChunkName: "functions" */ '
 const FunctionsViewResourcesPage = () => import(/* webpackChunkName: "functions" */ '@/pages/FunctionsViewResourcesPage')
 const FunctionsViewMiddlewarePage = () => import(/* webpackChunkName: "functions" */ '@/pages/FunctionsViewMiddlewarePage')
 const FunctionsViewTriggersPage = () => import(/* webpackChunkName: "functions" */ '@/pages/FunctionsViewTriggersPage')
-const ObjectStoragePage = () => import(/* webpackChunkName: "s3" */ '@/pages/ObjectStoragePage')
-const BucketViewPage = () => import(/* webpackChunkName: "s3" */ '@/pages/BucketViewPage')
+const BucketsPage = () => import(/* webpackChunkName: "s3" */ '@/pages/BucketsPage')
+const BucketsViewPage = () => import(/* webpackChunkName: "s3" */ '@/pages/BucketsViewPage')
 const MariaDBPage = () => import(/* webpackChunkName: "mware" */ '@/pages/MariaDBPage')
 const MongoDBPage = () => import(/* webpackChunkName: "mware" */ '@/pages/MongoDBPage')
 const StatsPage = () => import(/* webpackChunkName: "stats" */ '@/pages/StatsPage')
@@ -65,17 +65,17 @@ export default new Router({
     {
       path: '/storage',
       name: 'storage',
-      component: ObjectStoragePage
+      component: BucketsPage
     },
     {
       path: '/storage/bucket/:name',
       name: 'bucket.view',
-      component: BucketViewPage
+      component: BucketsViewPage
     },
     {
       path: '/storage/bucket/:name/:prefix',
       name: 'bucket.view.prefix',
-      component: BucketViewPage
+      component: BucketsViewPage
     },
     {
       path: '/mariadb',
