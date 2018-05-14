@@ -33,8 +33,8 @@
               <i class="fa fa-ellipsis-h"></i>
             </el-button>
             <el-dropdown-menu slot="dropdown" class="trigger-menu">
-              <el-dropdown-item v-if="scope.row.source === 'cron'" @click.native="openCronEditionDialog(scope.row.id)">Edit Trigger</el-dropdown-item>
-              <el-dropdown-item v-if="scope.row.source === 's3'" @click.native="openS3EditionDialog(scope.row.id)">Edit Trigger</el-dropdown-item>
+              <el-dropdown-item v-if="scope.row.source === 'cron'" @click.native="openCronEditingDialog(scope.row.id)">Edit Trigger</el-dropdown-item>
+              <el-dropdown-item v-if="scope.row.source === 's3'" @click.native="openS3EditingDialog(scope.row.id)">Edit Trigger</el-dropdown-item>
               <el-dropdown-item @click.native="deleteEventTrigger(scope.row.id)">Delete</el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>
@@ -110,9 +110,9 @@
 
     <el-dialog
       title="Edit scheduled trigger"
-      :visible.sync="dialogCronEditionVisibility"
+      :visible.sync="dialogCronEditingVisibility"
       width="600px">
-      <el-form ref="cronEditionForm" :model="forms.cron" :rules="formRules.cron" @submit="updateCronEventTrigger">
+      <el-form ref="cronEditingForm" :model="forms.cron" :rules="formRules.cron" @submit="updateCronEventTrigger">
         <el-form-item label="Trigger name" label-width="120px" prop="name">
           <el-input v-model="forms.cron.name" placeholder="cron1"></el-input>
         </el-form-item>
@@ -148,7 +148,7 @@
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
-        <el-button @click="dialogCronEditionVisibility = false">Cancel</el-button>
+        <el-button @click="dialogCronEditingVisibility = false">Cancel</el-button>
         <el-button type="primary" @click="updateCronEventTrigger" v-loading="formLoading">Save</el-button>
       </span>
     </el-dialog>
@@ -187,9 +187,9 @@
 
     <el-dialog
       title="Edit object storage trigger"
-      :visible.sync="dialogS3EditionVisibility"
+      :visible.sync="dialogS3EditingVisibility"
       width="600px">
-      <el-form ref="s3EditionForm" :model="forms.s3" @submit="updateS3EventTrigger" :rules="formRules.s3">
+      <el-form ref="s3EditingForm" :model="forms.s3" @submit="updateS3EventTrigger" :rules="formRules.s3">
         <el-form-item label="Bucket" label-width="120px" prop="bucket">
           <el-select v-model="forms.s3.bucket" placeholder="Select bucket" style="width: 450px">
             <el-option v-for="(bucket, k) in $store.getters.getS3Buckets" :key="k" :value="bucket.Name" :label="bucket.Name"></el-option>
@@ -212,7 +212,7 @@
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
-        <el-button @click="dialogS3EditionVisibility = false">Cancel</el-button>
+        <el-button @click="dialogS3EditingVisibility = false">Cancel</el-button>
         <el-button type="primary" @click="updateS3EventTrigger" v-loading="formLoading">Save</el-button>
       </span>
     </el-dialog>
@@ -233,9 +233,9 @@ export default {
       loading: true,
       formLoading: false,
       dialogCronCreationVisibility: false,
-      dialogCronEditionVisibility: false,
+      dialogCronEditingVisibility: false,
       dialogS3CreationVisibility: false,
-      dialogS3EditionVisibility: false,
+      dialogS3EditingVisibility: false,
       currentFunctionId: null,
 
       triggers: [],
@@ -395,7 +395,7 @@ export default {
       this.dialogCronCreationVisibility = true
     },
 
-    openCronEditionDialog (id) {
+    openCronEditingDialog (id) {
       this.resetForms()
       this.forms.cron.id = id
 
@@ -407,7 +407,7 @@ export default {
 
         this.updateFormByExpr(this.forms.cron.expression)
 
-        this.dialogCronEditionVisibility = true
+        this.dialogCronEditingVisibility = true
       }).catch(() => {
         this.$notify.error({
           title: 'Error',
@@ -421,7 +421,7 @@ export default {
       this.dialogS3CreationVisibility = true
     },
 
-    openS3EditionDialog (id) {
+    openS3EditingDialog (id) {
       this.resetForms()
       this.forms.s3.id = id
 
@@ -431,7 +431,7 @@ export default {
         this.forms.s3.path = response.data.s3.path
         this.forms.s3.filter = response.data.s3.pattern
 
-        this.dialogS3EditionVisibility = true
+        this.dialogS3EditingVisibility = true
       }).catch(() => {
         this.$notify.error({
           title: 'Error', message: 'Something wrong'
@@ -490,7 +490,7 @@ export default {
     },
 
     updateCronEventTrigger () {
-      this.$refs.cronEditionForm.validate(valid => {
+      this.$refs.cronEditingForm.validate(valid => {
         if (valid) {
           this.formLoading = true
 
@@ -513,7 +513,7 @@ export default {
           }).then(response => {
             return api.functions.one(this.currentFunctionId).triggers.delete(this.forms.cron.id)
           }).then(response => {
-            this.dialogCronEditionVisibility = false
+            this.dialogCronEditingVisibility = false
             return this.fetchEventTriggers()
           }).catch(error => {
             this.$notify.error({
@@ -555,7 +555,7 @@ export default {
     },
 
     updateS3EventTrigger () {
-      this.$refs.s3EditionForm.validate(valid => {
+      this.$refs.s3EditingForm.validate(valid => {
         if (valid) {
           this.formLoading = true
           api.functions.one(this.currentFunctionId).triggers.create({
@@ -569,7 +569,7 @@ export default {
           }).then(response => {
             return api.functions.one(this.currentFunctionId).triggers.delete(this.forms.s3.id)
           }).then(response => {
-            this.dialogS3EditionVisibility = false
+            this.dialogS3EditingVisibility = false
             return this.fetchEventTriggers()
           }).catch(error => {
             this.$notify.error({
