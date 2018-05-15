@@ -22,7 +22,8 @@ export class Function extends Model {
     return {
       fetch: '/functions/{id}',
       save: '/functions',
-      state: '/functions/{id}/state'
+      state: '/functions/{id}/state',
+      authctx: '/functions/{id}/authctx'
     }
   }
 
@@ -41,6 +42,15 @@ export class Function extends Model {
 
   deactivate () {
     return this.updateState('deactivated')
+  }
+
+  updateAuthCtx (value) {
+    let method = 'PUT'
+    let route = this.getRoute('authctx')
+    let url = this.getURL(route, { id: this.id })
+    let data = '"' + value + '"'
+
+    return this.getRequest({ method, url, data }).send()
   }
 }
 
