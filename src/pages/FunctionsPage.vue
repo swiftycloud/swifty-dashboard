@@ -107,9 +107,9 @@
       :visible.sync="manageAuthDialogVisibility"
       width="600px">
       <el-form ref="authForm" :model="authForm" label-width="200px" :rules="authFormRules">
-        <el-form-item label="Authentication Service" prop="mware">
-          <el-select v-model="authForm.mware" placeholder="Authentication Service">
-            <el-option v-for="mware in middlewareList" :value="mware.name" :label="mware.name" :key="mware.id"></el-option>
+        <el-form-item label="Authentication Service" prop="service">
+          <el-select v-model="authForm.service" placeholder="Authentication Service">
+            <el-option v-for="service in authServices" :value="service.id" :label="service.name" :key="service.id"></el-option>
           </el-select>
           <el-popover
             ref="authinfo"
@@ -146,11 +146,11 @@ export default {
       multipleSelection: [],
       manageAuthDialogVisibility: false,
       authForm: {
-        mware: ''
+        service: ''
       },
-      middlewareList: [],
+      authServices: [],
       authFormRules: {
-        mware: [
+        service: [
           { required: true, message: 'Please select Authentication Service', trigger: 'change' }
         ]
       }
@@ -164,11 +164,10 @@ export default {
       this.loading = false
     })
 
-    api.middleware.get({
-      project: this.$store.getters.project,
-      type: 'authjwt'
+    api.auths.get({
+      project: this.$store.getters.project
     }).then(response => {
-      this.middlewareList = response.data
+      this.authServices = response.data
     })
   },
 
@@ -318,6 +317,14 @@ export default {
             type: 'warning'
           }).then(() => {
             this.loading = true
+            return api.deployments.find(this.authForm.service)
+          }).then(response => {
+            var mwareName = null
+            response.data.items.forEach(item => {
+              if (item.type === 'mware' && /^.+_jwt$/.test(item.name)) {
+                mwareName = item.name
+              }
+            })
 
             var promises = []
             this.multipleSelection.forEach((self) => {
@@ -326,7 +333,7 @@ export default {
               }
 
               promises.push(
-                api.functions.one(self.id).authctx.update(null, '"' + this.authForm.mware + '"')
+                api.functions.one(self.id).authctx.update(null, '"' + mwareName + '"')
               )
             })
 
