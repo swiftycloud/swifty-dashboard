@@ -4,23 +4,23 @@ import Router from 'vue-router'
 import OverviewPage from '@/pages/OverviewPage'
 import SignPage from '@/pages/SignPage'
 
-import FunctionsPage from '@/pages/FunctionsPage'
-import FunctionsCreatePage from '@/pages/FunctionsCreatePage'
-import FunctionsViewPage from '@/pages/FunctionsViewPage'
-import FunctionsViewCodePage from '@/pages/FunctionsViewCodePage'
-import FunctionsViewResourcesPage from '@/pages/FunctionsViewResourcesPage'
-import FunctionsViewMiddlewarePage from '@/pages/FunctionsViewMiddlewarePage'
-import FunctionsViewTriggersPage from '@/pages/FunctionsViewTriggersPage'
-import ObjectStoragePage from '@/pages/ObjectStoragePage'
-import BucketViewPage from '@/pages/BucketViewPage'
-import MariaDBPage from '@/pages/MariaDBPage'
-import MongoDBPage from '@/pages/MongoDBPage'
-import StatsPage from '@/pages/StatsPage'
-import StatsFunctionsPage from '@/pages/StatsFunctionsPage'
-import StatsObjectStoragePage from '@/pages/StatsObjectStoragePage'
-import StatsMongoPage from '@/pages/StatsMongoPage'
-import StatsMariaPage from '@/pages/StatsMariaPage'
-import AuthServicePage from '@/pages/AuthServicePage'
+const FunctionsPage = () => import(/* webpackChunkName: "functions" */ '@/pages/FunctionsPage')
+const FunctionsCreatePage = () => import(/* webpackChunkName: "functions" */ '@/pages/FunctionsCreatePage')
+const FunctionsViewPage = () => import(/* webpackChunkName: "functions" */ '@/pages/FunctionsViewPage')
+const FunctionsViewCodePage = () => import(/* webpackChunkName: "functions" */ '@/pages/FunctionsViewCodePage')
+const FunctionsViewResourcesPage = () => import(/* webpackChunkName: "functions" */ '@/pages/FunctionsViewResourcesPage')
+const FunctionsViewMiddlewarePage = () => import(/* webpackChunkName: "functions" */ '@/pages/FunctionsViewMiddlewarePage')
+const FunctionsViewTriggersPage = () => import(/* webpackChunkName: "functions" */ '@/pages/FunctionsViewTriggersPage')
+const BucketsPage = () => import(/* webpackChunkName: "s3" */ '@/pages/BucketsPage')
+const BucketsViewPage = () => import(/* webpackChunkName: "s3" */ '@/pages/BucketsViewPage')
+const MariaDBPage = () => import(/* webpackChunkName: "mware" */ '@/pages/MariaDBPage')
+const MongoDBPage = () => import(/* webpackChunkName: "mware" */ '@/pages/MongoDBPage')
+const StatsPage = () => import(/* webpackChunkName: "stats" */ '@/pages/StatsPage')
+const StatsFunctionsPage = () => import(/* webpackChunkName: "stats" */ '@/pages/StatsFunctionsPage')
+const StatsObjectStoragePage = () => import(/* webpackChunkName: "stats" */ '@/pages/StatsObjectStoragePage')
+const StatsMongoPage = () => import(/* webpackChunkName: "stats" */ '@/pages/StatsMongoPage')
+const StatsMariaPage = () => import(/* webpackChunkName: "stats" */ '@/pages/StatsMariaPage')
+const AuthServicePage = () => import(/* webpackChunkName: "authservice" */ '@/pages/AuthServicePage')
 
 Vue.use(Router)
 
@@ -65,17 +65,17 @@ export default new Router({
     {
       path: '/storage',
       name: 'storage',
-      component: ObjectStoragePage
+      component: BucketsPage
     },
     {
       path: '/storage/bucket/:name',
       name: 'bucket.view',
-      component: BucketViewPage
+      component: BucketsViewPage
     },
     {
       path: '/storage/bucket/:name/:prefix',
       name: 'bucket.view.prefix',
-      component: BucketViewPage
+      component: BucketsViewPage
     },
     {
       path: '/mariadb',

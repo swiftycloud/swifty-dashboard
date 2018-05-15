@@ -43,6 +43,7 @@ export default {
         middleware: resource(config.API_GATE_ENDPOINT + '/functions/' + fid + '/middleware'),
         state: resource(config.API_GATE_ENDPOINT + '/functions/' + fid + '/state'),
         s3buckets: resource(config.API_GATE_ENDPOINT + '/functions/' + fid + '/s3buckets'),
+        authctx: resource(config.API_GATE_ENDPOINT + '/functions/' + fid + '/authctx'),
 
         // actions
         run: data => axios.post(config.API_GATE_ENDPOINT + '/functions/' + fid + '/run', data),
@@ -54,6 +55,8 @@ export default {
   middleware: resource(config.API_GATE_ENDPOINT + '/middleware'),
 
   auths: resource(config.API_GATE_ENDPOINT + '/auths'),
+
+  deployments: resource(config.API_GATE_ENDPOINT + '/deployments'),
 
   requestApiToken () {
     return axios.post(config.API_ADMD_ENDPOINT + '/login', {

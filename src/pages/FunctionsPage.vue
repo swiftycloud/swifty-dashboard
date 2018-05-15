@@ -10,6 +10,14 @@
           type="primary"
            size="medium"
            plain
+           @click="manageAuthDialogVisibility = true"
+           :disabled="this.multipleSelection.length === 0">
+          Manage authentication
+          </el-button>
+          <el-button
+          type="primary"
+           size="medium"
+           plain
            @click="enableSelected()"
            :disabled="this.multipleSelection.length === 0">
           Enable
@@ -67,6 +75,15 @@
             show-overflow-tooltip>
           </el-table-column>
           <el-table-column
+            label="Authentication"
+            sortable
+            show-overflow-tooltip>
+            <template slot-scope="scope">
+              <span v-if="'authctx' in scope.row">Enabled</span>
+              <span v-else>Disabled</span>
+            </template>
+          </el-table-column>
+          <el-table-column
             prop="lastcall"
             label="Last Run"
             sortable>
@@ -84,15 +101,59 @@
         </el-table>
       </div>
     </div>
+
+    <el-dialog
+      title="Manage Authentication For Your Functions"
+      :visible.sync="manageAuthDialogVisibility"
+      width="600px">
+      <el-form ref="authForm" :model="authForm" label-width="200px" :rules="authFormRules">
+        <el-form-item label="Authentication Service" prop="service">
+          <el-select v-model="authForm.service" placeholder="Authentication Service">
+            <el-option v-for="service in authServices" :value="service.id" :label="service.name" :key="service.id"></el-option>
+          </el-select>
+          <el-popover
+            ref="authinfo"
+            placement="right"
+            title="Authentication Database"
+            width="350"
+            trigger="hover"
+            content="If you do not have any Authentication Databases, please create one using Authentication Service.">
+          </el-popover>
+          <a href="#" @click.prevent class="input-info" v-popover:authinfo>
+            <span class="fa-stack fa-sm">
+              <i class="fa fa-circle-thin fa-stack-2x"></i>
+              <i class="fa fa-info fa-stack-1x"></i>
+            </span>
+          </a>
+        </el-form-item>
+      </el-form>
+      <span slot="footer">
+        <el-button @click="manageAuthDialogVisibility = false">Cancel</el-button>
+        <el-button type="primary" @click="enableAuthentication">Enable</el-button>
+        <el-button type="danger" @click="disableAuthentication">Disable</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
 <script>
+import api from '@/api'
+
 export default {
   data () {
     return {
       loading: true,
-      multipleSelection: []
+      multipleSelection: [],
+      manageAuthDialogVisibility: false,
+      authForm: {
+        service: ''
+      },
+      authServices: [],
+      authFormRules: {
+        service: [
+          { required: true, message: 'Please select Authentication Service', trigger: 'change' }
+        ]
+      }
     }
   },
 
@@ -101,6 +162,12 @@ export default {
 
     this.$store.dispatch('fetchFunctions').then(() => {
       this.loading = false
+    })
+
+    api.auths.get({
+      project: this.$store.getters.project
+    }).then(response => {
+      this.authServices = response.data
     })
   },
 
@@ -127,7 +194,6 @@ export default {
       if (this.multipleSelection.length === 0) {
         return false
       }
-
       this.$confirm('Selected function will be enabled', 'Warning', {
         confirmButtonText: 'OK',
         cancelButtonText: 'Cancel',
@@ -213,7 +279,6 @@ export default {
 
         var promises = []
         this.multipleSelection.forEach((self) => {
-          console.log(self)
           promises.push(
             this.$store.dispatch('deleteFunctionByID', self.id).catch(error => {
               this.$notify.error({
@@ -232,14 +297,108 @@ export default {
       }).finally(() => {
         this.loading = false
       })
+    },
+
+    enableAuthentication () {
+      if (this.multipleSelection.length === 0) {
+        this.$notify.error({
+          title: 'Error',
+          message: 'No function selected'
+        })
+
+        return false
+      }
+
+      this.$refs['authForm'].validate((valid) => {
+        if (valid) {
+          this.$confirm('Authentication will be enabled for selected functions', 'Warning', {
+            confirmButtonText: 'OK',
+            cancelButtonText: 'Cancel',
+            type: 'warning'
+          }).then(() => {
+            this.loading = true
+            return api.deployments.find(this.authForm.service)
+          }).then(response => {
+            var mwareName = null
+            response.data.items.forEach(item => {
+              if (item.type === 'mware' && /^.+_jwt$/.test(item.name)) {
+                mwareName = item.name
+              }
+            })
+
+            var promises = []
+            this.multipleSelection.forEach((self) => {
+              if ('labels' in self && self.labels.indexOf('auth') !== -1) {
+                return false
+              }
+
+              promises.push(
+                api.functions.one(self.id).authctx.update(null, '"' + mwareName + '"')
+              )
+            })
+
+            return Promise.all(promises)
+          }).then(() => {
+            this.manageAuthDialogVisibility = false
+            return this.$store.dispatch('fetchFunctions', this.$store.getters.currentProject)
+          }).catch(() => {
+            // ..
+          }).finally(() => {
+            this.loading = false
+          })
+        }
+      })
+    },
+
+    disableAuthentication () {
+      if (this.multipleSelection.length === 0) {
+        return false
+      }
+
+      this.$confirm('Authentication will be disabled for selected functions', 'Warning', {
+        confirmButtonText: 'OK',
+        cancelButtonText: 'Cancel',
+        type: 'warning'
+      }).then(() => {
+        this.loading = true
+
+        var promises = []
+        this.multipleSelection.forEach((self) => {
+          if ('labels' in self && self.labels.indexOf('auth') !== -1) {
+            return false
+          }
+
+          promises.push(
+            api.functions.one(self.id).authctx.update(null, '""')
+          )
+        })
+
+        return Promise.all(promises)
+      }).then(() => {
+        this.manageAuthDialogVisibility = false
+        return this.$store.dispatch('fetchFunctions', this.$store.getters.currentProject)
+      }).catch(() => {
+        // ..
+      }).finally(() => {
+        this.loading = false
+      })
     }
   }
 }
 </script>
 
 <style lang="scss">
-  .deactivated-func td,
-  .deactivated-func td a {
-    color: #c3c3c3;
+.deactivated-func td,
+.deactivated-func td a {
+  color: #c3c3c3;
+}
+
+.input-info {
+  margin-left: 10px;
+  color: rgba(0, 0, 0, 0.54);
+
+  .fa-stack {
+    height: 30px;
   }
+}
 </style>

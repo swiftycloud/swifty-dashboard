@@ -54,12 +54,6 @@ export default {
     this.fetchAuthService()
   },
 
-  computed: {
-    middlewares () {
-      return this.$store.getters.getMiddlewaresByType('authjwt')
-    }
-  },
-
   methods: {
     fetchAuthService () {
       this.loading = true

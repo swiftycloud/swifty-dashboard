@@ -65,9 +65,7 @@ import { mapActions } from 'vuex'
 
 import { codemirror } from 'vue-codemirror'
 import 'codemirror/lib/codemirror.css'
-// language js
 import 'codemirror/mode/python/python.js'
-// active-line.js
 import 'codemirror/addon/selection/active-line.js'
 
 export default {

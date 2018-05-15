@@ -4,7 +4,6 @@ import Vue from 'vue'
 import VueMoment from 'vue-moment'
 import VueFilterPrettyBytes from 'vue-filter-pretty-bytes'
 import moment from 'moment-timezone'
-import VueClipboard from 'vue-clipboard2'
 
 import App from '@/App'
 import store from '@/store'
@@ -35,7 +34,6 @@ store.dispatch('initUserAuth', router)
 Vue.use(ElementUI, { locale })
 Vue.use(VueMoment, { moment })
 Vue.use(VueFilterPrettyBytes)
-Vue.use(VueClipboard)
 
 Vue.config.productionTip = false
 
