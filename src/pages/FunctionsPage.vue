@@ -40,11 +40,11 @@
       </div>
     </div>
 
-    <div class="row" v-loading="loading">
+    <div class="row" v-loading="functions.loading">
       <div class="col">
         <el-table
           ref="multipleTable"
-          :data="$store.getters.functions"
+          :data="functions.models"
           style="width: 100%"
           @selection-change="handleSelectionChange"
           :row-class-name="tableRowClassName">
@@ -109,7 +109,7 @@
       <el-form ref="authForm" :model="authForm" label-width="200px" :rules="authFormRules">
         <el-form-item label="Authentication Service" prop="service">
           <el-select v-model="authForm.service" placeholder="Authentication Service">
-            <el-option v-for="service in authServices" :value="service.id" :label="service.name" :key="service.id"></el-option>
+            <el-option v-for="service in authServices.models" :value="service.id" :label="service.name" :key="service.id"></el-option>
           </el-select>
           <el-popover
             ref="authinfo"
@@ -139,16 +139,26 @@
 <script>
 import api from '@/api'
 
+import { FunctionList } from '@/models/Function'
+import { AuthServiceList } from '@/models/AuthService'
+
 export default {
   data () {
     return {
-      loading: true,
+      // objects
+      functions: new FunctionList(),
+      authServices: new AuthServiceList(),
+
+      // manage
       multipleSelection: [],
       manageAuthDialogVisibility: false,
+
+      // forms
       authForm: {
         service: ''
       },
-      authServices: [],
+
+      // rules
       authFormRules: {
         service: [
           { required: true, message: 'Please select Authentication Service', trigger: 'change' }
@@ -160,15 +170,8 @@ export default {
   created () {
     this.$store.dispatch('setPageTitle', 'Functions')
 
-    this.$store.dispatch('fetchFunctions').then(() => {
-      this.loading = false
-    })
-
-    api.auths.get({
-      project: this.$store.getters.project
-    }).then(response => {
-      this.authServices = response.data
-    })
+    this.functions.fetch()
+    this.authServices.fetch()
   },
 
   methods: {
@@ -178,6 +181,8 @@ export default {
       }
       return ''
     },
+
+    // table selection
     toggleSelection (rows) {
       if (rows) {
         rows.forEach(row => {
@@ -190,6 +195,10 @@ export default {
     handleSelectionChange (val) {
       this.multipleSelection = val
     },
+
+    /*
+     * Enable & Disable functions
+     */
     enableSelected () {
       if (this.multipleSelection.length === 0) {
         return false
@@ -202,22 +211,13 @@ export default {
         this.loading = true
 
         var promises = []
-        this.multipleSelection.forEach((self) => {
-          if (self.state !== 'ready') {
-            promises.push(
-              this.$store.dispatch('enableFunctionByID', self.id).catch(error => {
-                this.$notify.error({
-                  title: 'Error',
-                  message: error.response.data.message
-                })
-              })
-            )
-          }
+        this.multipleSelection.forEach(item => {
+          promises.push(item.activate())
         })
 
         return Promise.all(promises)
       }).then(() => {
-        return this.$store.dispatch('fetchFunctions', this.$store.getters.currentProject)
+        return this.functions.fetch()
       }).catch(error => {
         this.$notify.error({
           title: 'Error',
@@ -227,6 +227,7 @@ export default {
         this.loading = false
       })
     },
+
     disableSelected () {
       if (this.multipleSelection.length === 0) {
         return false
@@ -240,23 +241,15 @@ export default {
         this.loading = true
 
         var promises = []
-        this.multipleSelection.forEach((self) => {
-          if (self.state !== 'deactivated') {
-            promises.push(
-              this.$store.dispatch('disableFunctionByID', self.id).catch(error => {
-                this.$notify.error({
-                  title: 'Error',
-                  message: error.response.data.message
-                })
-              })
-            )
-          }
+        this.multipleSelection.forEach(item => {
+          promises.push(item.deactivate())
         })
 
         return Promise.all(promises)
       }).then(() => {
-        return this.$store.dispatch('fetchFunctions', this.$store.getters.currentProject)
+        return this.functions.fetch()
       }).catch(error => {
+        console.log(error)
         this.$notify.error({
           title: 'Error',
           message: error.response.data.message
@@ -265,6 +258,10 @@ export default {
         this.loading = false
       })
     },
+
+    /*
+     * Delete functions
+     */
     deleteSelected () {
       if (this.multipleSelection.length === 0) {
         return false
@@ -299,6 +296,9 @@ export default {
       })
     },
 
+    /*
+     * Enable & Disable authentication
+     */
     enableAuthentication () {
       if (this.multipleSelection.length === 0) {
         this.$notify.error({
