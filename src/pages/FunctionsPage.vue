@@ -327,20 +327,20 @@ export default {
             })
 
             var promises = []
-            this.multipleSelection.forEach((self) => {
-              if ('labels' in self && self.labels.indexOf('auth') !== -1) {
+            this.multipleSelection.forEach(item => {
+              if ('labels' in item && item.labels.indexOf('auth') !== -1) {
                 return false
               }
 
               promises.push(
-                api.functions.one(self.id).authctx.update(null, '"' + mwareName + '"')
+                item.updateAuthCtx(mwareName)
               )
             })
 
             return Promise.all(promises)
           }).then(() => {
             this.manageAuthDialogVisibility = false
-            return this.$store.dispatch('fetchFunctions', this.$store.getters.currentProject)
+            return this.functions.fetch()
           }).catch(() => {
             // ..
           }).finally(() => {
@@ -363,20 +363,20 @@ export default {
         this.loading = true
 
         var promises = []
-        this.multipleSelection.forEach((self) => {
-          if ('labels' in self && self.labels.indexOf('auth') !== -1) {
+        this.multipleSelection.forEach(item => {
+          if ('labels' in item && item.labels.indexOf('auth') !== -1) {
             return false
           }
 
           promises.push(
-            api.functions.one(self.id).authctx.update(null, '""')
+            item.updateAuthCtx('')
           )
         })
 
         return Promise.all(promises)
       }).then(() => {
         this.manageAuthDialogVisibility = false
-        return this.$store.dispatch('fetchFunctions', this.$store.getters.currentProject)
+        return this.functions.fetch()
       }).catch(() => {
         // ..
       }).finally(() => {
