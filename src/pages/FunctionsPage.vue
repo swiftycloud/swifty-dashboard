@@ -59,8 +59,7 @@
           <el-table-column
             prop="name"
             label="Name"
-            sortable
-            width="160">
+            sortable>
             <template slot-scope="scope">
               <router-link :to="{ name: 'functions.view.code', params: { fid: scope.row.id } }" v-if="scope.row.state != 'deactivated'">
                 {{ scope.row.name }}

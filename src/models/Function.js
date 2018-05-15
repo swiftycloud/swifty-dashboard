@@ -61,13 +61,14 @@ export class FunctionList extends Collection {
 
   defaults () {
     return {
-      project: 'default'
+      project: 'default',
+      details: true
     }
   }
 
   routes () {
     return {
-      fetch: '/functions?project={project}'
+      fetch: '/functions?project={project}&details={details}'
     }
   }
 
