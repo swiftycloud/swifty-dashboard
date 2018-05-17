@@ -30,7 +30,7 @@
             prop="name"
             label="Instance name"
             sortable
-            width="160">
+            width="300">
           </el-table-column>
           <el-table-column
             property="type"

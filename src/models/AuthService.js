@@ -5,7 +5,16 @@ export class AuthService extends Model {
   defaults () {
     return {
       id: null,
-      name: null
+      name: null,
+      type: null
+    }
+  }
+
+  routes () {
+    return {
+      fetch: '/auths/{id}',
+      save: '/auths',
+      delete: '/auths/{id}'
     }
   }
 }
