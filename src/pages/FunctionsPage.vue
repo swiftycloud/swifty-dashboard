@@ -78,8 +78,8 @@
             sortable
             show-overflow-tooltip>
             <template slot-scope="scope">
-              <span v-if="'authctx' in scope.row">Enabled</span>
-              <span v-else>Disabled</span>
+              <span v-if="'authctx' in scope.row"><i class="fa fa-lock" aria-hidden="true"></i></span>
+              <span v-else><i class="fa fa-unlock-alt" aria-hidden="true"></i></span>
             </template>
           </el-table-column>
           <el-table-column
