@@ -54,7 +54,7 @@ export default {
 
           this.$store.dispatch('userSignUp', this.form).then(response => {
             this.$store.dispatch('setSignLoadingStatus', false)
-            this.$router.push({ name: 'overview' })
+            this.$router.push({ name: 'functions' })
           }).catch(error => {
             this.$store.dispatch('setSignLoadingStatus', false)
 
