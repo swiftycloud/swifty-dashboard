@@ -60,7 +60,7 @@ export default {
             if (backUrl !== undefined) {
               this.$router.push({ path: backUrl })
             } else {
-              this.$router.push({ name: 'overview' })
+              this.$router.push({ name: 'functions' })
             }
           }).catch(error => {
             this.$store.dispatch('setSignLoadingStatus', false)
