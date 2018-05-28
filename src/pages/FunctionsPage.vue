@@ -40,11 +40,17 @@
       </div>
     </div>
 
+    <div class="labels">
+      <el-button plain size="mini" @click="label = 'all'">All</el-button>
+      <el-button plain size="mini" @click="label = 'none'">No label</el-button>
+      <el-button :plain="label != 'auth'" size="mini" @click="label = 'auth'" type="danger">Authentication</el-button>
+    </div>
+
     <div class="row" v-loading="functions.loading">
       <div class="col">
         <el-table
           ref="multipleTable"
-          :data="functions.models"
+          :data="functionsList"
           style="width: 100%"
           @selection-change="handleSelectionChange"
           :row-class-name="tableRowClassName">
@@ -65,6 +71,16 @@
                 {{ scope.row.name }}
               </router-link>
               <span v-else>{{ scope.row.name }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column
+            property="labels">
+            <template slot-scope="scope">
+              <div style="text-align: right">
+                <span v-if="scope.row.labels !== undefined" v-for="v in scope.row.labels" :key="v">
+                  <el-tag v-if="v === 'auth'" type="danger">Authentication</el-tag>
+                </span>
+              </div>
             </template>
           </el-table-column>
           <el-table-column
@@ -162,7 +178,10 @@ export default {
         service: [
           { required: true, message: 'Please select Authentication Service', trigger: 'change' }
         ]
-      }
+      },
+
+      // filter by label
+      label: 'all'
     }
   },
 
@@ -171,6 +190,24 @@ export default {
 
     this.functions.fetch()
     this.authServices.fetch()
+  },
+
+  computed: {
+    functionsList () {
+      if (this.label === 'all') {
+        return this.functions.models
+      } else if (this.label === 'none') {
+        return this.functions.filter(item => item.labels === undefined).models
+      } else if (this.label === 'auth') {
+        return this.functions.filter(item => {
+          if (item.labels !== undefined && item.labels.length && item.labels.indexOf('auth') !== -1) {
+            return true
+          } else {
+            return false
+          }
+        }).models
+      }
+    }
   },
 
   methods: {
@@ -398,6 +435,14 @@ export default {
 
   .fa-stack {
     height: 30px;
+  }
+}
+
+.labels {
+  margin-top: 20px;
+
+  .el-button {
+    text-transform: none;
   }
 }
 </style>
