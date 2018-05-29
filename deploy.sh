@@ -1,5 +1,5 @@
 #!/bin/bash
 
-npm install && npm run build && rm -rf ./html && mv ./dist ./html && docker-compose restart
+npm install && npm run build && docker-compose build
 
 echo "Deploy completed!"
