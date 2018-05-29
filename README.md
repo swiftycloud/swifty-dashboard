@@ -2,21 +2,24 @@
 
 ## Docker Setup
 ``` bash
-# setting api client
+# configure an API client
 cp src/api/config.example.js src/api/config.js
 vi src/api/config.js
+
+# set up nginx
+cp nginx.conf.example nginx.conf
+vi nginx.conf
 
 # run deploy script
 ./deploy.sh
 
-# run docker container
+# run or re-create docker container
 docker-compose up -d
 ```
 
-Now the application is available at http://localhost in the browser
+Now the application is available at http(s)://DOMAIN_NAME in the browser
 
 ## Or Manual Build Setup
-
 ``` bash
 # install dependencies
 npm install
@@ -30,6 +33,7 @@ npm run build
 # build for production and view the bundle analyzer report
 npm run build --report
 ```
-# swifty-dashboard-new
 
-(С)SwiftyCloud OU, 2018
+# Swifty Dashboard
+
+© SwiftyCloud OU, 2018
