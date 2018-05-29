@@ -9,7 +9,7 @@
             <el-select placeholder="Timeline" v-model="periods">
               <el-option v-for="(value, label) in $store.getters.getPeriods" :label="label" :value="value" :key="value"></el-option>
             </el-select>
-            <span class="period">from 04/05/2018 to 05/05/2018</span>
+            <span class="period">from {{ periodFrom | moment('L') }} to {{ periodTill | moment('L') }}</span>
           </el-form-item>
         </el-form>
       </el-col>
@@ -38,6 +38,9 @@ export default {
       loading: true,
 
       periods: 0,
+      periodFrom: null,
+      periodTill: null,
+
       storageStats: [
         { name: 'Used Storage, GB', period: 0, limit: 10 },
         { name: 'Outbound Traffic, GB', period: 0, limit: 200 }
@@ -88,6 +91,9 @@ export default {
       }
 
       this.storageStats[0].period = this.storageStats[0].period.toLocaleString(undefined, { minimumFractionDigits: 6 })
+
+      this.periodFrom = this.$store.state.auth.user.created
+      this.periodTill = new Date()
 
       this.loading = false
     }
