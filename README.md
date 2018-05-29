@@ -10,6 +10,10 @@ vi src/api/config.js
 cp nginx.conf.example nginx.conf
 vi nginx.conf
 
+# create volumes for certbot (if doesn't exists)
+docker volume create certs
+docker volume create certs-data
+
 # run deploy script
 ./deploy.sh
 
