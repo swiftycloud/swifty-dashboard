@@ -3,8 +3,8 @@ import api from '@/api'
 export default {
   state: {
     periods: {
-      'Current Period': 0,
-      'Previous Period': 1
+      'Current Period': 0
+      // 'Previous Period': 1
     }
   },
 
