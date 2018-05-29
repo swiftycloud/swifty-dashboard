@@ -18,6 +18,9 @@ server {
     listen [::]:443           ssl http2;
     server_name               DOMAIN_NAME;
 
+    root /html;
+    index index.html;
+
     ssl                       on;
 
     add_header                Strict-Transport-Security "max-age=31536000" always;
