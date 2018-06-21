@@ -11,11 +11,17 @@
       </div>
     </div>
 
+    <div class="labels">
+      <el-button plain size="mini" @click="label = 'all'">All</el-button>
+      <el-button plain size="mini" @click="label = 'none'">No label</el-button>
+      <el-button :plain="label != 'auth'" size="mini" @click="label = 'auth'" type="danger">Authentication</el-button>
+    </div>
+
     <div class="row" v-loading="loading">
       <div class="col">
         <el-table
           ref="multipleTable"
-          :data="middlewares"
+          :data="middlewareList"
           style="width: 100%"
           @selection-change="handleSelectionChange">
           <div slot="empty">
@@ -33,6 +39,16 @@
             width="300">
           </el-table-column>
           <el-table-column
+            property="labels">
+            <template slot-scope="scope">
+              <div style="text-align: right">
+                <span v-if="scope.row.labels !== undefined" v-for="v in scope.row.labels" :key="v">
+                  <el-tag v-if="v === 'auth'" type="danger">Authentication</el-tag>
+                </span>
+              </div>
+            </template>
+          </el-table-column>
+          <el-table-column
             property="type"
             label="Middleware type"
             sortable
@@ -45,11 +61,16 @@
 </template>
 
 <script>
+import { Middleware, MiddlewareList } from '@/models/Middleware'
+
 export default {
   data () {
     return {
       loading: true,
-      multipleSelection: []
+      multipleSelection: [],
+
+      middlewares: new MiddlewareList(),
+      label: 'all'
     }
   },
 
@@ -62,11 +83,26 @@ export default {
     }).finally(() => {
       this.loading = false
     })
+
+    this.middlewares.set('type', 'mongo')
+    this.middlewares.fetch()
   },
 
   computed: {
-    middlewares () {
-      return this.$store.getters.getMiddlewares
+    middlewareList () {
+      if (this.label === 'all') {
+        return this.middlewares.models
+      } else if (this.label === 'none') {
+        return this.middlewares.filter(item => item.labels === undefined).models
+      } else if (this.label === 'auth') {
+        return this.middlewares.filter(item => {
+          if (item.labels !== undefined && item.labels.length && item.labels.indexOf('auth') !== -1) {
+            return true
+          } else {
+            return false
+          }
+        }).models
+      }
     }
   },
 
@@ -91,16 +127,15 @@ export default {
         inputErrorMessage: 'Invalid instance name'
       }).then(input => {
         this.loading = false
-        return this.$store.dispatch('addMiddleware', {
+        let middleware = new Middleware({
           project: this.$store.getters.currentProject,
-          id: input.value,
+          name: input.value,
           type: 'mongo'
         })
+
+        return middleware.save()
       }).then(() => {
-        return this.$store.dispatch('fetchMiddlewareList', {
-          project: this.$store.getters.project,
-          type: 'mongo'
-        })
+        return this.middlewares.fetch()
       }).then(() => {
         this.$notify.success({
           title: 'Success',
@@ -130,12 +165,9 @@ export default {
         this.loading = true
 
         var promises = []
-        this.multipleSelection.forEach((self) => {
+        this.multipleSelection.forEach(middleware => {
           promises.push(
-            this.$store.dispatch('removeMiddleware', {
-              project: this.$store.state.projects.currentProject,
-              id: self.id
-            }).catch(error => {
+            middleware.delete().catch(error => {
               this.$notify.error({
                 title: 'Error',
                 message: error.response.data.message
@@ -146,10 +178,7 @@ export default {
 
         return Promise.all(promises)
       }).then(() => {
-        return this.$store.dispatch('fetchMiddlewareList', {
-          project: this.$store.getters.project,
-          type: 'mongo'
-        })
+        return this.middlewares.fetch()
       }).finally(() => {
         this.loading = false
       })
@@ -157,3 +186,13 @@ export default {
   }
 }
 </script>
+
+<style>
+.labels {
+  margin-top: 20px;
+
+  .el-button {
+    text-transform: none;
+  }
+}
+</style>
