@@ -1,6 +1,6 @@
 import axios from 'axios'
 import AWS from 'aws-sdk'
-import * as config from '@/api/config'
+import config from '@/api/config'
 
 AWS.config.update({ region: 'us-west-2' })
 
