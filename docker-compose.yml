@@ -8,6 +8,7 @@ services:
     container_name: nginx
     restart: always
     volumes:
+      - ./swifty.config.json:/html/swifty.config.json:ro
       - certs:/etc/letsencrypt
       - certs-data:/data/letsencrypt
     ports:
