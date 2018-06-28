@@ -13,9 +13,21 @@
       <navbar-full v-if="!$route.meta.clearPage"></navbar-full>
       <navbar-mini v-if="$route.meta.clearPage"></navbar-mini>
       <sidebar v-if="!$route.meta.clearPage && !sidebarHidden"></sidebar>
-      <el-main>
-        <router-view/>
-      </el-main>
+      <el-container>
+        <el-main>
+          <router-view/>
+        </el-main>
+        <el-footer height="63px">
+          <el-row>
+            <el-col :span="18">
+              © 2018 SwiftyCloud OÜ. All rights reserved.
+            </el-col>
+            <el-col :span="6" style="text-align: right">
+              <a href="mailto:info@swifty.cloud">Contact Us</a>
+            </el-col>
+          </el-row>
+        </el-footer>
+      </el-container>
     </el-container>
   </div>
 </template>

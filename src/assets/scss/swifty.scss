@@ -27,6 +27,21 @@ hr {
   padding-top: $navbar-height;
 }
 
+.el-footer {
+  line-height: 63px;
+  padding: 0 26px;
+  font-size: 14px;
+  color: rgba(48, 49, 51, 0.87);
+
+  background-color: #f5f7fa;
+  border-top: solid 1px #dcdfe6;
+
+  a {
+    text-decoration: none;
+    color: rgba(48, 49, 51, 0.87)
+  }
+}
+
 .page-content {
   padding: 24px;
 
