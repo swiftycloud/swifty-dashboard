@@ -1,3 +1,8 @@
+/*
+  © 2018 SwiftyCloud OÜ. All rights reserved.
+  Contact: info@swifty.cloud
+*/
+
 /** PAGE **/
 export const SET_HIDDEN_STATUS = 'SET_HIDDEN_STATUS'
 export const SET_PAGE_TITLE = 'SET_PAGE_TITLE'

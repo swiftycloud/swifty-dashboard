@@ -1,3 +1,10 @@
+<!-- 
+
+© 2018 SwiftyCloud OÜ. All rights reserved.
+Contact: info@swifty.cloud
+
+-->
+
 <template>
   <div class="page-content">
     <el-tabs v-model="activeTab" @tab-click="handleClick">

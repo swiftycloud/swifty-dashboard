@@ -1,3 +1,8 @@
+/*
+  © 2018 SwiftyCloud OÜ. All rights reserved.
+  Contact: info@swifty.cloud
+*/
+
 import {
   SET_PAGE_TITLE,
   SET_APP_LOADING_STATUS,

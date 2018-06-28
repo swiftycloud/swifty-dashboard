@@ -1,3 +1,8 @@
+/*
+  © 2018 SwiftyCloud OÜ. All rights reserved.
+  Contact: info@swifty.cloud
+*/
+
 import Vue from 'vue'
 import Vuex from 'vuex'
 import * as actions from './actions'
