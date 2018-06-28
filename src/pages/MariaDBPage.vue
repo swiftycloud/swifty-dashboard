@@ -1,3 +1,10 @@
+<!-- 
+
+© 2018 SwiftyCloud OÜ. All rights reserved.
+Contact: info@swifty.cloud
+
+-->
+
 <template>
   <div class="page-content">
     <p>Here you can manage your Maria database</p>

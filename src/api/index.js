@@ -1,3 +1,8 @@
+/*
+  © 2018 SwiftyCloud OÜ. All rights reserved.
+  Contact: info@swifty.cloud
+*/
+
 import axios from 'axios'
 import AWS from 'aws-sdk'
 import config from '@/api/config'

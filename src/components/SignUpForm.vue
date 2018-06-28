@@ -1,3 +1,10 @@
+<!-- 
+
+© 2018 SwiftyCloud OÜ. All rights reserved.
+Contact: info@swifty.cloud
+
+-->
+
 <template>
   <div class="sign-in-form">
     <!-- <ul class="list-unstyled social-buttons">

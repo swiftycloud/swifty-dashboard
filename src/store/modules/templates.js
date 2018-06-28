@@ -1,3 +1,8 @@
+/*
+  © 2018 SwiftyCloud OÜ. All rights reserved.
+  Contact: info@swifty.cloud
+*/
+
 export default {
   state: {
     templates: [

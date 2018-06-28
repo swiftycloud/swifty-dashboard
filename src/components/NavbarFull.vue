@@ -1,3 +1,10 @@
+<!-- 
+
+© 2018 SwiftyCloud OÜ. All rights reserved.
+Contact: info@swifty.cloud
+
+-->
+
 <template>
   <nav class="navbar">
     <div class="navbar-brand-block" :class="{ 'sidebar-showed' : !$store.state.sidebar.hidden }">

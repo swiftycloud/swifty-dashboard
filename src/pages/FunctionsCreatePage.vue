@@ -1,3 +1,10 @@
+<!-- 
+
+© 2018 SwiftyCloud OÜ. All rights reserved.
+Contact: info@swifty.cloud
+
+-->
+
 <template>
   <div class="page-content">
     <p>Please create new function from scratch or based on a template</p>

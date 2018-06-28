@@ -1,3 +1,10 @@
+<!-- 
+
+© 2018 SwiftyCloud OÜ. All rights reserved.
+Contact: info@swifty.cloud
+
+-->
+
 <template>
   <nav class="sidebar-menu">
     <!--<router-link to="/" class="nav-link" active-class="active" exact><a><i class="fa el-icon-arrow-right"></i>Overview</a></router-link>-->
