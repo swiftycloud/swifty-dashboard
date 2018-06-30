@@ -1,4 +1,4 @@
-<!-- 
+<!--
 
 © 2018 SwiftyCloud OÜ. All rights reserved.
 Contact: info@swifty.cloud
@@ -26,11 +26,14 @@ Contact: info@swifty.cloud
         </el-main>
         <el-footer height="63px">
           <el-row>
-            <el-col :span="18">
+            <el-col :span="20">
               © 2018 SwiftyCloud OÜ. All rights reserved.
             </el-col>
-            <el-col :span="6" style="text-align: right">
+            <el-col :span="2" style="text-align: right">
               <a href="mailto:info@swifty.cloud">Contact Us</a>
+            </el-col>
+            <el-col :span="2" style="text-align: right">
+              0.51
             </el-col>
           </el-row>
         </el-footer>
