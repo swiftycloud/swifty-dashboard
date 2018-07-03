@@ -10,7 +10,7 @@ export default {
         id: 0,
         name: 'Empty Function',
         description: 'Create your own function',
-        language: 'any',
+        language: 'python',
         source: '',
         args: {}
       },
@@ -73,6 +73,19 @@ export default {
                 '    return ["message": "hw:swift:" + args["name"]!]\n' +
                 '}',
         args: { name: 'username' }
+      },
+
+      {
+        id: 5,
+        name: 'Base Template',
+        description: 'Create your own function',
+        language: 'golang',
+        source: 'package main\n' +
+                '\n' +
+                'func Main(args map[string]string) interface{} {\n' +
+                '    return ""\n' +
+                '}',
+        args: {}
       }
     ],
 
