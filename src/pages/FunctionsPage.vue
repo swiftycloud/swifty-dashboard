@@ -318,20 +318,13 @@ export default {
         this.loading = true
 
         var promises = []
-        this.multipleSelection.forEach((self) => {
-          promises.push(
-            this.$store.dispatch('deleteFunctionByID', self.id).catch(error => {
-              this.$notify.error({
-                title: 'Error',
-                message: error.response.data.message
-              })
-            })
-          )
+        this.multipleSelection.forEach(item => {
+          promises.push(item.delete())
         })
 
         return Promise.all(promises)
       }).then(() => {
-        return this.$store.dispatch('fetchFunctions', this.$store.getters.currentProject)
+        return this.functions.fetch()
       }).catch(() => {
         // ..
       }).finally(() => {
