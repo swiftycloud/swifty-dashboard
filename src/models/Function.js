@@ -27,6 +27,7 @@ export class Function extends Model {
     return {
       fetch: '/functions/{id}',
       save: '/functions',
+      delete: '/functions/{id}',
       state: '/functions/{id}/state',
       authctx: '/functions/{id}/authctx'
     }
