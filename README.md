@@ -3,8 +3,8 @@
 ## Docker Setup
 ``` bash
 # configure an API client
-cp src/api/config.example.js src/api/config.js
-vi src/api/config.js
+cp swifty.config.json.example swifty.config.json
+vi swifty.config.json
 
 # set up nginx
 cp nginx.conf.example nginx.conf
