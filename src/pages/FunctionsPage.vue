@@ -111,13 +111,13 @@ Contact: info@swifty.cloud
             sortable>
             <template slot-scope="scope">
               <el-tooltip
-                v-if="scope.row.lastcall"
+                v-if="scope.row.stats[0].lastcall"
                 effect="dark"
-                :content="scope.row.lastcall | moment('YYYY-MM-DD HH:mm:ss')"
+                :content="scope.row.stats[0].lastcall | moment('YYYY-MM-DD HH:mm:ss')"
                 placement="right">
-                <span v-if="'lastcall' in scope.row">{{ scope.row.lastcall | moment('from', 'now') }}</span>
+                <span v-if="'lastcall' in scope.row.stats[0]">{{ scope.row.stats[0].lastcall | moment('from', 'now') }}</span>
               </el-tooltip>
-              <span v-if="scope.row.lastcall === undefined">never</span>
+              <span v-if="!('lastcall' in scope.row.stats[0])">never</span>
             </template>
           </el-table-column>
         </el-table>
