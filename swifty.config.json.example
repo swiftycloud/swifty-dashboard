@@ -2,5 +2,6 @@
   "API_GATE_ENDPOINT": "",
   "API_ADMD_ENDPOINT": "",
   "API_USERNAME": "",
-  "API_PASSWORD": ""
+  "API_PASSWORD": "",
+  "API_S3_SSL_ENABLED": true
 }
