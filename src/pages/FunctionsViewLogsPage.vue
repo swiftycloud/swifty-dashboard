@@ -7,7 +7,10 @@ Contact: info@swifty.cloud
 
 <template>
   <div v-loading="loading">
-    <p>Function log</p>
+    <p>
+      Function log
+      <a href="#" class="download-link">Download as ZIP</a>
+    </p>
 
     <ul class="logs">
       <li v-for="(line, k) in logs" v-key="k">
@@ -70,5 +73,10 @@ export default {
 
 .logs__text {
   color: #9b9b9b;
+}
+
+.download-link {
+  color: #1989fa;
+  margin-left: 30px;
 }
 </style>
