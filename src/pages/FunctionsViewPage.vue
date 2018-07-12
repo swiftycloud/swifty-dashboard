@@ -12,6 +12,7 @@ Contact: info@swifty.cloud
       <el-tab-pane label="Resources" name="resources"></el-tab-pane>
       <el-tab-pane label="Middleware" name="middleware"></el-tab-pane>
       <el-tab-pane label="Triggers" name="triggers"></el-tab-pane>
+      <el-tab-pane label="Logs" name="logs"></el-tab-pane>
     </el-tabs>
 
     <router-view></router-view>

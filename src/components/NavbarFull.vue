@@ -20,13 +20,14 @@ Contact: info@swifty.cloud
       <el-breadcrumb-item>{{ mainPageTitle }}</el-breadcrumb-item>
     </el-breadcrumb>
 
+    <a href="https://swifty.cloud/blog/" target="_blank" class="help-link">Help</a>
 
     <div class="navbar-forms">
-      <el-form :inline="true" class="search-form">
+      <!-- <el-form :inline="true" class="search-form">
         <el-form-item>
           <el-input placeholder="Search"></el-input>
         </el-form-item>
-      </el-form>
+      </el-form> -->
 
       <el-form :inline="true" class="project-form">
         <el-form-item label="Project: ">
@@ -77,3 +78,13 @@ export default {
   }
 }
 </script>
+
+<style>
+  .help-link {
+    position: absolute;
+    right: 0;
+    margin-right: 310px;
+    line-height: 64px;
+    color: #fff !important;
+  }
+</style>
