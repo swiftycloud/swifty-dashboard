@@ -49,6 +49,7 @@ export default {
         state: resource(config.API_GATE_ENDPOINT + '/functions/' + fid + '/state'),
         s3buckets: resource(config.API_GATE_ENDPOINT + '/functions/' + fid + '/s3buckets'),
         authctx: resource(config.API_GATE_ENDPOINT + '/functions/' + fid + '/authctx'),
+        logs: resource(config.API_GATE_ENDPOINT + '/functions/' + fid + '/logs'),
 
         // actions
         run: data => axios.post(config.API_GATE_ENDPOINT + '/functions/' + fid + '/run', data),

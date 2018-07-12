@@ -29,7 +29,8 @@ export class Function extends Model {
       save: '/functions',
       delete: '/functions/{id}',
       state: '/functions/{id}/state',
-      authctx: '/functions/{id}/authctx'
+      authctx: '/functions/{id}/authctx',
+      logs: '/functions/{id}/logs'
     }
   }
 
@@ -57,6 +58,14 @@ export class Function extends Model {
     let data = '"' + value + '"'
 
     return this.getRequest({ method, url, data }).send()
+  }
+
+  logs () {
+    let method = 'GET'
+    let route = this.getRoute('logs')
+    let url = this.getURL(route, { id: this.id })
+
+    return this.getRequest({ method, url }).send()
   }
 }
 

@@ -16,6 +16,7 @@ const FunctionsViewCodePage = () => import(/* webpackChunkName: "functions" */ '
 const FunctionsViewResourcesPage = () => import(/* webpackChunkName: "functions" */ '@/pages/FunctionsViewResourcesPage')
 const FunctionsViewMiddlewarePage = () => import(/* webpackChunkName: "functions" */ '@/pages/FunctionsViewMiddlewarePage')
 const FunctionsViewTriggersPage = () => import(/* webpackChunkName: "functions" */ '@/pages/FunctionsViewTriggersPage')
+const FunctionsViewLogsPage = () => import(/* webpackChunkName: "functions" */ '@/pages/FunctionsViewLogsPage')
 const BucketsPage = () => import(/* webpackChunkName: "s3" */ '@/pages/BucketsPage')
 const BucketsViewPage = () => import(/* webpackChunkName: "s3" */ '@/pages/BucketsViewPage')
 const MariaDBPage = () => import(/* webpackChunkName: "mware" */ '@/pages/MariaDBPage')
@@ -64,7 +65,8 @@ export default new Router({
         { path: 'code', name: 'functions.view.code', component: FunctionsViewCodePage },
         { path: 'resources', name: 'functions.view.resources', component: FunctionsViewResourcesPage },
         { path: 'middleware', name: 'functions.view.middleware', component: FunctionsViewMiddlewarePage },
-        { path: 'triggers', name: 'functions.view.triggers', component: FunctionsViewTriggersPage }
+        { path: 'triggers', name: 'functions.view.triggers', component: FunctionsViewTriggersPage },
+        { path: 'logs', name: 'functions.view.logs', component: FunctionsViewLogsPage }
       ]
     },
     {
