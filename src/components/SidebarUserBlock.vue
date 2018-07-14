@@ -1,4 +1,4 @@
-<!-- 
+<!--
 
 © 2018 SwiftyCloud OÜ. All rights reserved.
 Contact: info@swifty.cloud
@@ -24,7 +24,7 @@ Contact: info@swifty.cloud
       </span>
       <el-dropdown-menu slot="dropdown">
         <el-dropdown-item command="logout">Log Out</el-dropdown-item>
-        <el-dropdown-item>Change Settings</el-dropdown-item>
+        <!--<el-dropdown-item>Change Settings</el-dropdown-item>-->
       </el-dropdown-menu>
     </el-dropdown>
   </div>

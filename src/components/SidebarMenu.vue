@@ -1,4 +1,4 @@
-<!-- 
+<!--
 
 © 2018 SwiftyCloud OÜ. All rights reserved.
 Contact: info@swifty.cloud
@@ -9,6 +9,7 @@ Contact: info@swifty.cloud
   <nav class="sidebar-menu">
     <!--<router-link to="/" class="nav-link" active-class="active" exact><a><i class="fa el-icon-arrow-right"></i>Overview</a></router-link>-->
     <router-link to="/functions" class="nav-link" active-class="active" exact><a><i class="fa el-icon-arrow-right"></i>Functions</a></router-link>
+    <div class="divider"></div>
     <!--<a href="#/functions" class="nav-link"><i class="fa fa-square"></i> <span>Functions</span></a>-->
     <router-link to="/storage" class="nav-link" active-class="active" exact><a><i class="fa el-icon-arrow-right"></i>Object Storage</a></router-link>
     <router-link to="/mariadb" class="nav-link" active-class="active" exact><a><i class="fa el-icon-arrow-right"></i>Maria Database</a></router-link>
