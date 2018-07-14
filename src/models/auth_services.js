@@ -3,10 +3,9 @@
   Contact: info@swifty.cloud
 */
 
-import Model from '@/models/Model'
-import Collection from '@/models/Collection'
+import { CustomModel, CustomCollection } from '@/models'
 
-export class AuthService extends Model {
+export class AuthService extends CustomModel {
   defaults () {
     return {
       id: null,
@@ -24,7 +23,7 @@ export class AuthService extends Model {
   }
 }
 
-export class AuthServiceList extends Collection {
+export class AuthServiceList extends CustomCollection {
   model () {
     return AuthService
   }

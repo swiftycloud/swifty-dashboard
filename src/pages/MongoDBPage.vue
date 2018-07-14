@@ -68,7 +68,7 @@ Contact: info@swifty.cloud
 </template>
 
 <script>
-import { Middleware, MiddlewareList } from '@/models/Middleware'
+import { Middleware, MiddlewareList } from '@/models/middlewares'
 
 export default {
   data () {

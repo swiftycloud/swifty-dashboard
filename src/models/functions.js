@@ -3,10 +3,9 @@
   Contact: info@swifty.cloud
 */
 
-import Model from '@/models/Model'
-import Collection from '@/models/Collection'
+import { CustomModel, CustomCollection } from '@/models'
 
-export class Function extends Model {
+export class FunctionModel extends CustomModel {
   defaults () {
     return {
       id: null,
@@ -69,9 +68,9 @@ export class Function extends Model {
   }
 }
 
-export class FunctionList extends Collection {
+export class FunctionCollection extends CustomCollection {
   model () {
-    return Function
+    return FunctionModel
   }
 
   defaults () {
