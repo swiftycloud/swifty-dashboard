@@ -161,8 +161,8 @@ Contact: info@swifty.cloud
 <script>
 import api from '@/api'
 
-import { FunctionList } from '@/models/Function'
-import { AuthServiceList } from '@/models/AuthService'
+import { FunctionList } from '@/models/functions'
+import { AuthServiceList } from '@/models/auth_services'
 
 export default {
   data () {

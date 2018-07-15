@@ -3,10 +3,9 @@
   Contact: info@swifty.cloud
 */
 
-import Model from '@/models/Model'
-import Collection from '@/models/Collection'
+import { CustomModel, CustomCollection } from '@/models'
 
-export class Middleware extends Model {
+export class Middleware extends CustomModel {
   defaults () {
     return {
       id: null,
@@ -24,7 +23,7 @@ export class Middleware extends Model {
   }
 }
 
-export class MiddlewareList extends Collection {
+export class MiddlewareList extends CustomCollection {
   model () {
     return Middleware
   }

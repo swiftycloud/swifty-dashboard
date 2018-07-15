@@ -13,8 +13,8 @@ Contact: info@swifty.cloud
     </p>
 
     <ul class="logs">
-      <li v-for="(line, k) in logs" v-key="k">
-        <span class="logs__datetime">{{ line.ts }}</span>
+      <li v-for="(line, key) in logs" :key="key" :class="'logs__line ' + line.event.split('.').join(' ')">
+        <span class="logs__datetime">{{ line.ts | moment("D/MM/YYYY H:m:s") }}</span>
         <span class="logs__event">{{ line.event}}</span>
         <span class="logs__text">{{ line.text }}</span>
       </li>
@@ -23,35 +23,31 @@ Contact: info@swifty.cloud
 </template>
 
 <script>
-import api from '@/api'
+import { FunctionModel } from '@/models/functions'
 
 export default {
   data () {
     return {
-      logs: '',
+      function: new FunctionModel(),
+      logs: [],
       loading: true
     }
   },
   created () {
     this.$store.dispatch('setParentPage', { name: 'functions', title: 'Functions' })
     this.$store.dispatch('setFunctionActiveTab', 'logs')
-    this.fetchLogs()
-  },
-  methods: {
-    fetchLogs () {
-      this.loading = true
 
-      return api.functions.one(this.$route.params.fid).logs.get().then(response => {
-        this.logs = response.data
-      }).finally(() => {
-        this.loading = false
-      })
-    }
+    this.function.id = this.$route.params.fid
+    this.function.logs().then(response => {
+      this.logs = response.response.data
+    }).finally(() => {
+      this.loading = false
+    })
   }
 }
 </script>
 
-<style>
+<style lang="scss">
 .logs {
   list-style: none;
   margin: 0;
@@ -63,16 +59,21 @@ export default {
   background: #000;
 }
 
-.logs__datetime {
-  color: #d0021b;
-}
-
-.logs__event {
-  color: #fff;
-}
-
-.logs__text {
+.logs__line {
   color: #9b9b9b;
+  margin-bottom: 5px;
+
+  &.stdout {
+    color: #fff;
+  }
+
+  &.stderr {
+    color: #d0021b;
+  }
+
+  .logs__text {
+    word-break: break-all;
+  }
 }
 
 .download-link {
