@@ -68,7 +68,7 @@ export class FunctionModel extends CustomModel {
   }
 }
 
-export class FunctionCollection extends CustomCollection {
+export class FunctionList extends CustomCollection {
   model () {
     return FunctionModel
   }

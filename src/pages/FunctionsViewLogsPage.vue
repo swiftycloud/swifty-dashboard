@@ -13,8 +13,8 @@ Contact: info@swifty.cloud
     </p>
 
     <ul class="logs">
-      <li v-for="(line, key) in logs" :key="key" :class="'logs__line_' + line.event">
-        <span class="logs__datetime">{{ line.ts }}</span>
+      <li v-for="(line, key) in logs" :key="key" :class="'logs__line ' + line.event.split('.').join(' ')">
+        <span class="logs__datetime">{{ line.ts | moment("D/MM/YYYY H:m:s") }}</span>
         <span class="logs__event">{{ line.event}}</span>
         <span class="logs__text">{{ line.text }}</span>
       </li>
@@ -47,7 +47,7 @@ export default {
 }
 </script>
 
-<style>
+<style lang="scss">
 .logs {
   list-style: none;
   margin: 0;
@@ -57,15 +57,23 @@ export default {
   line-height: 14px;
 
   background: #000;
-  color: #fff;
 }
 
-.logs__line_call {
+.logs__line {
   color: #9b9b9b;
-}
+  margin-bottom: 5px;
 
-.logs__text {
-  word-break: break-all;
+  &.stdout {
+    color: #fff;
+  }
+
+  &.stderr {
+    color: #d0021b;
+  }
+
+  .logs__text {
+    word-break: break-all;
+  }
 }
 
 .download-link {
