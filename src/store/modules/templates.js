@@ -42,7 +42,7 @@ export default {
                 '           cursor.execute("CREATE TABLE `data` (`key` VARCHAR(64), `val` VARCHAR(64))")\n' +
                 '            res = "done"\n' +
                 '        elif req.args[\'action\'] == \'insert\':\n' +
-                '            cursor.execute("INSERT INTO `data` (`key`, `val`) VALUES (%s, %s)", (req.args[\'key\'], req.args['val']))\n' +
+                '            cursor.execute("INSERT INTO `data` (`key`, `val`) VALUES (%s, %s)", (req.args[\'key\'], req.args[\'val\']))\n' +
                 '            res = "done"\n' +
                 '        elif req.args[\'action\'] == \'select\':\n' +
                 '            cursor.execute("SELECT `val` FROM `data` WHERE `key` = %s", (req.args[\'key\'],))\n' +
@@ -50,9 +50,9 @@ export default {
                 '    db.commit()\n' +
                 '    return { "res": res }, None',
         args: {
-            db: '<ID of mware attached>',
-            table: 'mytable'
-          }
+          db: '<ID of mware attached>',
+          table: 'mytable'
+        }
       },
 
       {
