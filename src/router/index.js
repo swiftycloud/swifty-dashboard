@@ -27,6 +27,7 @@ const StatsObjectStoragePage = () => import(/* webpackChunkName: "stats" */ '@/p
 const StatsMongoPage = () => import(/* webpackChunkName: "stats" */ '@/pages/StatsMongoPage')
 const StatsMariaPage = () => import(/* webpackChunkName: "stats" */ '@/pages/StatsMariaPage')
 const AuthServicePage = () => import(/* webpackChunkName: "authservice" */ '@/pages/AuthServicePage')
+const RepositoriesPage = () => import(/* webpackChunkName: "repositories" */ '@/pages/RepositoriesPage')
 
 Vue.use(Router)
 
@@ -109,6 +110,11 @@ export default new Router({
       path: '/auth',
       name: 'auth',
       component: AuthServicePage
+    },
+    {
+      path: '/repositories',
+      name: 'repositories',
+      component: RepositoriesPage
     }
   ]
 })
