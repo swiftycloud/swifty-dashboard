@@ -19,6 +19,10 @@ body {
 
 a, a:hover, a:visited, a:focus {
   color: #303133;
+
+  &.primary {
+    color: #1989fa;
+  }
 }
 
 hr {
@@ -275,7 +279,7 @@ hr {
       font-size: 14px;
       text-decoration: none;
 
-      color: rgba(48, 49, 51, 0.87);
+      color: #303133;
 
       &:first-child {
         margin-top: 8px;

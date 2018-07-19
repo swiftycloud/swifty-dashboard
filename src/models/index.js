@@ -17,6 +17,19 @@ export class CustomModel extends Model {
 
     return super.getRequest(config)
   }
+
+  options () {
+    return {
+      methods: {
+        'fetch': 'GET',
+        'save': 'POST',
+        'update': 'PUT',
+        'create': 'POST',
+        'patch': 'PATCH',
+        'delete': 'DELETE'
+      }
+    }
+  }
 }
 
 export class CustomCollection extends Collection {

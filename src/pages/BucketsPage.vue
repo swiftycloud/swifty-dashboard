@@ -63,7 +63,7 @@ Contact: info@swifty.cloud
           <code>{{ credentials.secret }}</code>
         </el-form-item>
         <el-form-item label="API Endpoint:" style="margin-bottom: 0" v-if="credentials.secret">
-          <code>https://api.swifty.cloud:8787</code>
+          <code>{{ credentials.protocol }}{{ credentials.endpoint }}</code>
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer text-left">
@@ -75,6 +75,8 @@ Contact: info@swifty.cloud
 </template>
 
 <script>
+import config from '@/api/config'
+
 export default {
   data () {
     return {
@@ -84,7 +86,9 @@ export default {
       credentials: {
         expires: 30 * 24 * 60 * 60, // 30 days
         key: null,
-        secret: null
+        secret: null,
+        endpoint: null,
+        protocol: config.API_S3_SSL_ENABLED ? 'https://' : 'http://'
       },
       s3DialogLoading: false
     }
@@ -173,6 +177,7 @@ export default {
       this.credentials.expires = 30 * 24 * 60 * 60
       this.credentials.key = null
       this.credentials.secret = null
+      this.credentials.endpoint = null
       this.credentialsDialogVisible = false
     },
 
@@ -184,6 +189,7 @@ export default {
       }).then(response => {
         this.credentials.key = response.data.key
         this.credentials.secret = response.data.secret
+        this.credentials.endpoint = response.data.endpoint
         this.credentialsDialogVisible = true
       }).catch(error => {
         this.$notify.error({
