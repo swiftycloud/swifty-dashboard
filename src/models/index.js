@@ -21,12 +21,12 @@ export class CustomModel extends Model {
   options () {
     return {
       methods: {
-          "fetch":  "GET",
-          "save":   "POST",
-          "update": "PUT",
-          "create": "POST",
-          "patch":  "PATCH",
-          "delete": "DELETE",
+        'fetch': 'GET',
+        'save': 'POST',
+        'update': 'PUT',
+        'create': 'POST',
+        'patch': 'PATCH',
+        'delete': 'DELETE'
       }
     }
   }
