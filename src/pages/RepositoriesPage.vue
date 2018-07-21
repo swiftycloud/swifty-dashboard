@@ -258,9 +258,9 @@ export default {
   text-align: center;
 }
 
-.repo-link, 
-.repo-link:hover,
-.repo-link:focus {
+.el-button.repo-link, 
+.el-button.repo-link:hover,
+.el-button.repo-link:focus {
   color: #303133;
   text-transform: none;
   padding: 0;

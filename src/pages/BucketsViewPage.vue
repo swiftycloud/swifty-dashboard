@@ -497,9 +497,9 @@ export default {
     text-align: center;
   }
 
-  .bucket-object-link, 
-  .bucket-object-link:hover,
-  .bucket-object-link:focus {
+  .el-button.bucket-object-link, 
+  .el-button.bucket-object-link:hover,
+  .el-button.bucket-object-link:focus {
     color: #303133;
     text-transform: none;
     padding: 0;
