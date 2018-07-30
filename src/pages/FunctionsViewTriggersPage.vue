@@ -631,7 +631,7 @@ export default {
 .trigger-link:focus {
   color: #303133;
   text-transform: none;
-  padding: 0;
+  padding: 0 !important;
 }
 
 .copy-text-input {
