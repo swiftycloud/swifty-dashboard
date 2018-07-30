@@ -17,7 +17,7 @@ Contact: info@swifty.cloud
     <router-link to="/mongodb" class="nav-link" active-class="active" exact><i class="fa el-icon-arrow-right"></i>Mongo Database</router-link>
     <router-link to="/auth" class="nav-link" active-class="active" exact><i class="fa el-icon-arrow-right"></i>Authentication Service</router-link>
     <div class="divider"></div>    
-    <router-link :to="{ name: 'repositories' }" class="nav-link" active-class="active" exact><i class="fa el-icon-arrow-right"></i>Repositories</router-link>
+    <!-- <router-link :to="{ name: 'repositories' }" class="nav-link" active-class="active" exact><i class="fa el-icon-arrow-right"></i>Repositories</router-link> -->
     <router-link :to="{ name: 'stats.func' }" class="nav-link" active-class="active" exact><i class="fa el-icon-arrow-right"></i>Statistics</router-link>
     <!--<router-link to="/settings" class="nav-link" active-class="active" exact><i class="fa el-icon-arrow-right"></i>Settings</router-link>-->
   </nav>
