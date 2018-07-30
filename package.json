@@ -19,6 +19,7 @@
     "lodash": "^4.17.10",
     "moment-timezone": "^0.5.16",
     "vue": "^2.5.16",
+    "vue-api-query": "^1.0.0",
     "vue-codemirror": "^4.0.5",
     "vue-filter-pretty-bytes": "^0.1.1",
     "vue-mc": "^0.2.4",

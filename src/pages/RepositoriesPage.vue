@@ -9,18 +9,20 @@ Contact: info@swifty.cloud
   <div class="page-content">
     <p>Here you can manage your remote repositories</p>
 
-    <div class="row">
-      <div class="col">
-        <div class="actions-block">
-          <el-button type="primary" size="medium" @click="importNewRepoFormDialog = true">Attach repo</el-button>
-        </div>
-      </div>
+    <actions-block>
+      <el-button type="primary" size="medium" @click="showAttachRepoDialog">Attach Repo</el-button>
+    </actions-block>
+
+    <div class="labels">
+      <el-button plain size="mini" @click="label = 'all'">All</el-button>
+      <el-button plain size="mini" @click="label = 'connected'">Connected</el-button>
+      <el-button :plain="label != 'not connected'" size="mini" @click="label = 'not connected'" type="primary">Not connected</el-button>
     </div>
 
-    <div class="row">
+    <div class="row" v-loading="loading">
       <div class="col">
         <el-table
-          :data="repositories.models"
+          :data="repositories"
           ref="multipleTable"
           style="width: 100%">
           <div slot="empty">
@@ -60,78 +62,60 @@ Contact: info@swifty.cloud
             prop="state"
             label="Status"
             sortable>
+            <template slot-scope="scope">
+              <el-button type="default" size="mini">{{ scope.row.state }}</el-button>
+            </template>
           </el-table-column>
         </el-table>
       </div>
     </div>
 
     <el-dialog
-      title="Import New Repository"
-      :visible.sync="importNewRepoFormDialog">
+      title="Add new repository"
+      :visible.sync="attachRepoDialogVisibility">
       <el-form label-width="170px">
         <el-form-item label="Repository Type">
           <el-select v-model="form.type">
             <el-option label="GitHub" value="github"></el-option>
-            <el-option label="Repo by URL" value="url"></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="Personal Access Token" v-if="form.type === 'github'">
+        <el-form-item label="Personal Access Token" v-if="form.type === 'github'" style="margin-bottom: 0;">
           <el-input v-model="form.token" placeholder="xhgchxcgyycxtcve536dfvdtf5vhsc63vv36v"></el-input>
         </el-form-item>
-        <el-form-item label="Git Repository URL" v-if="form.type === 'url'" style="margin-bottom: 0">
-          <el-input v-model="form.url" placeholder="https://username:password@gitlab.company.com/group/project.git"></el-input>
+        <el-form-item label style="margin-bottom: 0;">
+          or
         </el-form-item>
-        <el-form-item v-if="form.type === 'url'">
-          <el-checkbox label="Mirror repository automatically" v-model="form.mirror"></el-checkbox>
-          <el-popover
-            ref="mirror"
-            placement="right"
-            title="Repository Mirroring"
-            width="400"
-            trigger="hover">
-            Automatically update this project's branches and tags from the upstream repository every hour. The Git LFS objects will not be synced.<br><a href='#' class="primary">More details</a>
-
-            <span class="fa-stack mirror-info" slot="reference">
-              <i class="fa fa-circle-thin fa-stack-2x"></i>
-              <i class="fa fa-info fa-stack-1x"></i>
-            </span>
-          </el-popover>
+        <el-form-item label="GitHub account name" v-if="form.type === 'github'">
+          <el-input v-model="form.user" placeholder="swifty"></el-input>
         </el-form-item>
       </el-form>
       <p v-if="form.type === 'github'">
         To integrate with GitHub you need to generate a <a href="#" class="primary">Personal Access Token</a>. When you create your Personal Access Token, you will need to select the repo scope, so we can display a list of your public and private repositories which are available to connect.
       </p>
-
-      <p v-if="form.type === 'url'">
-        The repository must be accessible over http://, https:// or git://.<br>
-        If your HTTP repository is not publicly accessible, add authentication information to the URL like: 
-        https://username:password@gitlab.company.com/group/project.git.<br>
-        The import will time out after 180 minutes 0 seconds. For repositories that take longer, use a clone/push combination.
-      </p>
       <span slot="footer" class="dialog-footer text-left">
-        <el-button @click="importNewRepoFormDialog = false">Cancel</el-button>
-        <el-button type="primary" v-if="form.type === 'github'" :disabled="!form.token">Next</el-button>
-        <el-button type="primary" v-if="form.type === 'url'" @click="attachRepoByURL" :disabled="!form.url">Done</el-button>
+        <el-button @click="cancelAddAccountDialog">Cancel</el-button>
+        <el-button type="primary" v-if="form.type === 'github'" :disabled="!form.token && !form.user" @click="addAccount">Next</el-button>
       </span>
     </el-dialog>
 
     <el-dialog
-      title="Repository Settings"
-      :visible.sync="settingsRepoFormDialog">
+      title="Select Repository"
+      :visible.sync="selectRepoDialogVisibility">
+      <p>Repository Name</p>
+      <span slot="footer" class="dialog-footer text-left">
+        <el-button @click="cancelSelectRepoDialog">Cancel</el-button>
+        <el-button type="primary" @click="cancelSelectRepoDialog">Done</el-button>
+      </span>
+    </el-dialog>
+
+    <el-dialog
+      title="Add Remote Repository Using URL"
+      :visible.sync="addRepoByURLDialogVisibility">
       <el-form label-width="170px">
-        <el-form-item label="Repository Type">
-          <el-select v-model="form.type">
-            <el-option label="GitHub" value="github"></el-option>
-            <el-option label="Repo by URL" value="url"></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="Personal Access Token" v-if="form.type === 'github'">
-          <el-input v-model="form.token" placeholder="xhgchxcgyycxtcve536dfvdtf5vhsc63vv36v"></el-input>
-        </el-form-item>
-        <el-form-item label="Git Repository URL" v-if="form.type === 'url'" style="margin-bottom: 0">
+        <el-form-item label="Git Repository URL" style="margin-bottom: 0">
           <el-input v-model="form.url" placeholder="https://username:password@gitlab.company.com/group/project.git"></el-input>
         </el-form-item>
-        <el-form-item v-if="form.type === 'url'">
+        <el-form-item>
           <el-checkbox label="Mirror repository automatically" v-model="form.mirror"></el-checkbox>
           <el-popover
             ref="mirror"
@@ -148,41 +132,50 @@ Contact: info@swifty.cloud
           </el-popover>
         </el-form-item>
       </el-form>
-      <p v-if="form.type === 'github'">
-        To integrate with GitHub you need to generate a <a href="#" class="primary">Personal Access Token</a>. When you create your Personal Access Token, you will need to select the repo scope, so we can display a list of your public and private repositories which are available to connect.
-      </p>
 
-      <p v-if="form.type === 'url'">
+      <p>
         The repository must be accessible over http://, https:// or git://.<br>
         If your HTTP repository is not publicly accessible, add authentication information to the URL like: 
         https://username:password@gitlab.company.com/group/project.git.<br>
         The import will time out after 180 minutes 0 seconds. For repositories that take longer, use a clone/push combination.
       </p>
       <span slot="footer" class="dialog-footer text-left">
-        <el-button @click="settingsRepoFormDialog = false">Cancel</el-button>
-        <el-button type="primary" v-if="form.type === 'github'" :disabled="!form.token">Next</el-button>
-        <el-button type="primary" v-if="form.type === 'url'" @click="updateRepoByURL" :disabled="!form.url">Done</el-button>
+        <el-button @click="cancelAddRepoByURLDialog">Cancel</el-button>
+        <el-button type="primary" :disabled="!form.url" @click="addRepoByURL">Add</el-button>
       </span>
     </el-dialog>
   </div>
 </template>
 
 <script>
-import { RepositoryList, Repository } from '@/models/repositories'
+import ActionsBlock from '@/components/ActionsBlock'
+
+import Repository from '@/models/Repository'
+import RepoAccount from '@/models/RepoAccount'
 
 export default {
+  components: { ActionsBlock },
   data () {
     return {
-      repositories: new RepositoryList(),
+      loading: true,
+
+      repositories: [],
+      accounts: [],
 
       form: {
         id: null,
-        type: 'url',
+        type: 'github',
         token: '',
+        user: '',
         url: '',
         mirror: true
       },
-      importNewRepoFormDialog: false,
+
+      label: 'all',
+
+      selectRepoDialogVisibility: false,
+      attachRepoDialogVisibility: false,
+      addRepoByURLDialogVisibility: false,
       settingsRepoFormDialog: false
     }
   },
@@ -190,31 +183,97 @@ export default {
   created () {
     this.$store.dispatch('setPageTitle', 'Repositories')
 
-    this.repositories.fetch()
+    this.fetchRepositories()
+    this.fetchAccounts()
   },
 
   methods: {
-    attachRepoByURL () {
+    fetchRepositories () {
+      this.loading = true
+      return Repository.get().then(repositories => {
+        this.repositories = repositories
+      }).finally(() => {
+        this.loading = false
+      })
+    },
+
+    fetchAccounts () {
+      this.loading = true
+      return RepoAccount.get().then(accounts => {
+        this.accounts = accounts
+      }).finally(() => {
+        this.loading = false
+      })
+    },
+
+    resetFormData () {
+      this.form.id = null
+      this.form.type = 'github'
+      this.form.token = ''
+      this.form.user = ''
+      this.form.url = ''
+      this.form.mirror = true
+    },
+
+    showAttachRepoDialog () {
+      this.resetFormData()
+      this.attachRepoDialogVisibility = true
+    },
+
+    showAddRepoByURLDialog () {
+      this.resetFormData()
+      this.addRepoByURLDialogVisibility = true
+    },
+
+    showSelectRepoDialog () {
+      this.selectRepoDialogVisibility = true
+    },
+
+    cancelAddAccountDialog () {
+      this.attachRepoDialogVisibility = false
+    },
+
+    cancelAddRepoByURLDialog () {
+      this.addRepoByURLDialogVisibility = false
+    },
+
+    cancelSelectRepoDialog () {
+      this.selectRepoDialogVisibility = false
+    },
+
+    addAccount () {
+      let account = new RepoAccount({
+        type: this.form.type,
+        name: this.form.user
+      })
+
+      account.save().then(account => {
+        this.cancelAddAccountDialog()
+        this.showSelectRepoDialog()
+      })
+    },
+
+    addRepoByURL () {
       let repo = new Repository({
         type: 'github',
         url: this.form.url
       })
 
       repo.save().finally(() => {
-        this.importNewRepoFormDialog = false
-        this.repositories.fetch()
+        this.cancelAddRepoByURLDialog()
+        this.fetchRepositories()
       })
     },
 
-    updateRepoByURL () {
-      let repo = new Repository({ id: this.form.id })
+    async updateRepoByURL () {
+      let repo = await Repository.find(this.form.id)
 
       repo.type = 'github'
       repo.url = this.form.url
 
       repo.save().finally(() => {
         this.settingsRepoFormDialog = false
-        this.repositories.fetch()
+        this.fetchRepositories()
       })
     },
 
@@ -235,7 +294,7 @@ export default {
       }).then(() => {
         return repo.delete()
       }).finally(() => {
-        this.repositories.fetch()
+        this.fetchRepositories()
       })
     }
   }
@@ -258,11 +317,19 @@ export default {
   text-align: center;
 }
 
-.repo-link, 
-.repo-link:hover,
-.repo-link:focus {
+.el-button.repo-link, 
+.el-button.repo-link:hover,
+.el-button.repo-link:focus {
   color: #303133;
   text-transform: none;
   padding: 0;
+}
+
+.labels {
+  margin-top: 20px;
+
+  .el-button {
+    text-transform: none;
+  }
 }
 </style>

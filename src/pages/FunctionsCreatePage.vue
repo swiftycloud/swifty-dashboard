@@ -111,7 +111,7 @@ export default {
           this.loading = true
 
           this.createFunction(this.form).then(response => {
-            this.$router.push({ name: 'functions.view.code', params: { fid: response.data } })
+            this.$router.push({ name: 'functions.view.code', params: { fid: response.data.id } })
           }).catch((error) => {
             this.form.project = this.$store.getters.project
             this.$notify.error({
