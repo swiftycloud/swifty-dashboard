@@ -141,10 +141,11 @@ export default {
 
       if (this.form.aid !== null) {
         account.id = this.form.aid
-      } else {
         await account.save()
-        this.form.aid = account.id
       }
+
+      await account.save()
+      this.form.aid = account.id
 
       Repository.params({
         aid: account.id
