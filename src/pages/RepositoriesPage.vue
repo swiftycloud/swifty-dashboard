@@ -62,6 +62,42 @@ Contact: info@swifty.cloud
             sortable>
           </el-table-column>
         </el-table>
+
+        <el-dialog
+          title="Repository Settings"
+          :visible.sync="settingsRepoFormDialog">
+            <el-form label-width="170px">
+              <el-form-item label="Git Repository URL" style="margin-bottom: 0">
+                <el-input v-model="form.url" placeholder="https://username:password@gitlab.company.com/group/project.git"></el-input>
+              </el-form-item>
+              <el-form-item>
+                <el-checkbox label="Mirror repository automatically" v-model="form.mirror"></el-checkbox>
+                <el-popover
+                  ref="mirror"
+                  placement="right"
+                  title="Repository Mirroring"
+                  width="400"
+                  trigger="hover">
+                  Automatically update this project's branches and tags from the upstream repository every hour. The Git LFS objects will not be synced.<br><a href='#' class="primary">More details</a>
+
+                  <span class="fa-stack mirror-info" slot="reference">
+                    <i class="fa fa-circle-thin fa-stack-2x"></i>
+                    <i class="fa fa-info fa-stack-1x"></i>
+                  </span>
+                </el-popover>
+              </el-form-item>
+            </el-form>
+            <p>
+              The repository must be accessible over http://, https:// or git://.<br>
+              If your HTTP repository is not publicly accessible, add authentication information to the URL like: 
+              https://username:password@gitlab.company.com/group/project.git.<br>
+              The import will time out after 180 minutes 0 seconds. For repositories that take longer, use a clone/push combination.
+            </p>
+            <span slot="footer" class="dialog-footer text-left">
+              <el-button @click="cancelSettingsFormModal">Cancel</el-button>
+              <el-button type="primary" @click="updateRepository">Done</el-button>
+            </span>
+        </el-dialog>
       </div>
     </div>
   </div>
@@ -84,10 +120,7 @@ export default {
       accounts: [],
 
       form: {
-        id: null,
-        type: 'github',
-        token: '',
-        user: '',
+        repo: null,
         url: '',
         mirror: true
       },
@@ -142,6 +175,25 @@ export default {
       }).then(() => {
         return repo.delete()
       }).finally(() => {
+        this.fetchRepositories()
+      })
+    },
+
+    openSettingsFormModal (repo) {
+      this.form.repo = repo
+      this.form.url = repo.url
+      this.settingsRepoFormDialog = true
+    },
+
+    cancelSettingsFormModal () {
+      this.settingsRepoFormDialog = false
+    },
+
+    updateRepository () {
+      this.form.repo.url = this.form.url
+      this.form.repo.pulling = this.form.mirror ? 'periodic' : null
+      this.form.repo.save().then(() => {
+        this.cancelSettingsFormModal()
         this.fetchRepositories()
       })
     }
