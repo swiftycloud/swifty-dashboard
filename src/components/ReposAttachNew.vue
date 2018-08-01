@@ -70,7 +70,7 @@ Contact: info@swifty.cloud
       <div v-if="form.step == 2">
         <ul class="repos">
           <li class="repos__item">Repository Name</li>
-          <li v-for="repo in repositories" class="repos__item">
+          <li v-for="repo in repositories" v-if="repo.url" class="repos__item">
             {{ repo.url }}
             <el-button plain type="primary" size="small" class="repos__button pull-right" v-if="repo.state === 'unattached'" @click="attachRepo(repo)">connect</el-button>
             <el-button plain type="success" size="small" class="repos__button pull-right" v-if="repo.state !== 'unattached'" @click="deattachRepo(repo)">connected</el-button>
@@ -102,6 +102,7 @@ export default {
         aid: null,
         url: null
       },
+      account: {},
       repositories: [],
       dialogTitle: 'Add new repository',
       loading: false
@@ -135,13 +136,15 @@ export default {
 
       let account = new RepoAccount({
         type: this.form.type,
-        token: this.form.token,
         name: this.form.user
       })
 
+      if (this.form.token.length === 40) {
+        account.token = this.form.token
+      }
+
       if (this.form.aid !== null) {
         account.id = this.form.aid
-        await account.save()
       }
 
       await account.save()
@@ -219,6 +222,6 @@ export default {
 }
 
 .repos__button {
-  margin-top: 8px;
+  margin-top: 8px !important;
 }
 </style>
