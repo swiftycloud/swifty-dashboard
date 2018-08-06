@@ -1,4 +1,4 @@
-<!-- 
+<!--
 
 © 2018 SwiftyCloud OÜ. All rights reserved.
 Contact: info@swifty.cloud
@@ -27,8 +27,7 @@ Contact: info@swifty.cloud
       <el-table-column
         prop="Name"
         label="Name"
-        sortable
-        width="120">
+        sortable>
         <template slot-scope="scope">
           <a href="#" @click.prevent="$router.push({ name: 'bucket.view', params: { name: scope.row.Name } })">{{ scope.row.Name }}</a>
         </template>
