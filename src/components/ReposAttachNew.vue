@@ -1,4 +1,4 @@
-<!-- 
+<!--
 
 © 2018 SwiftyCloud OÜ. All rights reserved.
 Contact: info@swifty.cloud
@@ -52,11 +52,11 @@ Contact: info@swifty.cloud
           </el-form-item>
         </el-form>
         <p v-if="form.type === 'github'">
-          To integrate with GitHub you need to generate a <a href="#" class="primary">Personal Access Token</a>. When you create your Personal Access Token, you will need to select the repo scope, so we can display a list of your public and private repositories which are available to connect.
+          To integrate with GitHub you need to generate a <a href="https://github.com/settings/tokens" class="primary">Personal Access Token</a>. When you create your Personal Access Token, you will need to select the repo scope, so we can display a list of your public and private repositories which are available to connect.
         </p>
         <p v-if="form.type === 'giturl'">
           The repository must be accessible over http://, https:// or git://.<br>
-          If your HTTP repository is not publicly accessible, add authentication information to the URL like: 
+          If your HTTP repository is not publicly accessible, add authentication information to the URL like:
           https://username:password@gitlab.company.com/group/project.git.<br>
           The import will time out after 180 minutes 0 seconds. For repositories that take longer, use a clone/push combination.
         </p>
