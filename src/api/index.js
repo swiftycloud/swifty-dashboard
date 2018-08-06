@@ -64,6 +64,17 @@ export default {
 
   deployments: resource(config.API_GATE_ENDPOINT + '/deployments'),
 
+  repos: resource(config.API_GATE_ENDPOINT + '/repos', {
+    one: (rid) => {
+      return {
+        files: resource(config.API_GATE_ENDPOINT + '/repos/' + rid + '/files'),
+
+        desc: () => axios.get(config.API_GATE_ENDPOINT + '/repos/' + rid + '/desc'),
+        pull: () => axios.post(config.API_GATE_ENDPOINT + '/repos/' + rid + '/pull')
+      }
+    }
+  }),
+
   requestApiToken () {
     return axios.post(config.API_ADMD_ENDPOINT + '/login', {
       username: config.API_USERNAME,
