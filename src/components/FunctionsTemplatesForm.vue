@@ -47,7 +47,7 @@ Contact: info@swifty.cloud
           </el-row>
 
           <el-row :gutter="20" class="template-radio-block">
-            <el-col :xs="24" :sm="24" :md="12" :lg="10" v-for="template in filteredTemplates" :key="template.name">
+            <el-col :xs="24" :sm="24" :md="12" :lg="10" v-for="template in paginatedTemplates" :key="template.name">
               <el-radio v-model="selectedTemplate" :label="template" border>
                 <p class="title">{{ template.name }}</p>
                 <p class="description">{{ template.desc }}</p>
@@ -55,13 +55,15 @@ Contact: info@swifty.cloud
             </el-col>
           </el-row>
 
-          <el-row v-if="filteredTemplates.length > 4">
+          <el-row v-if="pageCount > 0">
             <el-col :span="24">
               <el-pagination
-                :page-size="20"
-                :pager-count="11"
+                :page-size="pageSize"
+                :pager-count="10"
+                :page-count="pageCount"
                 layout="prev, pager, next"
-                :total="1000">
+                :total="filteredTemplates.length"
+                @current-change="setPage">
               </el-pagination>
             </el-col>
           </el-row>
@@ -184,6 +186,9 @@ export default {
       templates: [],
       templateSearch: '',
 
+      pageNumber: 0,
+      pageSize: 4,
+
       syncLoading: false,
       loading: false,
 
@@ -231,12 +236,27 @@ export default {
       })
     },
 
+    paginatedTemplates () {
+      const start = this.pageNumber * this.pageSize
+      const end = start + this.pageSize
+
+      return this.filteredTemplates.slice(start, end)
+    },
+
     repoWithFile () {
       return this.repoId + '/' + this.selectedTemplate.path
+    },
+
+    pageCount () {
+      return Math.floor(this.templates.length / this.pageSize)
     }
   },
 
   methods: {
+    setPage (number) {
+      this.pageNumber = (number - 1)
+    },
+
     fetchFilesByRepo (rid) {
       this.selectedTemplate.path = null
       api.repos.one(rid).files.get().then(response => {
