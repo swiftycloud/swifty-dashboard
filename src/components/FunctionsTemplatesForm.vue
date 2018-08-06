@@ -33,7 +33,8 @@ Contact: info@swifty.cloud
             </el-col>
             <el-col :xs="24" :sm="8" :md="6" :lg="4">          
               <el-form-item label-width="0">
-                <el-select placeholder="Please select language" v-model="form.code.lang" style="width: 100%">
+                <el-select placeholder="Please select language" v-model="filterLang" style="width: 100%">
+                  <el-option label="all" value="all"></el-option>
                   <el-option
                     v-for="(lang, k) in $store.getters.getFunctionLangs"
                     :label="lang"
@@ -164,7 +165,7 @@ export default {
         project: this.$store.getters.currentProject,
         name: null,
         sources: { type: 'git', repo: null, sync: false },
-        code: { lang: 'python' },
+        code: { lang: null },
         event: { source: 'url' },
         userdata: ''
       },
@@ -173,8 +174,10 @@ export default {
       repoId: null,
       selectedTemplate: {
         path: null,
-        name: null
+        name: null,
+        lang: null
       },
+      filterLang: 'all',
       previewCode: null,
       repos: [],
       step: 1,
@@ -224,7 +227,7 @@ export default {
       return this.templates.files.filter(file => {
         return (file.name.toLowerCase().includes(this.templateSearch.toLowerCase()) ||
           file.desc.toLowerCase().includes(this.templateSearch.toLowerCase())) &&
-          file.lang === this.form.code.lang
+          (file.lang === this.filterLang || this.filterLang === 'all')
       })
     },
 
@@ -245,9 +248,10 @@ export default {
       if (data.type === 'file') {
         if (this.selectedTemplate.path === data.path) {
           this.selectedTemplate.path = null
+          this.selectedTemplate.lang = null
         } else {
           this.selectedTemplate.path = data.path
-          this.form.code.lang = data.lang
+          this.selectedTemplate.lang = data.lang
         }
       }
     },
@@ -255,6 +259,7 @@ export default {
     nextForm () {
       api.repos.one(this.repoId).files.find(this.selectedTemplate.path).then(response => {
         this.previewCode = response.data
+        this.form.code.lang = this.selectedTemplate.lang
         this.step = 2
       }).catch(error => {
         this.$notify.error({
