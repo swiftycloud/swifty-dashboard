@@ -1,4 +1,4 @@
-<!-- 
+<!--
 
 © 2018 SwiftyCloud OÜ. All rights reserved.
 Contact: info@swifty.cloud
@@ -7,7 +7,7 @@ Contact: info@swifty.cloud
 
 <template>
   <div class="function-scratch-form">
-    <el-form ref="functionForm" label-width="160px" :model="form" :rules="rules" @submit="submitFunctionForm">
+    <el-form ref="functionForm" label-width="120px" :model="form" :rules="rules" @submit="submitFunctionForm">
       <el-row :gutter="20">
         <el-col :xs="24" :sm="18" :md="14" :lg="10">
           <el-form-item label="Name" prop="name">

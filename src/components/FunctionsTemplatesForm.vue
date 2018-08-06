@@ -1,4 +1,4 @@
-<!-- 
+<!--
 
 © 2018 SwiftyCloud OÜ. All rights reserved.
 Contact: info@swifty.cloud
@@ -7,7 +7,7 @@ Contact: info@swifty.cloud
 
 <template>
   <div class="functions-templates-form" v-loading="loading">
-    <el-form ref="functionForm" label-width="160px" :model="form" :rules="rules">
+    <el-form ref="functionForm" label-width="120px" :model="form" :rules="rules">
       <span v-if="step === 1">
         <el-row :gutter="20">
           <el-col :xs="24" :sm="18" :md="14" :lg="10">
@@ -23,7 +23,7 @@ Contact: info@swifty.cloud
             </el-form-item>
           </el-col>
         </el-row>
-    
+
         <span v-if="withDesc">
           <el-row :gutter="20">
             <el-col :xs="24" :sm="10" :md="8" :lg="6">
@@ -31,9 +31,10 @@ Contact: info@swifty.cloud
                 <el-input placeholder="Search" v-model="templateSearch"></el-input>
               </el-form-item>
             </el-col>
-            <el-col :xs="24" :sm="8" :md="6" :lg="4">          
+            <el-col :xs="24" :sm="8" :md="6" :lg="4">
               <el-form-item label-width="0">
-                <el-select placeholder="Please select language" v-model="form.code.lang" style="width: 100%">
+                <el-select placeholder="Please select language" v-model="filterLang" style="width: 100%">
+                  <el-option label="all" value="all"></el-option>
                   <el-option
                     v-for="(lang, k) in $store.getters.getFunctionLangs"
                     :label="lang"
@@ -46,7 +47,7 @@ Contact: info@swifty.cloud
           </el-row>
 
           <el-row :gutter="20" class="template-radio-block">
-            <el-col :xs="24" :sm="24" :md="12" :lg="10" v-for="template in filteredTemplates" :key="template.name">
+            <el-col :xs="24" :sm="24" :md="12" :lg="10" v-for="template in paginatedTemplates" :key="template.name">
               <el-radio v-model="selectedTemplate" :label="template" border>
                 <p class="title">{{ template.name }}</p>
                 <p class="description">{{ template.desc }}</p>
@@ -54,13 +55,15 @@ Contact: info@swifty.cloud
             </el-col>
           </el-row>
 
-          <el-row v-if="filteredTemplates.length > 4">
+          <el-row v-if="pageCount > 0">
             <el-col :span="24">
               <el-pagination
-                :page-size="20"
-                :pager-count="11"
+                :page-size="pageSize"
+                :pager-count="10"
+                :page-count="pageCount"
                 layout="prev, pager, next"
-                :total="1000">
+                :total="filteredTemplates.length"
+                @current-change="setPage">
               </el-pagination>
             </el-col>
           </el-row>
@@ -82,7 +85,7 @@ Contact: info@swifty.cloud
                 </span>
               </el-tree>
             </el-col>
-          </el-row>  
+          </el-row>
         </span>
 
         <el-row>
@@ -120,7 +123,7 @@ Contact: info@swifty.cloud
             </el-form-item>
 
             <el-form-item label="Language" prop="code.lang">
-              <el-select placeholder="Please select language" v-model="form.code.lang" style="width: 100%">
+              <el-select placeholder="Please select language" v-model="form.code.lang" style="width: 40%">
                 <el-option
                   v-for="(lang, k) in $store.getters.getFunctionLangs"
                   :label="lang"
@@ -130,7 +133,7 @@ Contact: info@swifty.cloud
               </el-select>
             </el-form-item>
 
-            <el-form-item label="Name" prop="name">
+            <el-form-item label="Name" prop="name" style="width: 60%">
               <el-input v-model="form.name" :autofocus="true"></el-input>
             </el-form-item>
 
@@ -164,7 +167,7 @@ export default {
         project: this.$store.getters.currentProject,
         name: null,
         sources: { type: 'git', repo: null, sync: false },
-        code: { lang: 'python' },
+        code: { lang: null },
         event: { source: 'url' },
         userdata: ''
       },
@@ -173,13 +176,18 @@ export default {
       repoId: null,
       selectedTemplate: {
         path: null,
-        name: null
+        name: null,
+        lang: null
       },
+      filterLang: 'all',
       previewCode: null,
       repos: [],
       step: 1,
       templates: [],
       templateSearch: '',
+
+      pageNumber: 0,
+      pageSize: 4,
 
       syncLoading: false,
       loading: false,
@@ -224,16 +232,31 @@ export default {
       return this.templates.files.filter(file => {
         return (file.name.toLowerCase().includes(this.templateSearch.toLowerCase()) ||
           file.desc.toLowerCase().includes(this.templateSearch.toLowerCase())) &&
-          file.lang === this.form.code.lang
+          (file.lang === this.filterLang || this.filterLang === 'all')
       })
+    },
+
+    paginatedTemplates () {
+      const start = this.pageNumber * this.pageSize
+      const end = start + this.pageSize
+
+      return this.filteredTemplates.slice(start, end)
     },
 
     repoWithFile () {
       return this.repoId + '/' + this.selectedTemplate.path
+    },
+
+    pageCount () {
+      return Math.floor(this.templates.length / this.pageSize)
     }
   },
 
   methods: {
+    setPage (number) {
+      this.pageNumber = (number - 1)
+    },
+
     fetchFilesByRepo (rid) {
       this.selectedTemplate.path = null
       api.repos.one(rid).files.get().then(response => {
@@ -245,9 +268,10 @@ export default {
       if (data.type === 'file') {
         if (this.selectedTemplate.path === data.path) {
           this.selectedTemplate.path = null
+          this.selectedTemplate.lang = null
         } else {
           this.selectedTemplate.path = data.path
-          this.form.code.lang = data.lang
+          this.selectedTemplate.lang = data.lang
         }
       }
     },
@@ -255,6 +279,7 @@ export default {
     nextForm () {
       api.repos.one(this.repoId).files.find(this.selectedTemplate.path).then(response => {
         this.previewCode = response.data
+        this.form.code.lang = this.selectedTemplate.lang
         this.step = 2
       }).catch(error => {
         this.$notify.error({
@@ -360,7 +385,7 @@ export default {
 .review-code {
   border-radius: 4px;
   border: solid 1px #dcdfe6;
-  padding: 10px;  
+  padding: 10px;
 
   overflow-y: auto;
   max-height: 350px;
