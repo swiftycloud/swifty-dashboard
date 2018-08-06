@@ -1,4 +1,4 @@
-<!-- 
+<!--
 
 © 2018 SwiftyCloud OÜ. All rights reserved.
 Contact: info@swifty.cloud
@@ -7,7 +7,7 @@ Contact: info@swifty.cloud
 
 <template>
   <div class="functions-templates-form" v-loading="loading">
-    <el-form ref="functionForm" label-width="160px" :model="form" :rules="rules">
+    <el-form ref="functionForm" label-width="120px" :model="form" :rules="rules">
       <span v-if="step === 1">
         <el-row :gutter="20">
           <el-col :xs="24" :sm="18" :md="14" :lg="10">
@@ -23,7 +23,7 @@ Contact: info@swifty.cloud
             </el-form-item>
           </el-col>
         </el-row>
-    
+
         <span v-if="withDesc">
           <el-row :gutter="20">
             <el-col :xs="24" :sm="10" :md="8" :lg="6">
@@ -31,7 +31,7 @@ Contact: info@swifty.cloud
                 <el-input placeholder="Search" v-model="templateSearch"></el-input>
               </el-form-item>
             </el-col>
-            <el-col :xs="24" :sm="8" :md="6" :lg="4">          
+            <el-col :xs="24" :sm="8" :md="6" :lg="4">
               <el-form-item label-width="0">
                 <el-select placeholder="Please select language" v-model="filterLang" style="width: 100%">
                   <el-option label="all" value="all"></el-option>
@@ -85,7 +85,7 @@ Contact: info@swifty.cloud
                 </span>
               </el-tree>
             </el-col>
-          </el-row>  
+          </el-row>
         </span>
 
         <el-row>
@@ -123,7 +123,7 @@ Contact: info@swifty.cloud
             </el-form-item>
 
             <el-form-item label="Language" prop="code.lang">
-              <el-select placeholder="Please select language" v-model="form.code.lang" style="width: 100%">
+              <el-select placeholder="Please select language" v-model="form.code.lang" style="width: 40%">
                 <el-option
                   v-for="(lang, k) in $store.getters.getFunctionLangs"
                   :label="lang"
@@ -133,7 +133,7 @@ Contact: info@swifty.cloud
               </el-select>
             </el-form-item>
 
-            <el-form-item label="Name" prop="name">
+            <el-form-item label="Name" prop="name" style="width: 60%">
               <el-input v-model="form.name" :autofocus="true"></el-input>
             </el-form-item>
 
@@ -385,7 +385,7 @@ export default {
 .review-code {
   border-radius: 4px;
   border: solid 1px #dcdfe6;
-  padding: 10px;  
+  padding: 10px;
 
   overflow-y: auto;
   max-height: 350px;
