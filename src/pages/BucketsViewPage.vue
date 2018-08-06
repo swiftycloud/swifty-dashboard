@@ -1,4 +1,4 @@
-<!-- 
+<!--
 
 © 2018 SwiftyCloud OÜ. All rights reserved.
 Contact: info@swifty.cloud
@@ -13,17 +13,18 @@ Contact: info@swifty.cloud
       <el-button type="primary" size="medium" @click="$router.push({ name: 'storage' })">Back to Buckets</el-button>
       <el-button type="primary" size="medium" @click="uploadDialogVisible = true">Upload</el-button>
       <el-button type="primary" size="medium" @click="openCreatingFolderForm">Create Folder</el-button>
-      <el-button plain size="medium" @click="deleteSelected" :disabled="multipleSelection.length === 0">Delete</el-button>
+      <!--<el-button plain size="medium" @click="deleteSelected" :disabled="multipleSelection.length === 0">Delete</el-button>-->
       <el-dropdown trigger="click" placement="bottom-start">
         <el-button plain size="medium">More <i class="fa fa-angle-down"></i></el-button>
         <el-dropdown-menu slot="dropdown" class="bucket-menu">
           <el-dropdown-item @click.native="cutSelected">Cut</el-dropdown-item>
           <el-dropdown-item @click.native="copySelected">Copy</el-dropdown-item>
           <el-dropdown-item @click.native="pasteObjects">Paste</el-dropdown-item>
+          <el-dropdown-item @click.native="deleteSelected">Delete</el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
     </div>
-  
+
     <el-breadcrumb separator="/">
       <el-breadcrumb-item :to="{ name: 'bucket.view', params: { name: $route.params.name } }">
         <i class="fa fa-folder"></i> {{ $route.params.name }}
@@ -60,18 +61,19 @@ Contact: info@swifty.cloud
             {{ scope.row.Key.replace(prefix, '').replace('/', '') }}
           </a>
 
-          <el-dropdown 
-            trigger="click" 
-            placement="bottom-start" 
+          <el-dropdown
+            trigger="click"
+            placement="bottom-start"
             v-if="scope.row.Folder"
             class="bucket-object-link-dropdown">
             <el-button type="text" size="medium" class="bucket-object-link">
               <i class="fa fa-ellipsis-h"></i>
             </el-button>
             <el-dropdown-menu slot="dropdown" class="bucket-menu">
-              <el-dropdown-item>Cut</el-dropdown-item>
-              <el-dropdown-item>Copy</el-dropdown-item>
-              <el-dropdown-item>Paste</el-dropdown-item>
+              <el-dropdown-item @click.native="cutObjectToBuffer(scope.row.Key)">Cut</el-dropdown-item>
+              <el-dropdown-item @click.native="copyObjectToBuffer(scope.row.Key)">Copy</el-dropdown-item>
+              <!--<el-dropdown-item>Paste</el-dropdown-item>-->
+              <el-dropdown-item>Delete</el-dropdown-item>
               <el-dropdown-item @click.native="renameObject(scope.row.Key.replace(prefix, ''))">Rename</el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>
@@ -81,8 +83,8 @@ Contact: info@swifty.cloud
           </span>
 
           <el-dropdown
-            trigger="click" 
-            placement="bottom-start" 
+            trigger="click"
+            placement="bottom-start"
             v-if="scope.row.Folder === undefined"
             class="bucket-object-link-dropdown">
             <el-button type="text" size="medium" class="bucket-object-link">
@@ -93,6 +95,7 @@ Contact: info@swifty.cloud
               <el-dropdown-item @click.native="downloadObject(scope.row.Key.replace(prefix, ''))">Download</el-dropdown-item>
               <el-dropdown-item @click.native="renameObject(scope.row.Key.replace(prefix, ''))">Rename</el-dropdown-item>
               <el-dropdown-item @click.native="copyObjectToBuffer(scope.row.Key)">Copy</el-dropdown-item>
+              <el-dropdown-item>Delete</el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>
         </template>
@@ -497,7 +500,7 @@ export default {
     text-align: center;
   }
 
-  .el-button.bucket-object-link, 
+  .el-button.bucket-object-link,
   .el-button.bucket-object-link:hover,
   .el-button.bucket-object-link:focus {
     color: #303133;
