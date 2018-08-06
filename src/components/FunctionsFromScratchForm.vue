@@ -30,7 +30,7 @@ Contact: info@swifty.cloud
         <el-col :span="24">
           <br>
           <el-button @click="$router.push({ name: 'functions' })">Cancel</el-button>
-          <el-button type="primary" class="create-function-button" @click="submitFunctionForm">Create</el-button>
+          <el-button type="primary" @click="submitFunctionForm">Create</el-button>
         </el-col>
       </el-row>
     </el-form>

@@ -307,11 +307,6 @@ export default {
   //width: 900px;
 }
 
-.create-function-button {
-  padding-left: 50px;
-  padding-right: 50px;
-}
-
 .el-radio.is-bordered {
   height: 122px !important;
   width: 100%;
