@@ -256,6 +256,11 @@ export default {
       api.repos.one(this.repoId).files.find(this.selectedTemplate.path).then(response => {
         this.previewCode = response.data
         this.step = 2
+      }).catch(error => {
+        this.$notify.error({
+          title: 'Error',
+          message: error.response.data.message || 'Template error'
+        })
       })
     },
 
