@@ -47,26 +47,24 @@ Contact: info@swifty.cloud
           </el-row>
 
           <el-row :gutter="20" class="template-radio-block">
-            <el-col :xs="24" :sm="24" :md="12" :lg="10" v-for="template in paginatedTemplates" :key="template.name">
+            <el-col :xs="24" :sm="24" :md="12" :lg="10" v-for="template in filteredTemplates" :key="template.name">
               <el-radio v-model="selectedTemplate" :label="template" border>
-                <p class="title">{{ template.name }}</p>
+                <p class="title">{{ template.name }} <span class="language">({{ template.lang }})</span></p>
                 <p class="description">{{ template.desc }}</p>
               </el-radio>
             </el-col>
           </el-row>
 
-          <el-row v-if="pageCount > 0">
+          <!--<el-row v-if="filteredTemplates.length > 4">
             <el-col :span="24">
               <el-pagination
-                :page-size="pageSize"
-                :pager-count="10"
-                :page-count="pageCount"
+                :page-size="20"
+                :pager-count="11"
                 layout="prev, pager, next"
-                :total="filteredTemplates.length"
-                @current-change="setPage">
+                :total="1000">
               </el-pagination>
             </el-col>
-          </el-row>
+          </el-row>-->
         </span>
 
         <span v-if="!withDesc && files.length">
@@ -186,9 +184,6 @@ export default {
       templates: [],
       templateSearch: '',
 
-      pageNumber: 0,
-      pageSize: 4,
-
       syncLoading: false,
       loading: false,
 
@@ -236,27 +231,12 @@ export default {
       })
     },
 
-    paginatedTemplates () {
-      const start = this.pageNumber * this.pageSize
-      const end = start + this.pageSize
-
-      return this.filteredTemplates.slice(start, end)
-    },
-
     repoWithFile () {
       return this.repoId + '/' + this.selectedTemplate.path
-    },
-
-    pageCount () {
-      return Math.floor(this.templates.length / this.pageSize)
     }
   },
 
   methods: {
-    setPage (number) {
-      this.pageNumber = (number - 1)
-    },
-
     fetchFilesByRepo (rid) {
       this.selectedTemplate.path = null
       api.repos.one(rid).files.get().then(response => {
@@ -362,6 +342,12 @@ export default {
 
     .description {
       font-size: 14px;
+      color: #909399;
+      line-height: 1.71;
+      margin-bottom: 0;
+    }
+    .language {
+      font-size: 16px;
       color: #909399;
       line-height: 1.71;
       margin-bottom: 0;

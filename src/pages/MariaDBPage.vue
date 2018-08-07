@@ -1,4 +1,4 @@
-<!-- 
+<!--
 
 © 2018 SwiftyCloud OÜ. All rights reserved.
 Contact: info@swifty.cloud
@@ -36,8 +36,7 @@ Contact: info@swifty.cloud
           <el-table-column
             prop="name"
             label="Instance name"
-            sortable
-            width="160">
+            sortable>
           </el-table-column>
           <el-table-column
             property="type"

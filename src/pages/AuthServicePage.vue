@@ -1,4 +1,4 @@
-<!-- 
+<!--
 
 © 2018 SwiftyCloud OÜ. All rights reserved.
 Contact: info@swifty.cloud
@@ -36,12 +36,11 @@ Contact: info@swifty.cloud
           <el-table-column
             prop="name"
             label="Name"
-            sortable
-            width="300">
+            sortable>
             <template slot-scope="scope">
               {{ scope.row.name }}
-              <el-dropdown 
-                trigger="click" 
+              <el-dropdown
+                trigger="click"
                 placement="bottom-start"
                 class="auth-service-link-dropdown">
                 <el-button type="text" size="medium" class="auth-service-link">
@@ -54,8 +53,8 @@ Contact: info@swifty.cloud
               </el-dropdown>
             </template>
           </el-table-column>
-          <el-table-column label="Type"></el-table-column>
-          <el-table-column label="Description"></el-table-column>
+          <!--<el-table-column label="Type"></el-table-column>
+          <el-table-column label="Description"></el-table-column>-->
         </el-table>
       </div>
     </div>
@@ -196,12 +195,12 @@ export default {
 }
 
 .auth-service-link-dropdown {
-  float: right;
+  float: center;
   width: 32px;
   text-align: center;
 }
 
-.auth-service-link, 
+.auth-service-link,
 .auth-service-link:hover,
 .auth-service-link:focus {
   color: #303133;

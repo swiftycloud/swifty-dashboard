@@ -23,7 +23,7 @@ Contact: info@swifty.cloud
         <el-main>
           <router-view/>
         </el-main>
-        <el-footer height="63px">
+        <el-footer height="40px">
           <el-row>
             <el-col :span="20">
               © 2018 SwiftyCloud OÜ. All rights reserved.

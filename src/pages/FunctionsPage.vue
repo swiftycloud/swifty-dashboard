@@ -1,4 +1,4 @@
-<!-- 
+<!--
 
 © 2018 SwiftyCloud OÜ. All rights reserved.
 Contact: info@swifty.cloud
@@ -78,9 +78,12 @@ Contact: info@swifty.cloud
                 {{ scope.row.name }}
               </router-link>
               <span v-else>{{ scope.row.name }}</span>
+              <span v-if="scope.row.labels !== undefined" v-for="v in scope.row.labels" :key="v">
+                <el-tag size="medium" v-if="v === 'auth'" type="danger">Authentication</el-tag>
+              </span>
             </template>
           </el-table-column>
-          <el-table-column
+          <!--<el-table-column
             property="labels">
             <template slot-scope="scope">
               <div style="text-align: right">
@@ -89,7 +92,7 @@ Contact: info@swifty.cloud
                 </span>
               </div>
             </template>
-          </el-table-column>
+          </el-table-column>-->
           <el-table-column
             property="state"
             label="Status"

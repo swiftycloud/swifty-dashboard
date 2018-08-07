@@ -1,4 +1,4 @@
-<!-- 
+<!--
 
 © 2018 SwiftyCloud OÜ. All rights reserved.
 Contact: info@swifty.cloud
@@ -23,18 +23,18 @@ Contact: info@swifty.cloud
               <p>You don’t have any repositories</p>
               <el-button type="primary" size="mini" round>Attach</el-button>
           </div>
-          <el-table-column
+          <!--<el-table-column
             type="selection"
             width="55">
-          </el-table-column>
+          </el-table-column>-->
           <el-table-column
             prop="url"
             label="Name"
             sortable>
             <template slot-scope="scope">
               {{ scope.row.url }}
-              <el-dropdown 
-                trigger="click" 
+              <el-dropdown
+                trigger="click"
                 placement="bottom-start"
                 class="repo-link-dropdown">
                 <el-button type="text" size="medium" class="repo-link">
@@ -50,7 +50,8 @@ Contact: info@swifty.cloud
           <el-table-column
             prop="type"
             label="Type"
-            sortable>
+            sortable
+            width="200">
             <template slot-scope="scope">
               <span v-if="scope.row.account_id === undefined">Git URL</span>
               <span v-else>GitHub</span>
@@ -59,7 +60,8 @@ Contact: info@swifty.cloud
           <el-table-column
             prop="state"
             label="Status"
-            sortable>
+            sortable
+            width="200">
           </el-table-column>
         </el-table>
 
@@ -89,7 +91,7 @@ Contact: info@swifty.cloud
             </el-form>
             <p>
               The repository must be accessible over http://, https:// or git://.<br>
-              If your HTTP repository is not publicly accessible, add authentication information to the URL like: 
+              If your HTTP repository is not publicly accessible, add authentication information to the URL like:
               https://username:password@gitlab.company.com/group/project.git.<br>
               The import will time out after 180 minutes 0 seconds. For repositories that take longer, use a clone/push combination.
             </p>
@@ -217,7 +219,7 @@ export default {
   text-align: center;
 }
 
-.el-button.repo-link, 
+.el-button.repo-link,
 .el-button.repo-link:hover,
 .el-button.repo-link:focus {
   color: #303133;
