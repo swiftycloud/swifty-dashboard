@@ -49,7 +49,7 @@ Contact: info@swifty.cloud
           <el-row :gutter="20" class="template-radio-block">
             <el-col :xs="24" :sm="24" :md="12" :lg="10" v-for="template in filteredTemplates" :key="template.name">
               <el-radio v-model="selectedTemplate" :label="template" border>
-                <p class="title">{{ template.name }}</p>
+                <p class="title">{{ template.name }} <span class="language">({{ template.lang }})</span></p>
                 <p class="description">{{ template.desc }}</p>
               </el-radio>
             </el-col>
@@ -342,6 +342,12 @@ export default {
 
     .description {
       font-size: 14px;
+      color: #909399;
+      line-height: 1.71;
+      margin-bottom: 0;
+    }
+    .language {
+      font-size: 16px;
       color: #909399;
       line-height: 1.71;
       margin-bottom: 0;
