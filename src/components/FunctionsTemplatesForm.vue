@@ -77,7 +77,7 @@ Contact: info@swifty.cloud
                   <span v-if="data.type === 'dir'">
                     <i class="fa fa-folder"></i> {{ data.label }}
                   </span>
-                  <span v-if="data.type === 'file'" :class="{ selected: data.path === selectedTemplate }">
+                  <span v-if="data.type === 'file'" :class="{ selected: data.path === selectedTemplate.path }">
                     <i class="fa fa-file-code-o"></i> {{ data.label }}
                   </span>
                 </span>

@@ -52,7 +52,7 @@ Contact: info@swifty.cloud
           </el-form-item>
         </el-form>
         <p v-if="form.type === 'github'">
-          To integrate with GitHub you need to generate a <a href="https://github.com/settings/tokens" class="primary">Personal Access Token</a>. When you create your Personal Access Token, you will need to select the repo scope, so we can display a list of your public and private repositories which are available to connect.
+          To integrate with GitHub you need to generate a <a href="https://github.com/settings/tokens" target="_blank" class="primary">Personal Access Token</a>. When you create your Personal Access Token, you will need to select the repo scope, so we can display a list of your public and private repositories which are available to connect.
         </p>
         <p v-if="form.type === 'giturl'">
           The repository must be accessible over http://, https:// or git://.<br>
