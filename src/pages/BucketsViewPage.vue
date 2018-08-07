@@ -21,6 +21,7 @@ Contact: info@swifty.cloud
           <el-dropdown-item @click.native="copySelected">Copy</el-dropdown-item>
           <el-dropdown-item @click.native="pasteObjects">Paste</el-dropdown-item>
           <el-dropdown-item @click.native="deleteSelected">Delete</el-dropdown-item>
+          <el-dropdown-item @click.native="openHttpServerSettings">HTTP Server Settings</el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
     </div>
@@ -141,18 +142,54 @@ Contact: info@swifty.cloud
       </span>
     </el-dialog>
 
+    <el-dialog
+      title="HTTP Server Settings"
+      :visible.sync="httpServerSettingsVisible">
+      <el-form label-width="160px">
+        <el-form-item label="Enable HTTP Server">
+          <el-radio-group v-model="form.enabled">
+            <el-radio-button :label="true">On</el-radio-button>
+            <el-radio-button :label="false">Off</el-radio-button>
+          </el-radio-group>
+        </el-form-item>
+
+        <div class="website-link" v-if="form.enabled">
+          <div>Endpoint:</div>
+          <a :href="form.link" class="primary" target="_blank">{{ form.link }}</a>
+        </div>
+
+        <el-form-item label="Index document" v-if="form.enabled">
+          <el-input placeholder="index.html" v-model="form.index"></el-input>
+        </el-form-item>
+        <el-form-item label="Error document" v-if="form.enabled">
+          <el-input placeholder="error.html" v-model="form.error"></el-input>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="cancelHttpServerSettings">Cancel</el-button>
+        <el-button type="primary" @click="saveHTTPServerSettings">Save</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import FileSaver from 'file-saver'
+import config from '@/api'
 
 export default {
   data () {
     return {
+      form: {
+        enabled: false,
+        link: null,
+        index: 'index.html',
+        error: 'error.html'
+      },
       objects: [],
       prefix: '',
       uploadDialogVisible: false,
+      httpServerSettingsVisible: false,
       multipleSelection: [],
       loading: true,
       uploading: false,
@@ -195,6 +232,69 @@ export default {
     }
   },
   methods: {
+    openHttpServerSettings () {
+      this.loading = true
+      this.$store.dispatch('getBucketWebsite', {
+        project: this.$store.getters.currentProject,
+        bucket: this.$route.params.name
+      }).then(response => {
+        this.form.error = response.ErrorDocument.Key
+        this.form.index = response.IndexDocument.Suffix
+        this.form.enabled = true
+
+        this.$store.dispatch('getS3Credentials', {
+          project: this.$store.getters.currentProject,
+          lifetime: 1
+        }).then(response => {
+          this.form.link = (config.API_S3_SSL_ENABLED ? 'https://' : 'http://') +
+            response.data.endpoint.split(':')[0] +
+            ':8080/' +
+            response.data.accid + '/' +
+            this.$route.params.name + '/'
+        })
+      }).finally(() => {
+        this.loading = false
+        this.httpServerSettingsVisible = true
+      })
+    },
+
+    cancelHttpServerSettings () {
+      this.httpServerSettingsVisible = false
+      this.form = {
+        enabled: false,
+        link: null,
+        index: 'index.html',
+        error: 'error.html'
+      }
+    },
+
+    async saveHTTPServerSettings () {
+      if (this.form.enabled === true) {
+        await this.$store.dispatch('deleteBucketWebsite', {
+          project: this.$store.getters.currentProject,
+          bucket: this.$route.params.name
+        })
+
+        this.$store.dispatch('putBucketWebsite', {
+          project: this.$store.getters.currentProject,
+          bucket: this.$route.params.name,
+          error: this.form.error,
+          index: this.form.index
+        }).then(response => {
+          console.log(response)
+        }).finally(() => {
+          this.cancelHttpServerSettings()
+        })
+      } else {
+        this.$store.dispatch('deleteBucketWebsite', {
+          project: this.$store.getters.currentProject,
+          bucket: this.$route.params.name
+        }).finally(() => {
+          this.cancelHttpServerSettings()
+        })
+      }
+    },
+
     clearBuffer () {
       this.copyBuffer = []
       this.cutBuffer = []
@@ -510,5 +610,13 @@ export default {
 
   .buffered {
     color: #909399;
+  }
+
+  .website-link {
+    margin-bottom: 20px;
+
+    div {
+      margin-bottom: 15px;
+    }
   }
 </style>

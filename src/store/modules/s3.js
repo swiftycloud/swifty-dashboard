@@ -78,6 +78,30 @@ export default {
 
     getMetricStatistics ({ dispatch }, { project, data }) {
       return api.cw('getMetricStatistics', project, data)
+    },
+
+    getBucketWebsite ({ dispatch }, { project, bucket }) {
+      return api.s3('getBucketWebsite', project, { Bucket: bucket }, bucket)
+    },
+
+    putBucketWebsite ({ dispatch }, { project, bucket, error, index }) {
+      let data = {
+        Bucket: bucket,
+        WebsiteConfiguration: {
+          ErrorDocument: {
+            Key: error
+          },
+          IndexDocument: {
+            Suffix: index
+          }
+        }
+      }
+
+      return api.s3('putBucketWebsite', project, data, bucket)
+    },
+
+    deleteBucketWebsite ({ dispatch }, { project, bucket }) {
+      return api.s3('deleteBucketWebsite', project, { Bucket: bucket }, bucket)
     }
   },
 
