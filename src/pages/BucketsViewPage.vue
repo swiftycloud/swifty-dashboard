@@ -241,7 +241,7 @@ export default {
         this.form.error = response.ErrorDocument.Key
         this.form.index = response.IndexDocument.Suffix
         this.form.enabled = true
-
+      }).finally(() => {
         this.$store.dispatch('getS3Credentials', {
           project: this.$store.getters.currentProject,
           lifetime: 1
@@ -251,10 +251,10 @@ export default {
             ':8080/' +
             response.data.accid + '/' +
             this.$route.params.name + '/'
+
+          this.loading = false
+          this.httpServerSettingsVisible = true
         })
-      }).finally(() => {
-        this.loading = false
-        this.httpServerSettingsVisible = true
       })
     },
 
@@ -270,10 +270,14 @@ export default {
 
     async saveHTTPServerSettings () {
       if (this.form.enabled === true) {
-        await this.$store.dispatch('deleteBucketWebsite', {
-          project: this.$store.getters.currentProject,
-          bucket: this.$route.params.name
-        })
+        try {
+          await this.$store.dispatch('deleteBucketWebsite', {
+            project: this.$store.getters.currentProject,
+            bucket: this.$route.params.name
+          })
+        } catch (err) {
+          console.log(err)
+        }
 
         this.$store.dispatch('putBucketWebsite', {
           project: this.$store.getters.currentProject,
