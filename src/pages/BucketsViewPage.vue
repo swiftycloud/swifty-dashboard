@@ -156,6 +156,8 @@ Contact: info@swifty.cloud
         <div class="website-link" v-if="form.enabled">
           <div>Endpoint:</div>
           <a :href="form.link" class="primary" target="_blank">{{ form.link }}</a>
+          <el-button size="mini" type="primary" plain @click="copyToClipboard()">{{ copyButtonText }}</el-button>
+          <input type="text" class="copy-text-input" id="copyText" :value="form.link">
         </div>
 
         <el-form-item label="Index document" v-if="form.enabled">
@@ -194,7 +196,9 @@ export default {
       loading: true,
       uploading: false,
       copyBuffer: [],
-      cutBuffer: []
+      cutBuffer: [],
+
+      copyButtonText: 'Copy'
     }
   },
   created () {
@@ -232,6 +236,16 @@ export default {
     }
   },
   methods: {
+    copyToClipboard () {
+      let copyText = document.getElementById('copyText')
+      copyText.select()
+      document.execCommand('Copy')
+      this.copyButtonText = 'Copied'
+      setTimeout(() => {
+        this.copyButtonText = 'Copy'
+      }, 2000)
+    },
+
     openHttpServerSettings () {
       this.loading = true
       this.$store.dispatch('getBucketWebsite', {
@@ -622,5 +636,11 @@ export default {
     div {
       margin-bottom: 15px;
     }
+  }
+
+  .copy-text-input {
+    opacity: 0;
+    width: 1px;
+    height: 1px;
   }
 </style>
