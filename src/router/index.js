@@ -28,6 +28,7 @@ const StatsMongoPage = () => import(/* webpackChunkName: "stats" */ '@/pages/Sta
 const StatsMariaPage = () => import(/* webpackChunkName: "stats" */ '@/pages/StatsMariaPage')
 const AuthServicePage = () => import(/* webpackChunkName: "authservice" */ '@/pages/AuthServicePage')
 const RepositoriesPage = () => import(/* webpackChunkName: "repositories" */ '@/pages/RepositoriesPage')
+const AdminUsersPage = () => import(/* webpackChunkName: "admin" */ '@/pages/AdminUsersPage')
 
 Vue.use(Router)
 
@@ -115,6 +116,11 @@ export default new Router({
       path: '/repositories',
       name: 'repositories',
       component: RepositoriesPage
+    },
+    {
+      path: '/admin/users',
+      name: 'admin.users',
+      component: AdminUsersPage
     }
   ]
 })

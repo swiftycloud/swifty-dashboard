@@ -20,6 +20,11 @@ Contact: info@swifty.cloud
     <router-link :to="{ name: 'repositories' }" class="nav-link" active-class="active" exact><i class="fa el-icon-arrow-right"></i>Repositories</router-link>
     <router-link :to="{ name: 'stats.func' }" class="nav-link" active-class="active" exact><i class="fa el-icon-arrow-right"></i>Statistics</router-link>
     <!--<router-link to="/settings" class="nav-link" active-class="active" exact><i class="fa el-icon-arrow-right"></i>Settings</router-link>-->
+
+    <span v-if="$store.getters.getUserInfo.admin">
+      <div class="divider"></div> 
+      <router-link :to="{ name: 'admin.users' }" class="nav-link" active-class="active" exact><i class="fa el-icon-arrow-right"></i>Users</router-link>
+    </span>
   </nav>
 </template>
 

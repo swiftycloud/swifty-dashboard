@@ -104,6 +104,22 @@ export default {
     })
   },
 
+  usersList () {
+    return axios.post(config.API_ADMD_ENDPOINT + '/users', {})
+  },
+
+  setPass (data) {
+    return axios.post(config.API_ADMD_ENDPOINT + '/setpass', data)
+  },
+
+  delUser (user) {
+    return axios.post(config.API_ADMD_ENDPOINT + '/deluser', user)
+  },
+
+  addUser (user) {
+    return axios.post(config.API_ADMD_ENDPOINT + '/adduser', user)
+  },
+
   /** PROJECT METHODS **/
 
   projectList () {
