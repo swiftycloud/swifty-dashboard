@@ -93,8 +93,8 @@ export default {
   /** USER METHODS **/
 
   userCreate (id, password, name, token) {
-    return axios.post(config.API_ADMD_ENDPOINT + '/adduser', {
-      id: id, pass: password, name: name
+    return axios.post(config.API_ADMD_ENDPOINT + '/users', {
+      uid: id, pass: password, name: name
     }, {
       headers: { 'X-Auth-Token': token }
     })
