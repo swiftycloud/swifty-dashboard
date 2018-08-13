@@ -68,7 +68,7 @@ export default {
         }
 
         /** Get user info **/
-        api.userInfo(userId).then(response => {
+        api.users.find('me').then(response => {
           commit(SAVE_USER_INFO, response.data)
         })
 

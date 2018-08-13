@@ -65,7 +65,7 @@ Contact: info@swifty.cloud
             sortable>
           </el-table-column>
           <el-table-column
-            prop="email"
+            prop="uid"
             label="Email"
             sortable>
           </el-table-column>
@@ -104,8 +104,8 @@ Contact: info@swifty.cloud
         <el-form-item label="Name" prop="name">
           <el-input v-model="userForm.name" placeholder="Name"></el-input>
         </el-form-item>
-        <el-form-item label="E-mail" prop="email">
-          <el-input v-model="userForm.email" placeholder="E-mail"></el-input>
+        <el-form-item label="E-mail" prop="uid">
+          <el-input v-model="userForm.uid" placeholder="E-mail"></el-input>
         </el-form-item>
         <el-form-item label="Password" prop="password">
           <el-input v-model="userForm.password">
@@ -134,12 +134,12 @@ export default {
       users: [],
 
       userForm: {
-        email: null,
+        uid: null,
         password: null
       },
       userCreateDialog: false,
       userRules: {
-        email: [
+        uid: [
           { required: true, message: 'Please enter your email', trigger: 'blur' },
           { type: 'email', message: 'Please input correct email address', trigger: 'blur' }
         ],
@@ -168,18 +168,8 @@ export default {
     fetchUsers () {
       this.loading = true
 
-      return api.usersList().then(response => {
-        response.data.forEach(item => {
-          if (item.name) {
-            let data = JSON.parse(item.name)
-            this.users.push({
-              id: item.id,
-              name: data.name,
-              email: data.email,
-              created: data.created
-            })
-          }
-        })
+      return api.users.get().then(response => {
+        this.users = response.data
       }).finally(() => {
         this.loading = false
       })
@@ -217,7 +207,7 @@ export default {
 
     changePassword () {
       this.passwordUpdating = true
-      api.setPass(this.passwordForm).finally(() => {
+      api.users.one(this.passwordForm.username).pass(this.passwordForm).finally(() => {
         this.cancelChangePasswordDialog()
         this.passwordUpdating = false
       })
@@ -241,7 +231,7 @@ export default {
 
         var promises = []
         this.multipleSelection.forEach(item => {
-          promises.push(api.delUser(item))
+          promises.push(api.users.delete(item.uid))
         })
 
         return Promise.all(promises)
@@ -260,7 +250,7 @@ export default {
     createUser () {
       this.$refs['userForm'].validate(valid => {
         if (valid) {
-          api.addUser(this.userForm).then(() => {
+          api.users.create(this.userForm).then(() => {
             this.fetchUsers()
             this.userCreateDialog = false
           }).catch(error => {
