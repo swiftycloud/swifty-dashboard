@@ -24,12 +24,6 @@ Contact: info@swifty.cloud
           <el-form-item label="Personal Access Token" v-if="form.type === 'github'" style="margin-bottom: 0;">
             <el-input v-model="form.token" placeholder="xhgchxcgyycxtcve536dfvdtf5vhsc63vv36v" :disabled="loading"></el-input>
           </el-form-item>
-          <el-form-item label style="margin-bottom: 0;" v-if="form.type === 'github'">
-            or
-          </el-form-item>
-          <el-form-item label="GitHub account name" v-if="form.type === 'github'">
-            <el-input v-model="form.user" placeholder="swifty" :disabled="loading"></el-input>
-          </el-form-item>
 
           <el-form-item label="Git Repository URL" style="margin-bottom: 0" v-if="form.type === 'giturl'">
             <el-input v-model="form.url" placeholder="https://username:password@gitlab.company.com/group/project.git"></el-input>
