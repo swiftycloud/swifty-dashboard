@@ -15,6 +15,10 @@ export class CustomModel extends Model {
       }
     }
 
+    if (sessionStorage.getItem('_xrt')) {
+      config.headers.common['X-Relay-Tennant'] = sessionStorage.getItem('_xrt')
+    }
+
     return super.getRequest(config)
   }
 
@@ -39,6 +43,10 @@ export class CustomCollection extends Collection {
       common: {
         'X-Auth-Token': localStorage.getItem('_token')
       }
+    }
+
+    if (sessionStorage.getItem('_xrt')) {
+      config.headers.common['X-Relay-Tennant'] = sessionStorage.getItem('_xrt')
     }
 
     return super.getRequest(config)

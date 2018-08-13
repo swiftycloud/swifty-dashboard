@@ -60,7 +60,7 @@ Contact: info@swifty.cloud
         <template slot-scope="scope">
           <code v-if="scope.row.source === 'cron'">{{ scope.row.cron.tab }}</code>
           <span v-if="scope.row.source === 'url'">
-            <span style="padding-right: 10px">POST {{ scope.row.url }}</span>
+            <span style="padding-right: 10px">{{ scope.row.url }}</span>
             <el-button size="mini" type="primary" plain @click="copyToClipboard()">{{ copyButtonText }}</el-button>
             <input type="text" class="copy-text-input" id="copyText" :value="scope.row.url">
           </span>

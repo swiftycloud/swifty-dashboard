@@ -75,6 +75,14 @@ export default {
     }
   }),
 
+  users: resource(config.API_ADMD_ENDPOINT + '/users', {
+    one: (uid) => {
+      return {
+        pass: (data) => axios.put(config.API_ADMD_ENDPOINT + '/users/' + uid + '/pass', data)
+      }
+    }
+  }),
+
   requestApiToken () {
     return axios.post(config.API_ADMD_ENDPOINT + '/login', {
       username: config.API_USERNAME,
@@ -102,6 +110,22 @@ export default {
     return axios.post(config.API_ADMD_ENDPOINT + '/userinfo', {
       id: id
     })
+  },
+
+  usersList () {
+    return axios.post(config.API_ADMD_ENDPOINT + '/users', {})
+  },
+
+  setPass (data) {
+    return axios.post(config.API_ADMD_ENDPOINT + '/setpass', data)
+  },
+
+  delUser (user) {
+    return axios.post(config.API_ADMD_ENDPOINT + '/deluser', user)
+  },
+
+  addUser (user) {
+    return axios.post(config.API_ADMD_ENDPOINT + '/adduser', user)
   },
 
   /** PROJECT METHODS **/

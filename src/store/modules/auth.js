@@ -4,11 +4,13 @@
 */
 
 import api from '@/api'
+import { Model } from 'vue-api-query'
 import {
   SAVE_USER_INFO,
   SAVE_AUTH_TOKEN,
   SAVE_USER_ID,
-  RESET_AUTH_DATA
+  RESET_AUTH_DATA,
+  SAVE_LOGIN_AS_STATUS
 } from '@/store/mutation-types.js'
 
 export default {
@@ -16,15 +18,18 @@ export default {
     user: {
       id: null,
       name: null,
-      created: null
+      created: null,
+      admin: true
     },
+    loginAs: false,
     token: null,
     expires: null
   },
 
   getters: {
     getUserInfo: state => state.user,
-    getToken: state => state.token
+    getToken: state => state.token,
+    getLoginAs: state => state.loginAs
   },
 
   actions: {
@@ -32,6 +37,9 @@ export default {
       const userId = localStorage.getItem('_id')
       const token = localStorage.getItem('_token')
       const expires = localStorage.getItem('_expires')
+
+      let params = new URLSearchParams(window.location.search)
+      const xrt = sessionStorage.getItem('_xrt') || params.get('as')
 
       if (userId !== null && token !== null && expires !== null) {
         commit(SAVE_USER_ID, userId)
@@ -51,8 +59,16 @@ export default {
 
         api.axios.defaults.headers.common['X-Auth-Token'] = token
 
+        if (xrt) {
+          sessionStorage.setItem('_xrt', xrt)
+          api.axios.defaults.headers.common['X-Relay-Tennant'] = xrt
+          commit(SAVE_LOGIN_AS_STATUS, xrt)
+
+          Model.$http = api.axios
+        }
+
         /** Get user info **/
-        api.userInfo(userId).then(response => {
+        api.users.find('me').then(response => {
           commit(SAVE_USER_INFO, response.data)
         })
 
@@ -106,9 +122,10 @@ export default {
       })
     },
 
-    userLogout ({ commit }, router) {
+    userLogout ({ commit, dispatch }, router) {
       localStorage.clear()
       commit(RESET_AUTH_DATA)
+      dispatch('logoutAs')
       router.push({ path: '/sign' })
     },
 
@@ -141,6 +158,9 @@ export default {
       state.user.id = null
       state.token = null
       state.expires = null
+    },
+    [SAVE_LOGIN_AS_STATUS] (state, status) {
+      state.loginAs = status
     }
   }
 }

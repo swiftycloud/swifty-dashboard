@@ -7,11 +7,11 @@ Contact: info@swifty.cloud
 
 <template>
   <div v-loading="loading">
-    <p>Please add middleware</p>
+    <p>Please add access to middleware or accounts</p>
 
     <div class="actions-block">
-      <el-button type="primary" size="medium" @click="addMiddlewareDialogVisible = true">Attach Middleware</el-button>
-      <el-button type="primary" plain size="medium" @click="deattach" :disabled="multipleSelection.length === 0">Deattach</el-button>
+      <el-button type="primary" size="medium" @click="addMiddlewareDialogVisible = true">Add</el-button>
+      <el-button type="primary" plain size="medium" @click="deattach" :disabled="multipleSelection.length === 0">Remove</el-button>
     </div>
 
     <el-table
@@ -20,7 +20,7 @@ Contact: info@swifty.cloud
       style="width: 100%"
       @selection-change="handleSelectionChange">
       <div slot="empty" class="middleware-empty-message">
-          <p>You don’t have any middleware configured to attach it to the function</p>
+          <p>You don’t have any access credentials configured to attach it to the function</p>
           <el-button type="primary" size="mini" round @click="$router.push({ name: 'storage' })">Create Object Storage</el-button>
           <el-button type="primary" size="mini" round @click="$router.push({ name: 'mariadb' })">Create Maria Database</el-button>
           <el-button type="primary" size="mini" round @click="$router.push({ name: 'mongodb' })">Create Mongo Database</el-button>
@@ -42,12 +42,12 @@ Contact: info@swifty.cloud
     </el-table>
 
     <el-dialog
-      title="Attach new middleware"
+      title="Add new access credentials"
       width="35%"
       :visible.sync="addMiddlewareDialogVisible">
       <el-form ref="form" :model="form" label-width="120px">
-        <el-form-item label="Middleware type">
-          <el-select v-model="form.type" placeholder="Middleware type" style="width: 100%">
+        <el-form-item label="Credentials type">
+          <el-select v-model="form.type" placeholder="Credentials type" style="width: 100%">
             <el-option v-for="type in $store.getters.getMiddlewareTypes"
                        :label="type.name"
                        :value="type.id"
@@ -55,8 +55,8 @@ Contact: info@swifty.cloud
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="Instance name">
-          <el-select v-model="form.id" placeholder="Instance name" style="width: 100%">
+        <el-form-item label="Entity name">
+          <el-select v-model="form.id" placeholder="Entity name" style="width: 100%">
             <el-option v-for="mware in middlewares"
                        :label="mware.name"
                        :value="mware.id"
@@ -67,7 +67,7 @@ Contact: info@swifty.cloud
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="addMiddlewareDialogVisible = false">Cancel</el-button>
-        <el-button type="primary" @click="attach">Attach</el-button>
+        <el-button type="primary" @click="attach">Add</el-button>
       </span>
     </el-dialog>
   </div>
@@ -164,7 +164,7 @@ export default {
         return false
       }
 
-      this.$confirm('Selected middlewares will be deattached', 'Warning', {
+      this.$confirm('Selected access credentials will be removed', 'Warning', {
         confirmButtonText: 'OK',
         cancelButtonText: 'Cancel',
         type: 'warning'

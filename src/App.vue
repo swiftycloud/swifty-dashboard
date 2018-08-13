@@ -25,8 +25,13 @@ Contact: info@swifty.cloud
         </el-main>
         <el-footer height="40px">
           <el-row>
-            <el-col :span="20">
+            <el-col :span="$store.getters.getLoginAs ? 12 : 20">
               © 2018 SwiftyCloud OÜ. All rights reserved.
+            </el-col>
+            <el-col :span="8" v-if="$store.getters.getLoginAs" style="text-align: right">
+              <div class="login-as-notify">
+                You are logged in as <strong>{{ $store.getters.getLoginAs }}</strong>
+              </div>
             </el-col>
             <el-col :span="2" style="text-align: right">
               <a href="mailto:info@swifty.cloud">Contact Us</a>
