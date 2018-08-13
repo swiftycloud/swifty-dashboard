@@ -74,7 +74,6 @@ Contact: info@swifty.cloud
               <el-dropdown-item @click.native="cutObjectToBuffer(scope.row.Key)">Cut</el-dropdown-item>
               <el-dropdown-item @click.native="copyObjectToBuffer(scope.row.Key)">Copy</el-dropdown-item>
               <!--<el-dropdown-item>Paste</el-dropdown-item>-->
-              <el-dropdown-item>Delete</el-dropdown-item>
               <el-dropdown-item @click.native="renameObject(scope.row.Key.replace(prefix, ''))">Rename</el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>
@@ -94,9 +93,9 @@ Contact: info@swifty.cloud
             <el-dropdown-menu slot="dropdown" class="bucket-menu">
               <el-dropdown-item @click.native="cutObjectToBuffer(scope.row.Key)">Cut</el-dropdown-item>
               <el-dropdown-item @click.native="downloadObject(scope.row.Key.replace(prefix, ''))">Download</el-dropdown-item>
+              <el-dropdown-item @click.native="deleteObject(scope.row.Key)">Delete</el-dropdown-item>
               <el-dropdown-item @click.native="renameObject(scope.row.Key.replace(prefix, ''))">Rename</el-dropdown-item>
               <el-dropdown-item @click.native="copyObjectToBuffer(scope.row.Key)">Copy</el-dropdown-item>
-              <el-dropdown-item>Delete</el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>
         </template>
@@ -579,6 +578,30 @@ export default {
         return this.fetchListObjects()
       }).catch(() => {
         // ..
+      }).finally(() => {
+        this.loading = false
+      })
+    },
+
+    deleteObject (key) {
+      this.$confirm('Selected object will be deleted', 'Warning', {
+        confirmButtonText: 'OK',
+        cancelButtonText: 'Cancel',
+        type: 'warning'
+      }).then(() => {
+        this.loading = true
+        this.$store.dispatch('deleteS3Object', {
+          project: this.$store.state.projects.currentProject,
+          bucket: this.$route.params.name,
+          object: key
+        }).then(() => {
+          return this.fetchListObjects()
+        }).catch(error => {
+          this.$notify.error({
+            title: 'Error',
+            message: error.response.data.message
+          })
+        })
       }).finally(() => {
         this.loading = false
       })
