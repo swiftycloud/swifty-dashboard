@@ -261,10 +261,10 @@ export default {
           lifetime: 1
         }).then(response => {
           this.form.link = (config.API_S3_SSL_ENABLED ? 'https://' : 'http://') +
+            this.$route.params.name + '.' +
+            response.data.accid + '.' +
             response.data.endpoint.split(':')[0] +
-            ':8080/' +
-            response.data.accid + '/' +
-            this.$route.params.name + '/'
+            ':8080/'
 
           this.loading = false
           this.httpServerSettingsVisible = true
