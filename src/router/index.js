@@ -29,6 +29,7 @@ const StatsMariaPage = () => import(/* webpackChunkName: "stats" */ '@/pages/Sta
 const AuthServicePage = () => import(/* webpackChunkName: "authservice" */ '@/pages/AuthServicePage')
 const RepositoriesPage = () => import(/* webpackChunkName: "repositories" */ '@/pages/RepositoriesPage')
 const AdminUsersPage = () => import(/* webpackChunkName: "admin" */ '@/pages/AdminUsersPage')
+const AccountsPage = () => import(/* webpackChunkName: "accounts" */ '@/pages/AccountsPage')
 
 Vue.use(Router)
 
@@ -116,6 +117,11 @@ export default new Router({
       path: '/repositories',
       name: 'repositories',
       component: RepositoriesPage
+    },
+    {
+      path: '/accounts',
+      name: 'accounts',
+      component: AccountsPage
     },
     {
       path: '/admin/users',
