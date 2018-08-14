@@ -75,6 +75,8 @@ export default {
     }
   }),
 
+  accounts: resource(config.API_GATE_ENDPOINT + '/accounts'),
+
   users: resource(config.API_ADMD_ENDPOINT + '/users', {
     one: (uid) => {
       return {
