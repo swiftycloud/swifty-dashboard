@@ -17,9 +17,10 @@ export default {
   state: {
     user: {
       id: null,
+      uid: null,
       name: null,
       created: null,
-      admin: true
+      roles: []
     },
     loginAs: false,
     token: null,
@@ -144,8 +145,10 @@ export default {
   mutations: {
     [SAVE_USER_INFO] (state, user) {
       state.user.id = user.id
+      state.user.uid = user.uid
       state.user.name = user.name
       state.user.created = user.created
+      state.user.roles = user.roles
     },
     [SAVE_AUTH_TOKEN] (state, payload) {
       state.token = payload.token

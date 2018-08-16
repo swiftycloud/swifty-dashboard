@@ -176,7 +176,7 @@ export default {
     },
 
     loginAs (user) {
-      window.open('/?as=' + user.id, '_blank')
+      window.open('/?as=' + user.uid, '_blank')
       window.focus()
     },
 
