@@ -15,7 +15,7 @@ Contact: info@swifty.cloud
       </el-col>
       <el-col :span="15" class="user-info">
         <p class="user-name">{{ $store.state.auth.user.name }}</p>
-        <p class="user-email">{{ $store.state.auth.user.id }}</p>
+        <p class="user-email">{{ $store.state.auth.user.uid }}</p>
       </el-col>
     </el-row>
     <el-dropdown trigger="click" placement="bottom-start" @command="handleCommand">
