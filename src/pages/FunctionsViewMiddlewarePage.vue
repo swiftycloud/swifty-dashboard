@@ -38,6 +38,10 @@ Contact: info@swifty.cloud
         prop="type"
         label="Type"
         sortable>
+        <template slot-scope="scope">
+          <span v-if="scope.row.type === 'account'">{{ scope.row.account_type }}</span>
+          <span v-else>{{ scope.row.type }}</span>
+        </template>
       </el-table-column>
     </el-table>
 
@@ -53,6 +57,7 @@ Contact: info@swifty.cloud
                        :value="type.id"
                        :key="type.id">
             </el-option>
+            <el-option label="Account" value="account"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="Entity name">
@@ -84,6 +89,7 @@ export default {
         id: null
       },
       mwareList: [],
+      accounts: [],
       loading: true,
       multipleSelection: [],
       addMiddlewareDialogVisible: false
@@ -99,7 +105,11 @@ export default {
     }).then(response => {
       return this.$store.dispatch('fetchMiddlewareTypes')
     }).then(response => {
-      this.$store.dispatch('fetchS3ListBuckets', this.$store.getters.project)
+      return this.$store.dispatch('fetchS3ListBuckets', this.$store.getters.project)
+    }).then(response => {
+      return api.accounts.get().then(response => {
+        this.accounts = response.data
+      })
     }).catch(() => {
       // ..
     }).finally(() => {
@@ -122,6 +132,8 @@ export default {
         })
 
         return buckets
+      } else if (this.form.type === 'account') {
+        return this.accounts
       } else {
         return this.$store.getters.getMiddlewaresByType(this.form.type)
       }
@@ -144,11 +156,35 @@ export default {
             type: 's3'
           })
         })
+
+        return api.functions.one(this.$route.params.fid).accounts.get()
+      }).then(response => {
+        response.data.forEach(item => {
+          this.mwareList.push({
+            id: item.id,
+            name: item.name,
+            type: 'account',
+            account_type: item.type
+          })
+        })
       })
     },
 
     attach () {
-      let type = this.form.type === 's3' ? 's3buckets' : 'middleware'
+      let type
+      switch (this.form.type) {
+        case 's3':
+          type = 's3buckets'
+          break
+
+        case 'account':
+          type = 'accounts'
+          break
+
+        default:
+          type = 'middleware'
+          break
+      }
 
       api.functions.one(this.$route.params.fid)[type].create('"' + this.form.id + '"').then(response => {
         this.loading = true
@@ -172,8 +208,22 @@ export default {
         this.loading = true
 
         var promises = []
-        this.multipleSelection.forEach((self) => {
-          let type = self.type === 's3' ? 's3buckets' : 'middleware'
+        this.multipleSelection.forEach(self => {
+          let type
+          switch (self.type) {
+            case 's3':
+              type = 's3buckets'
+              break
+
+            case 'account':
+              type = 'accounts'
+              break
+
+            default:
+              type = 'middleware'
+              break
+          }
+
           promises.push(
             api.functions.one(this.$route.params.fid)[type].delete(self.id).catch(error => {
               this.$notify.error({
