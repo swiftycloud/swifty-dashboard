@@ -48,6 +48,7 @@ export default {
         middleware: resource(config.API_GATE_ENDPOINT + '/functions/' + fid + '/middleware'),
         state: resource(config.API_GATE_ENDPOINT + '/functions/' + fid + '/state'),
         s3buckets: resource(config.API_GATE_ENDPOINT + '/functions/' + fid + '/s3buckets'),
+        accounts: resource(config.API_GATE_ENDPOINT + '/functions/' + fid + '/accounts'),
         authctx: resource(config.API_GATE_ENDPOINT + '/functions/' + fid + '/authctx'),
         logs: resource(config.API_GATE_ENDPOINT + '/functions/' + fid + '/logs'),
 

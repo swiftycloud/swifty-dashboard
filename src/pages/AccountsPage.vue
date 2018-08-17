@@ -53,12 +53,6 @@ Contact: info@swifty.cloud
             label="Type"
             sortable>
           </el-table-column>
-          <el-table-column
-            prop="update"
-            label="Updated"
-            sortable
-            width="200">
-          </el-table-column>
         </el-table>
 
         <el-dialog
@@ -90,13 +84,13 @@ Contact: info@swifty.cloud
           :visible.sync="updateAccountDialog">
           <el-form label-width="170px">
             <el-form-item label="Account Type">
-              <el-select v-model="accountForm.type">
+              <el-select v-model="accountForm.type" disabled>
                 <el-option label="Generic" value="generic"></el-option>
                 <el-option label="Telegram API" value="telegram"></el-option>
               </el-select>
             </el-form-item>
             <el-form-item label="Account Name">
-              <el-input v-model="accountForm.name" placeholder="Swifty_Bot"></el-input>
+              <el-input v-model="accountForm.name" placeholder="Swifty_Bot" disabled></el-input>
             </el-form-item>
             <el-form-item label="Token">
               <el-input v-model="accountForm.token" placeholder="dsdzijicdhcc7etcetceub3idh83gc7egc6tuybc837ec"></el-input>
