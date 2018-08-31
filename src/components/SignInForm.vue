@@ -76,7 +76,6 @@ export default {
               this.$message.error('Sign in was failed')
             } else {
               this.$message.error('Opps. Unknown error')
-              console.log(error.message)
             }
           })
         }
