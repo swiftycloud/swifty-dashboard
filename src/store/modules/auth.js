@@ -13,6 +13,42 @@ import {
   SAVE_LOGIN_AS_STATUS
 } from '@/store/mutation-types.js'
 
+function getCookie (name) {
+  var matches = document.cookie.match(new RegExp(
+    '(?:^|; )' + name.replace(/([.$?*|{}()[]\\\/\+^])/g, '\\$1') + '=([^;]*)'
+  ))
+  return matches ? decodeURIComponent(matches[1]) : undefined
+}
+
+function setCookie (name, value, options) {
+  options = options || {}
+
+  var expires = options.expires
+
+  if (typeof expires === 'number' && expires) {
+    var d = new Date()
+    d.setTime(d.getTime() + expires * 1000)
+    expires = options.expires = d
+  }
+  if (expires && expires.toUTCString) {
+    options.expires = expires.toUTCString()
+  }
+
+  value = encodeURIComponent(value)
+
+  var updatedCookie = name + '=' + value
+
+  for (var propName in options) {
+    updatedCookie += '; ' + propName
+    var propValue = options[propName]
+    if (propValue !== true) {
+      updatedCookie += '=' + propValue
+    }
+  }
+
+  document.cookie = updatedCookie
+}
+
 export default {
   state: {
     user: {
@@ -35,6 +71,16 @@ export default {
 
   actions: {
     initUserAuth ({ commit, dispatch }, router) {
+      if (getCookie('_id') && getCookie('_token') && getCookie('_expires')) {
+        if (new Date(getCookie('_expires')) > new Date()) {
+          dispatch('saveAuthToken', {
+            token: getCookie('_token'),
+            expires: getCookie('_expires')
+          })
+          dispatch('saveUserId', getCookie('_id'))
+        }
+      }
+
       const userId = localStorage.getItem('_id')
       const token = localStorage.getItem('_token')
       const expires = localStorage.getItem('_expires')
@@ -124,9 +170,11 @@ export default {
     },
 
     userLogout ({ commit, dispatch }, router) {
+      setCookie('_id', '', { expires: -1, domain: getCookie('_domain') })
+      setCookie('_token', '', { expires: -1, domain: getCookie('_domain') })
+      setCookie('_expires', '', { expires: -1, domain: getCookie('_domain') })
       localStorage.clear()
       commit(RESET_AUTH_DATA)
-      dispatch('logoutAs')
       router.push({ path: '/sign' })
     },
 
