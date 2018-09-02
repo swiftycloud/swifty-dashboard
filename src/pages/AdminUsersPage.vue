@@ -231,7 +231,7 @@ export default {
 
         var promises = []
         this.multipleSelection.forEach(item => {
-          promises.push(api.users.delete(item.uid))
+          promises.push(api.users.delete(item.id))
         })
 
         return Promise.all(promises)
