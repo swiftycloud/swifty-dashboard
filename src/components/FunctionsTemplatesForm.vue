@@ -313,12 +313,13 @@ export default {
 }
 
 .el-radio.is-bordered {
-  height: 122px !important;
+  height: 138px !important;
   width: 100%;
   display: table;
   background: white;
   padding: 0 20px !important;
   margin: 10px 0;
+  overflow: hidden;
 
   .el-radio__input,
   .el-radio__label {
