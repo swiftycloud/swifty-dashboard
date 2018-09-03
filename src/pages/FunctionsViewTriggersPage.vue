@@ -60,12 +60,18 @@ Contact: info@swifty.cloud
         <template slot-scope="scope">
           <code v-if="scope.row.source === 'cron'">{{ scope.row.cron.tab }}</code>
           <span v-if="scope.row.source === 'url'">
-            <span style="padding-right: 10px">{{ scope.row.url }}</span>
-            <el-button size="mini" type="primary" plain @click="copyToClipboard()">{{ copyButtonText }}</el-button>
-            <input type="text" class="copy-text-input" id="copyText" :value="scope.row.url">
+            <span style="padding-right: 10px" class="trigger-post-url">{{ scope.row.url }}</span>
           </span>
           <span v-if="scope.row.source === 's3'">{{ scope.row.s3.ops.split(',').join(', ') }}</span>
           <span v-else>{{ scope.row.data }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column width="150px">
+        <template slot-scope="scope">
+          <span v-if="scope.row.source === 'url'">
+            <el-button size="mini" type="primary" plain @click="copyToClipboard()">{{ copyButtonText }}</el-button>
+            <input type="text" class="copy-text-input" id="copyText" :value="scope.row.url">
+          </span>
         </template>
       </el-table-column>
     </el-table>
@@ -605,12 +611,13 @@ export default {
 </script>
 
 <style lang="scss">
-.trigger-post-url-label {
-  line-height: 36px;
-}
 .trigger-post-url {
-  color: #909399;
-  font-size: 14px;
+  display: inline-block;
+  width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  float: left;
 }
 .el-dialog__footer {
   text-align: left !important;

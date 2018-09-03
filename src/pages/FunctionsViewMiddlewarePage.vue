@@ -97,7 +97,7 @@ export default {
   },
   created () {
     this.$store.dispatch('setParentPage', { name: 'functions', title: 'Functions' })
-    this.$store.dispatch('setFunctionActiveTab', 'middleware')
+    this.$store.dispatch('setFunctionActiveTab', 'access')
     this.fetchMiddlewareList().then(response => {
       return this.$store.dispatch('fetchMiddlewareList', {
         project: this.$store.getters.project

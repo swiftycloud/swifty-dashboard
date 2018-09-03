@@ -47,7 +47,7 @@ Contact: info@swifty.cloud
           </el-row>
 
           <el-row :gutter="20" class="template-radio-block">
-            <el-col :xs="24" :sm="24" :md="12" :lg="10" v-for="template in filteredTemplates" :key="template.name">
+            <el-col :xs="24" :sm="24" :md="12" :lg="10" v-for="template in filteredTemplates" :key="template.path">
               <el-radio v-model="selectedTemplate" :label="template" border>
                 <p class="title">{{ template.name }} <span class="language">({{ template.lang }})</span></p>
                 <p class="description">{{ template.desc }}</p>
@@ -135,6 +135,10 @@ Contact: info@swifty.cloud
               <el-input v-model="form.name" :autofocus="true"></el-input>
             </el-form-item>
 
+            <el-form-item label="Environment" prop="env" style="width: 60%">
+              <el-input type="textarea" v-model="funcEnv"></el-input>
+            </el-form-item>
+
             <el-button @click="step = 1">Back</el-button>
             <el-button type="primary" class="create-function-button" @click="createFunction">
               Create
@@ -165,7 +169,7 @@ export default {
         project: this.$store.getters.currentProject,
         name: null,
         sources: { type: 'git', repo: null, sync: false },
-        code: { lang: null },
+        code: { lang: null, env: [] },
         event: { source: 'url' },
         userdata: ''
       },
@@ -233,6 +237,16 @@ export default {
 
     repoWithFile () {
       return this.repoId + '/' + this.selectedTemplate.path
+    },
+
+    funcEnv: {
+      get () {
+        return this.form.code.env.join('\n')
+      },
+
+      set (val) {
+        this.form.code.env = val.split('\n')
+      }
     }
   },
 
@@ -313,12 +327,13 @@ export default {
 }
 
 .el-radio.is-bordered {
-  height: 122px !important;
+  height: 138px !important;
   width: 100%;
   display: table;
   background: white;
   padding: 0 20px !important;
   margin: 10px 0;
+  overflow: hidden;
 
   .el-radio__input,
   .el-radio__label {
