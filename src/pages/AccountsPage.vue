@@ -63,13 +63,20 @@ Contact: info@swifty.cloud
               <el-select v-model="accountForm.type">
                 <el-option label="Generic" value="generic"></el-option>
                 <el-option label="Telegram API" value="telegram"></el-option>
+                <el-option label="Facebook API" value="facebook"></el-option>
               </el-select>
             </el-form-item>
             <el-form-item label="Account Name">
               <el-input v-model="accountForm.name" placeholder="Swifty_Bot"></el-input>
             </el-form-item>
-            <el-form-item label="Token">
+            <el-form-item label="Token" v-if="accountForm.type !== 'facebook'">
               <el-input v-model="accountForm.token" placeholder="dsdzijicdhcc7etcetceub3idh83gc7egc6tuybc837ec"></el-input>
+            </el-form-item>
+            <el-form-item label="Client ID" v-if="accountForm.type === 'facebook'">
+              <el-input v-model="accountForm.client" placeholder=""></el-input>
+            </el-form-item>
+            <el-form-item label="Secret" v-if="accountForm.type === 'facebook'">
+              <el-input v-model="accountForm.secret" placeholder=""></el-input>
             </el-form-item>
           </el-form>
           <p>You can attach account to the function to store secret access data.</p>
@@ -92,8 +99,14 @@ Contact: info@swifty.cloud
             <el-form-item label="Account Name">
               <el-input v-model="accountForm.name" placeholder="Swifty_Bot" disabled></el-input>
             </el-form-item>
-            <el-form-item label="Token">
+            <el-form-item label="Token" v-if="accountForm.type !== 'facebook'">
               <el-input v-model="accountForm.token" placeholder="dsdzijicdhcc7etcetceub3idh83gc7egc6tuybc837ec"></el-input>
+            </el-form-item>
+            <el-form-item label="Client ID" v-if="accountForm.type === 'facebook'">
+              <el-input v-model="accountForm.client" placeholder=""></el-input>
+            </el-form-item>
+            <el-form-item label="Secret" v-if="accountForm.type === 'facebook'">
+              <el-input v-model="accountForm.secret" placeholder=""></el-input>
             </el-form-item>
           </el-form>
           <p>You can attach account to the function to store secret access data.</p>
@@ -121,7 +134,9 @@ export default {
         id: null,
         type: 'generic',
         name: null,
-        token: null
+        token: null,
+        client: null,
+        secret: null
       },
       accounts: [],
 
@@ -150,6 +165,8 @@ export default {
       this.accountForm.type = 'generic'
       this.accountForm.name = null
       this.accountForm.token = null
+      this.accountForm.client = null
+      this.accountForm.secret = null
       this.newAccountDialog = true
     },
 
