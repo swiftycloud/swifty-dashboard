@@ -268,11 +268,11 @@ export default {
   /** INFO **/
 
   infoLangs () {
-    return axios.post(config.API_GATE_ENDPOINT + '/info/langs')
+    return axios.get(config.API_GATE_ENDPOINT + '/info/langs')
   },
 
   infoMiddlewares () {
-    return axios.post(config.API_GATE_ENDPOINT + '/info/mwares')
+    return axios.get(config.API_GATE_ENDPOINT + '/info/mwares')
   },
 
   /** S3 API **/
