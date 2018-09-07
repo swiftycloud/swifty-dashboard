@@ -322,7 +322,7 @@ export default {
 
         var promises = []
         this.multipleSelection.forEach(item => {
-          promises.push(item.delete())
+          promises.push(this.$store.dispatch('deleteFunctionByID', item.id))
         })
 
         return Promise.all(promises)
