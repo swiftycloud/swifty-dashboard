@@ -13,14 +13,6 @@ import {
 } from '../mutation-types'
 import api from '@/api'
 
-function transformToTestFunc (data) {
-  data = JSON.parse(JSON.stringify(data))
-  data.name = data.project.concat('_', data.name)
-  data.project = 'test'
-
-  return data
-}
-
 export default {
   state: {
     function: {},
@@ -88,18 +80,6 @@ export default {
       })
     },
 
-    findTestFunctionByID ({ commit }, fid) {
-      return api.functions.find(fid).then(response => {
-        let testFuncData = transformToTestFunc({
-          project: response.data.project,
-          name: response.data.name
-        })
-        return api.functions.get(testFuncData)
-      }).then(response => {
-        return response.data[0]
-      })
-    },
-
     /** Update Function **/
     updateFunction ({ commit, state }, { fid, data }) {
       return api.functions.update(fid, data)
@@ -131,17 +111,7 @@ export default {
     /** Delete Function **/
 
     deleteFunctionByID ({ state }, fid) {
-      return api.functions.find(fid).then(response => {
-        let testFuncData = transformToTestFunc({
-          project: response.data.project,
-          name: response.data.name
-        })
-        return api.functions.get(testFuncData)
-      }).then(response => {
-        return api.functions.delete(response.data[0].id)
-      }).then(function () {
-        return api.functions.delete(fid)
-      })
+      return api.functions.delete(fid)
     },
 
     /** Change Function State **/
@@ -163,24 +133,16 @@ export default {
 
     fetchFunctionInfo ({ state, getters, commit }, { project, name }) {
       return api.functionInfo(project, name).then(response => {
-        if (project !== 'test') {
-          commit(SAVE_CURRENT_FUNCTION, response.data)
-        }
+        commit(SAVE_CURRENT_FUNCTION, response.data)
         return response
       })
     },
 
     fetchFunctionStats ({ state, getters, commit }, { project, name }) {
       return api.functionStats(project, name).then(response => {
-        if (project !== 'test') {
-          commit(SAVE_FUNCTION_STATS, response.data)
-        }
+        commit(SAVE_FUNCTION_STATS, response.data)
         return response
       })
-    },
-
-    fetchTestFunctionInfo ({ dispatch }, data) {
-      return dispatch('fetchFunctionInfo', transformToTestFunc(data))
     },
 
     fetchFunctionCode ({ state }, { project, name, version }) {
@@ -194,36 +156,17 @@ export default {
 
     // creating functions
     createFunction ({ commit, state }, data) {
-      return api.functions.create(transformToTestFunc(data)).then(function () {
-        return api.functions.create(data)
-      })
-    },
-
-    // update functions
-    updateTestFunction ({ dispatch }, data) {
-      return dispatch('updateFunction', transformToTestFunc(data))
+      return api.functions.create(data)
     },
 
     // enable function
     enableFunction ({ dispatch }, { project, name }) {
-      return api.functionState(project, name, 'ready').then(response => {
-        const data = transformToTestFunc({
-          project: project,
-          name: name
-        })
-        return api.functionState(data.project, data.name, 'ready')
-      })
+      return api.functionState(project, name, 'ready')
     },
 
     // disable function
     disableFunction ({ dispatch }, { project, name }) {
-      return api.functionState(project, name, 'deactivated').then(response => {
-        const data = transformToTestFunc({
-          project: project,
-          name: name
-        })
-        return api.functionState(data.project, data.name, 'deactivated')
-      })
+      return api.functionState(project, name, 'deactivated')
     }
   },
 

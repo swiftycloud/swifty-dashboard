@@ -68,6 +68,7 @@ Contact: info@swifty.cloud
 </template>
 
 <script>
+import api from '@/api'
 import { mapActions } from 'vuex'
 
 import { codemirror } from 'vue-codemirror'
@@ -169,39 +170,13 @@ export default {
 
     testFunctionCode () {
       this.loading = true
-      var testFunction = {}
 
-      // fetch test function for current function
-      this.findTestFunctionByID(this.$route.params.fid).then(func => {
-        testFunction = func
-        // save code to test function
-        return this.updateFunctionSources({
-          fid: testFunction.id,
-          data: {
-            type: 'code',
-            code: btoa(this.code)
-          }
-        })
-      }).then(response => {
-        // fetch test function version
-        return this.getFunctionByID(testFunction.id)
-      }).then(response => {
-        // wait
-        return this.waitFunctionVersion({
-          fid: response.data.id,
-          data: {
-            timeout: 30000,
-            version: response.data.version
-          }
-        })
-      }).then(response => {
-        // and run
-        return this.runFunctionCode({
-          fid: testFunction.id,
-          data: {
-            args: this.args
-          }
-        })
+      api.functions.one(this.$route.params.fid).run({
+        args: this.args,
+        src: {
+          type: 'code',
+          code: btoa(this.code)
+        }
       }).then(response => {
         // show logs
         this.logs = '------ stdout -----\n' +
