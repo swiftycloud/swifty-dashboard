@@ -11,7 +11,7 @@ Contact: info@swifty.cloud
 
     <div class="actions-block">
         <el-button type="primary" size="medium" @click="testFunctionCode" :disabled="loading">Test</el-button>
-        <el-button type="primary" size="medium" @click="saveFunctionCode" :disabled="loading">Save</el-button>
+        <el-button type="primary" size="medium" @click="saveFunctionCode" :disabled="loading || sync">Save</el-button>
         <div class="status-block" :class="{ success: runStatus == 'success', failed: runStatus == 'failed' }">
           <i class="fa fa-circle status-icon">
           </i>
@@ -26,9 +26,20 @@ Contact: info@swifty.cloud
 
     <el-row :gutter="35">
       <el-col :xs="24" :sm="24" :md="20" :lg="20">
+        <el-alert
+          title
+          type="success"
+          show-icon
+          :closable="false"
+          v-if="sync">
+          This function automatically update from the upstream repository every hour.
+          <a href="#" @click.prevent="stopCodeSync">Stop syncronization</a>
+        </el-alert>
+
         <div class="custom-form-item">
-          <label for="code">Code</label>
-          <codemirror id="code" v-model="code" :value="code" :options="cmOptions"></codemirror>
+          <label for="code">Code <span v-if="sync">(stop syncronization to edit code here)</span></label>
+          <pre class="review-code" v-if="sync">{{ code }}</pre>
+          <codemirror id="code" v-model="code" :value="code" :options="cmOptions" v-else></codemirror>
         </div>
       </el-col>
 
@@ -68,6 +79,7 @@ Contact: info@swifty.cloud
 </template>
 
 <script>
+import api from '@/api'
 import { mapActions } from 'vuex'
 
 import { codemirror } from 'vue-codemirror'
@@ -79,6 +91,7 @@ export default {
   components: { codemirror },
   data () {
     return {
+      sync: false,
       code: null,
       args: {},
       argsTmp: '',
@@ -158,6 +171,7 @@ export default {
       return this.fetchFunctionSourcesByID(this.$route.params.fid).then(response => {
         if ('code' in response.data && response.data.code !== '') {
           this.code = atob(response.data.code)
+          this.sync = response.data.sync
         }
       })
     },
@@ -169,39 +183,13 @@ export default {
 
     testFunctionCode () {
       this.loading = true
-      var testFunction = {}
 
-      // fetch test function for current function
-      this.findTestFunctionByID(this.$route.params.fid).then(func => {
-        testFunction = func
-        // save code to test function
-        return this.updateFunctionSources({
-          fid: testFunction.id,
-          data: {
-            type: 'code',
-            code: btoa(this.code)
-          }
-        })
-      }).then(response => {
-        // fetch test function version
-        return this.getFunctionByID(testFunction.id)
-      }).then(response => {
-        // wait
-        return this.waitFunctionVersion({
-          fid: response.data.id,
-          data: {
-            timeout: 30000,
-            version: response.data.version
-          }
-        })
-      }).then(response => {
-        // and run
-        return this.runFunctionCode({
-          fid: testFunction.id,
-          data: {
-            args: this.args
-          }
-        })
+      api.functions.one(this.$route.params.fid).run({
+        args: this.args,
+        src: {
+          type: 'code',
+          code: btoa(this.code)
+        }
       }).then(response => {
         // show logs
         this.logs = '------ stdout -----\n' +
@@ -234,7 +222,8 @@ export default {
         fid: this.$route.params.fid,
         data: {
           type: 'code',
-          code: btoa(this.code)
+          code: btoa(this.code),
+          sync: this.sync
         }
       }).then(response => {
         return this.updateFunction({
@@ -247,6 +236,33 @@ export default {
         this.saved = true
       }).catch(error => {
         this.setRunStatus('failed', 'Failed')
+        this.$notify.error({
+          title: 'Error',
+          message: error.response.data.message || 'Unknown error'
+        })
+      }).finally(() => {
+        this.loading = false
+      })
+    },
+
+    stopCodeSync () {
+      this.$confirm('Are you sure about that?', 'Warning', {
+        confirmButtonText: 'Yes',
+        cancelButtonText: 'No',
+        type: 'warning'
+      }).then(() => {
+        this.loading = true
+        return this.updateFunctionSources({
+          fid: this.$route.params.fid,
+          data: {
+            type: 'code',
+            code: btoa(this.code),
+            sync: false
+          }
+        })
+      }).then(() => {
+        return this.fetchFunctionCode()
+      }).catch(error => {
         this.$notify.error({
           title: 'Error',
           message: error.response.data.message || 'Unknown error'
@@ -314,5 +330,19 @@ export default {
       float: right;
     }
   }
+}
+
+.sync-container {
+  margin-top: 10px;
+}
+
+.review-code {
+  border-radius: 4px;
+  border: solid 1px #dcdfe6;
+  padding: 10px;
+  margin-top: 0;
+
+  overflow-y: auto;
+  max-height: 300px;
 }
 </style>

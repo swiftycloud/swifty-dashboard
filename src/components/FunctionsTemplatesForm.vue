@@ -135,10 +135,6 @@ Contact: info@swifty.cloud
               <el-input v-model="form.name" :autofocus="true"></el-input>
             </el-form-item>
 
-            <el-form-item label="Environment" prop="env" style="width: 60%">
-              <el-input type="textarea" v-model="funcEnv"></el-input>
-            </el-form-item>
-
             <el-button @click="step = 1">Back</el-button>
             <el-button type="primary" class="create-function-button" @click="createFunction">
               Create
@@ -237,16 +233,6 @@ export default {
 
     repoWithFile () {
       return this.repoId + '/' + this.selectedTemplate.path
-    },
-
-    funcEnv: {
-      get () {
-        return this.form.code.env.join('\n')
-      },
-
-      set (val) {
-        this.form.code.env = val.split('\n')
-      }
     }
   },
 

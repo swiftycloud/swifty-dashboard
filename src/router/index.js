@@ -13,6 +13,7 @@ const FunctionsPage = () => import(/* webpackChunkName: "functions" */ '@/pages/
 const FunctionsCreatePage = () => import(/* webpackChunkName: "functions" */ '@/pages/FunctionsCreatePage')
 const FunctionsViewPage = () => import(/* webpackChunkName: "functions" */ '@/pages/FunctionsViewPage')
 const FunctionsViewCodePage = () => import(/* webpackChunkName: "functions" */ '@/pages/FunctionsViewCodePage')
+const FunctionsViewVariablesPage = () => import(/* webpackChunkName: "functions" */ '@/pages/FunctionsViewVariablesPage')
 const FunctionsViewResourcesPage = () => import(/* webpackChunkName: "functions" */ '@/pages/FunctionsViewResourcesPage')
 const FunctionsViewMiddlewarePage = () => import(/* webpackChunkName: "functions" */ '@/pages/FunctionsViewMiddlewarePage')
 const FunctionsViewTriggersPage = () => import(/* webpackChunkName: "functions" */ '@/pages/FunctionsViewTriggersPage')
@@ -66,6 +67,7 @@ export default new Router({
       component: FunctionsViewPage,
       children: [
         { path: 'code', name: 'functions.view.code', component: FunctionsViewCodePage },
+        { path: 'variables', name: 'functions.view.variables', component: FunctionsViewVariablesPage },
         { path: 'resources', name: 'functions.view.resources', component: FunctionsViewResourcesPage },
         { path: 'access', name: 'functions.view.access', component: FunctionsViewMiddlewarePage },
         { path: 'triggers', name: 'functions.view.triggers', component: FunctionsViewTriggersPage },

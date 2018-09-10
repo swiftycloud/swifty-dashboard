@@ -51,6 +51,7 @@ export default {
         accounts: resource(config.API_GATE_ENDPOINT + '/functions/' + fid + '/accounts'),
         authctx: resource(config.API_GATE_ENDPOINT + '/functions/' + fid + '/authctx'),
         logs: resource(config.API_GATE_ENDPOINT + '/functions/' + fid + '/logs'),
+        env: resource(config.API_GATE_ENDPOINT + '/functions/' + fid + '/env'),
 
         // actions
         run: data => axios.post(config.API_GATE_ENDPOINT + '/functions/' + fid + '/run', data),
