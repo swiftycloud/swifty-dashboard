@@ -9,6 +9,7 @@ Contact: info@swifty.cloud
   <div class="page-content">
     <el-tabs v-model="activeTab" @tab-click="handleClick">
       <el-tab-pane label="Code" name="code"></el-tab-pane>
+      <el-tab-pane label="Variables" name="variables"></el-tab-pane>
       <el-tab-pane label="Resources" name="resources"></el-tab-pane>
       <el-tab-pane label="Access" name="access"></el-tab-pane>
       <el-tab-pane label="Triggers" name="triggers"></el-tab-pane>
