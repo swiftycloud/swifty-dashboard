@@ -10,9 +10,9 @@ Contact: info@swifty.cloud
     <p>User management</p>
 
     <actions-block>
-      <el-button type="primary" @click="userCreateDialog = true">Create</el-button>
-      <el-button type="primary">Plan</el-button>
-      <el-button type="primary" @click="deleteSelected" :disabled="multipleSelection.length === 0">Delete</el-button>
+      <el-button type="primary" size="medium" @click="userCreateDialog = true">Create</el-button>
+      <el-button type="primary" size="medium">Plan</el-button>
+      <el-button type="primary" size="medium" @click="deleteSelected" :disabled="multipleSelection.length === 0">Delete</el-button>
     </actions-block>
 
     <div class="row">

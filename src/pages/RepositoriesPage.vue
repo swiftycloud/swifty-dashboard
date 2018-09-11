@@ -70,7 +70,7 @@ Contact: info@swifty.cloud
           :visible.sync="settingsRepoFormDialog">
             <el-form label-width="170px">
               <el-form-item label="Git Repository URL" style="margin-bottom: 0">
-                <el-input v-model="form.url" placeholder="https://username:password@gitlab.company.com/group/project.git"></el-input>
+                <el-input v-model="form.url" placeholder="https://username:password@github.com/user/repo.git"></el-input>
               </el-form-item>
               <el-form-item>
                 <el-checkbox label="Mirror repository automatically" v-model="form.mirror"></el-checkbox>
@@ -80,7 +80,7 @@ Contact: info@swifty.cloud
                   title="Repository Mirroring"
                   width="400"
                   trigger="hover">
-                  Automatically update this project's branches and tags from the upstream repository every hour. The Git LFS objects will not be synced.<br><a href='#' class="primary">More details</a>
+                  Automatically update this project's branches and tags from the upstream repository every hour.<br>
 
                   <span class="fa-stack mirror-info" slot="reference">
                     <i class="fa fa-circle-thin fa-stack-2x"></i>
@@ -92,8 +92,7 @@ Contact: info@swifty.cloud
             <p>
               The repository must be accessible over http://, https:// or git://.<br>
               If your HTTP repository is not publicly accessible, add authentication information to the URL like:
-              https://username:password@gitlab.company.com/group/project.git.<br>
-              The import will time out after 180 minutes 0 seconds. For repositories that take longer, use a clone/push combination.
+              https://username:password@github.com/user/repo.git.<br>
             </p>
             <span slot="footer" class="dialog-footer text-left">
               <el-button @click="cancelSettingsFormModal">Cancel</el-button>
