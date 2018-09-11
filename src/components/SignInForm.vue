@@ -1,4 +1,4 @@
-<!-- 
+<!--
 
 © 2018 SwiftyCloud OÜ. All rights reserved.
 Contact: info@swifty.cloud
@@ -27,8 +27,8 @@ Contact: info@swifty.cloud
     </ul>
 
     <ul class="sign-in-links">
-      <li><small><a href="#">Don’t remember your password?</a></small></li>
-      <li><a href="#">Don’t have an account? Sign up!</a></li>
+      <li><small><a href="http://login.swifty.cloud/password/link">Don’t remember your password?</a></small></li>
+      <li><a href="http://login.swifty.cloud/signup">Don’t have an account? Sign Up!</a></li>
     </ul>
   </div>
 </template>
