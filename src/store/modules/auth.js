@@ -175,7 +175,7 @@ export default {
       setCookie('_expires', '', { expires: -1, domain: getCookie('_domain') })
       localStorage.clear()
       commit(RESET_AUTH_DATA)
-      router.push({ path: '/sign' })
+      window.location.href = 'http://login.swifty.cloud/signin'
     },
 
     saveAuthToken ({ commit }, { token, expires }) {
