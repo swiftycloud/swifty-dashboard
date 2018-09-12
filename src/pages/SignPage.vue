@@ -1,4 +1,4 @@
-<!-- 
+<!--
 
 © 2018 SwiftyCloud OÜ. All rights reserved.
 Contact: info@swifty.cloud
@@ -11,9 +11,9 @@ Contact: info@swifty.cloud
       <el-tab-pane label="Sign In">
         <sign-in-form></sign-in-form>
       </el-tab-pane>
-      <el-tab-pane label="Sign Up">
+      <!--<el-tab-pane label="Sign Up">
         <sign-up-form></sign-up-form>
-      </el-tab-pane>
+      </el-tab-pane>-->
     </el-tabs>
   </el-card>
 </template>

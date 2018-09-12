@@ -10,7 +10,7 @@ Contact: info@swifty.cloud
     <p>Here you can manage your account and secrets</p>
 
     <actions-block>
-      <el-button type="primary" @click="openNewAccountDialog">Create account</el-button>
+      <el-button type="primary" size="medium" @click="openNewAccountDialog">Create account</el-button>
     </actions-block>
 
     <div class="row" v-loading="loading">
