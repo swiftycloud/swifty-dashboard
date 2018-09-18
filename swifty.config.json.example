@@ -3,5 +3,6 @@
   "API_ADMD_ENDPOINT": "",
   "API_USERNAME": "",
   "API_PASSWORD": "",
-  "API_S3_SSL_ENABLED": true
+  "API_S3_SSL_ENABLED": true,
+  "SWY_CONNECTOR_URL": ""
 }

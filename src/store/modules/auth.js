@@ -4,6 +4,7 @@
 */
 
 import api from '@/api'
+import config from '@/api/config'
 import { Model } from 'vue-api-query'
 import {
   SAVE_USER_INFO,
@@ -175,7 +176,7 @@ export default {
       setCookie('_expires', '', { expires: -1, domain: getCookie('_domain') })
       localStorage.clear()
       commit(RESET_AUTH_DATA)
-      window.location.href = 'http://login.swifty.cloud/signin'
+      window.location.href = config.SWY_CONNECTOR_URL + '/signin'
     },
 
     saveAuthToken ({ commit }, { token, expires }) {
