@@ -27,16 +27,21 @@ Contact: info@swifty.cloud
     </ul>
 
     <ul class="sign-in-links">
-      <li><small><a href="http://login.swifty.cloud/password/link">Don’t remember your password?</a></small></li>
-      <li><a href="http://login.swifty.cloud/signup">Don’t have an account? Sign Up!</a></li>
+      <li><small><a :href="remember_link">Don’t remember your password?</a></small></li>
+      <li><a :href="sign_up_link">Don’t have an account? Sign Up!</a></li>
     </ul>
   </div>
 </template>
 
 <script>
+import config from '@/api/config'
+
 export default {
   data () {
     return {
+      remember_link: config.SWY_CONNECTOR_URL + '/password/link',
+      sign_up_link: config.SWY_CONNECTOR_URL + '/signup',
+
       form: {
         email: null,
         password: null,
