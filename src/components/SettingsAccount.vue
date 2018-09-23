@@ -10,10 +10,10 @@
 
         <el-form label-position="top">
           <el-form-item label="Old password">
-            <el-input type="password" v-model="oldPassword" placeholder="********"></el-input>
+            <el-input type="password" v-model="form.oldPassword" placeholder="********"></el-input>
           </el-form-item>
           <el-form-item label="New password">
-            <el-input type="password" v-model="newPassword" placeholder="********"></el-input>
+            <el-input type="password" v-model="form.newPassword" placeholder="********"></el-input>
           </el-form-item>
 
           <el-button type="primary">Change password</el-button>
