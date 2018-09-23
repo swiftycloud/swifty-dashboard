@@ -1,6 +1,6 @@
 <template>
   <div class="settings-plan">
-    <p class="description">You are currently on <strong>Free</strong> plan. Please upgrade your plan to get more benefits.<br>
+    <p class="description">You are currently on <strong>{{ currentPlan }}</strong> plan. Please upgrade your plan to get more benefits.<br>
     All plans are free to use during beta period! We will automatically charge you when the service goes production.</p>
 
     <el-row :gutter="12">
