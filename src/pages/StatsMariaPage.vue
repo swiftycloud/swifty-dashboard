@@ -46,7 +46,11 @@ export default {
       mariaStats: [
         { name: 'Used Storage, GB', period: 0, limit: null },
         { name: 'Number of databases', period: 0, limit: null }
-      ]
+      ],
+
+      periods: 0,
+      periodFrom: null,
+      periodTill: null
     }
   },
 
