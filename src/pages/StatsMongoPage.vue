@@ -44,7 +44,7 @@ export default {
     return {
       loading: false,
       mongoStats: [
-        { name: 'Used Storage, GB', period: 0, limit: null },
+        { name: 'Used Storage, MB', period: 0, limit: null },
         { name: 'Number of databases', period: 0, limit: null }
       ],
 
@@ -64,7 +64,7 @@ export default {
       this.loading = true
       this.$store.dispatch('getStats', { periods: this.periods }).then(response => {
         if ('mongo' in response.data.mware) {
-          this.mongoStats[0].period = response.data.mware.mongo.disk_usage
+          this.mongoStats[0].period = response.data.mware.mongo.disk_usage / 1024
           this.mongoStats[1].period = response.data.mware.mongo.count
         }
 

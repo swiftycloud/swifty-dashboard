@@ -44,7 +44,7 @@ export default {
     return {
       loading: false,
       mariaStats: [
-        { name: 'Used Storage, GB', period: 0, limit: null },
+        { name: 'Used Storage, MB', period: 0, limit: null },
         { name: 'Number of databases', period: 0, limit: null }
       ],
 
@@ -64,7 +64,7 @@ export default {
       this.loading = true
       this.$store.dispatch('getStats', { periods: this.periods }).then(response => {
         if ('mariadb' in response.data.mware) {
-          this.mariaStats[0].period = response.data.mware.mariadb.disk_usage
+          this.mariaStats[0].period = response.data.mware.mariadb.disk_usage / 1024
           this.mariaStats[1].period = response.data.mware.mariadb.count
         }
 
