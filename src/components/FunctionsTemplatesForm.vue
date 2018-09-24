@@ -153,7 +153,7 @@ import api from '@/api'
 export default {
   data () {
     var validateFunctionName = (rule, value, callback) => {
-      if (/^[A-z0-9_]+$/.test(value) === false) {
+      if (/^[A-z0-9_.]+$/.test(value) === false) {
         callback(new Error('Please input correct function name'))
       } else {
         callback()
