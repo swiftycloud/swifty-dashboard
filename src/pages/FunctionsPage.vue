@@ -69,7 +69,7 @@ Contact: info@swifty.cloud
             type="selection"
             width="55">
           </el-table-column>
-          <el-table-column
+          <el-table-tree-column
             prop="name"
             label="Name"
             sortable>
@@ -82,7 +82,7 @@ Contact: info@swifty.cloud
                 <el-tag size="medium" v-if="v === 'auth'" type="danger">Authentication</el-tag>
               </span>
             </template>
-          </el-table-column>
+          </el-table-tree-column>
           <!--<el-table-column
             property="labels">
             <template slot-scope="scope">
