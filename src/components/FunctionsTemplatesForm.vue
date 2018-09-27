@@ -103,7 +103,7 @@ Contact: info@swifty.cloud
 
             <pre class="review-code">{{ previewCode }}</pre>
 
-            <el-form-item label label-width="0">
+            <el-form-item label label-width="0" v-if="form.code.lang !== 'deployment'">
               <el-checkbox label="Sync with repository" v-model="form.sources.sync"></el-checkbox>
               <el-popover
                 ref="sync"
@@ -284,17 +284,38 @@ export default {
 
       this.$refs.functionForm.validate((valid) => {
         if (valid) {
-          this.$store.dispatch('createFunction', this.form).then(response => {
-            this.$router.push({ name: 'functions.view.code', params: { fid: response.data.id } })
-          }).catch((error) => {
-            this.form.project = this.$store.getters.project
-            this.$notify.error({
-              title: 'Error',
-              message: error.response.data.message || 'Function creating was failed'
+          this.loading = true
+
+          if (this.form.code.lang === 'deployment') {
+            api.deployments.create({
+              project: this.form.project,
+              name: this.form.name,
+              from: {
+                type: 'repo',
+                repo: this.form.sources.repo
+              }
+            }).then(() => {
+              this.$router.push({ name: 'functions' })
+            }).catch((error) => {
+              this.$notify.error({
+                title: 'Error',
+                message: error.response.data.message || 'Functions creating was failed'
+              })
+            }).finally(() => {
+              this.loading = false
             })
-          }).finally(() => {
-            this.loading = false
-          })
+          } else {
+            this.$store.dispatch('createFunction', this.form).then(response => {
+              this.$router.push({ name: 'functions.view.code', params: { fid: response.data.id } })
+            }).catch((error) => {
+              this.$notify.error({
+                title: 'Error',
+                message: error.response.data.message || 'Function creating was failed'
+              })
+            }).finally(() => {
+              this.loading = false
+            })
+          }
         }
       })
     }
