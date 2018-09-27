@@ -19,6 +19,9 @@ import locale from 'element-ui/lib/locale/lang/en'
 import '@/assets/scss/vendors.scss'
 import '@/assets/scss/swifty.scss'
 
+import ElTreeGrid from 'element-tree-grid'
+Vue.component(ElTreeGrid.name, ElTreeGrid)
+
 router.beforeEach((to, from, next) => {
   store.dispatch('userIsAuth').then(isAuth => {
     if (isAuth === true) {
