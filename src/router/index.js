@@ -31,6 +31,7 @@ const AuthServicePage = () => import(/* webpackChunkName: "authservice" */ '@/pa
 const RepositoriesPage = () => import(/* webpackChunkName: "repositories" */ '@/pages/RepositoriesPage')
 const AdminUsersPage = () => import(/* webpackChunkName: "admin" */ '@/pages/AdminUsersPage')
 const AccountsPage = () => import(/* webpackChunkName: "accounts" */ '@/pages/AccountsPage')
+const SettingsPage = () => import(/* webpackChunkName: "settings" */ '@/pages/SettingsPage')
 
 Vue.use(Router)
 
@@ -129,6 +130,11 @@ export default new Router({
       path: '/admin/users',
       name: 'admin.users',
       component: AdminUsersPage
+    },
+    {
+      path: '/settings/:tab',
+      name: 'settings',
+      component: SettingsPage
     }
   ]
 })
