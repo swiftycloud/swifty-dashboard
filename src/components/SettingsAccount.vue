@@ -8,7 +8,7 @@
         <div class="label">Email</div>
         <div class="field">{{ $store.state.auth.user.uid }}</div>
 
-        <el-form label-position="top">
+        <el-form label-position="top" ref="passwordForm" :model="form" :rules="rules">
           <el-form-item label="Old password">
             <el-input type="password" v-model="form.oldPassword" placeholder="********"></el-input>
           </el-form-item>
@@ -16,7 +16,7 @@
             <el-input type="password" v-model="form.newPassword" placeholder="********"></el-input>
           </el-form-item>
 
-          <el-button type="primary">Change password</el-button>
+          <el-button type="primary" @click="changePassword">Change password</el-button>
         </el-form>
       </el-col>
     </el-row>
@@ -24,13 +24,49 @@
 </template>
 
 <script>
+import api from '@/api'
+
 export default {
   data () {
     return {
       form: {
         oldPassword: null,
         newPassword: null
+      },
+      rules: {
+        oldPassword: [
+          { required: true, message: 'Please enter your current password', trigger: 'blur' }
+        ],
+        newPassword: [
+          { required: true, message: 'Please enter your new password', trigger: 'blur' }
+        ]
       }
+    }
+  },
+
+  methods: {
+    changePassword () {
+      this.$refs['passwordForm'].validate(valid => {
+        if (valid) {
+          api.users.one('me').pass({
+            current: this.form.oldPassword,
+            password: this.form.newPassword
+          }).then(response => {
+            this.$message({
+              message: 'Your password has changed',
+              type: 'success'
+            })
+
+            this.form.oldPassword = null
+            this.form.newPassword = null
+          }).catch(error => {
+            this.$notify.error({
+              title: 'Error',
+              message: error.response.data.message || 'Something wrong'
+            })
+          })
+        }
+      })
     }
   }
 }
