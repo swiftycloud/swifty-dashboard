@@ -263,7 +263,7 @@ export default {
             this.$route.params.name + '.' +
             response.data.accid + '.' +
             response.data.endpoint.split(':')[0] +
-            ':8080/'
+            '/'
 
           this.loading = false
           this.httpServerSettingsVisible = true
