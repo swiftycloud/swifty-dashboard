@@ -262,8 +262,7 @@ export default {
           this.form.link = (config.API_S3_SSL_ENABLED ? 'https://' : 'http://') +
             this.$route.params.name + '.' +
             response.data.accid + '.' +
-            response.data.endpoint.split(':')[0] +
-            '/'
+            response.data.endpoint.split(':')[0]
 
           this.loading = false
           this.httpServerSettingsVisible = true
