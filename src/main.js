@@ -16,6 +16,7 @@ import router from '@/router'
 
 import ElementUI from 'element-ui'
 import locale from 'element-ui/lib/locale/lang/en'
+import 'codemirror/theme/solarized.css'
 import '@/assets/scss/vendors.scss'
 import '@/assets/scss/swifty.scss'
 
