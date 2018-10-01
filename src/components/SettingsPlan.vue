@@ -1,8 +1,7 @@
 <template>
   <div class="settings-plan">
-    <p class="description">You are currently on <strong>{{ currentPlan }}</strong> plan. Please upgrade your plan to get more benefits.<br>
-    All plans are free to use during beta period! We will automatically charge you when the service goes production.</p>
-
+    <p>You are currently on <strong>{{ currentPlan }}</strong> plan. Please upgrade your plan to get more benefits. All plans are free to use during beta period!</p>
+    <p></p>
     <el-row :gutter="12">
       <el-col :span="7" v-for="plan in plans" :key="plan.name">
         <el-card class="plan-card" :class="{ current : currentPlan === plan.name }" shadow="never">
@@ -10,7 +9,7 @@
             {{ plan.name }}
           </div>
           <div class="per-month">
-            ${{ plan.per_month }}/per month            
+            ${{ plan.per_month }}/per month
             <div class="notice" v-if="plan.notice">
               {{ plan.notice }}
             </div>
@@ -22,7 +21,7 @@
 
           <div class="footer">
             <div class="read-more">
-              <a href="#">Read More</a>
+              <a href="https://swifty.cloud/">Read More</a>
             </div>
             <el-button type="primary" disabled v-if="currentPlan === plan.name">Current Plan</el-button>
             <el-button type="primary" v-else @click="currentPlan = plan.name">Select</el-button>
@@ -42,35 +41,23 @@ export default {
           name: 'Free',
           per_month: 0,
           features: [
-            'All features of Swifty',
-            'Up to 100 requests per second',
-            '3 seconds timeout',
-            '10000 GB-s included',
-            'etc'
+            'All features of Swifty'
           ]
         },
         {
           name: 'Starter',
-          per_month: 10,
-          notice: '(free during beta)',
+          per_month: 0,
+          notice: '(available later)',
           features: [
-            'All features of Swifty',
-            'Up to 100 requests per second',
-            '3 seconds timeout',
-            '10000 GB-s included',
-            'etc'
+            'Coming soon'
           ]
         },
         {
           name: 'Pay-as-you-Go',
           per_month: 0,
-          notice: '(free during beta)',
+          notice: '(available later)',
           features: [
-            'All features of Swifty',
-            'Up to 100 requests per second',
-            '3 seconds timeout',
-            '10000 GB-s included',
-            'etc'
+            'Coming soon'
           ]
         }
       ],
@@ -91,7 +78,7 @@ export default {
 .plan-card {
   text-align: center;
   font-size: 16px;
-  min-height: 520px;
+  min-height: 400px;
   position: relative;
 
   .header {
