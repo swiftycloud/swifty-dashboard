@@ -47,7 +47,7 @@ Contact: info@swifty.cloud
         <div class="custom-form-item">
           <label for="result">
             Output
-            <a href="#" @click.prevent="inputDialogVisible = true" class="change-input-action">Change Input</a>
+            <a href="#" @click.prevent="openInputDialog" class="change-input-action">Change Input</a>
           </label>
           <codemirror id="result" :value="result" :options="cmLogsOptions"></codemirror>
         </div>
@@ -66,12 +66,35 @@ Contact: info@swifty.cloud
       :visible.sync="inputDialogVisible"
       class="input-dialog">
       <el-form ref="form" label-position="top">
-        <el-form-item label="Input">
-          <codemirror id="input" v-model="argsTmp" :options="cmOptions"></codemirror>
+        <el-form-item label style="margin-bottom: 0">
+          <el-col :span="9">
+            <div style="text-align: center"><strong>Key</strong></div>
+          </el-col>
+          <el-col :span="1">
+            <div style="text-align: center">&nbsp;</div>
+          </el-col>
+          <el-col :span="9">
+            <div style="text-align: center"><strong>Value</strong></div>
+          </el-col>
+        </el-form-item>
+        <el-form-item label v-for="arg, k in argsTmp" :key="k">
+          <el-col :span="9">
+            <el-input :value="arg.name"></el-input>
+          </el-col>
+          <el-col :span="1">
+            <div style="text-align: center">=</div>
+          </el-col>
+          <el-col :span="9">
+            <el-input :value="arg.value"></el-input>
+          </el-col>
+          <el-col :span="5" style="text-align: center">
+            <el-button type="danger" plain @click="removeArg(k)">Remove</el-button>
+          </el-col>
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="inputDialogVisible = false">Cancel</el-button>
+        <el-button type="primary" plain @click="addArgsParam">Add param</el-button>
         <el-button type="primary" @click="saveArgs">Save and close</el-button>
       </span>
     </el-dialog>
@@ -93,8 +116,8 @@ export default {
     return {
       sync: false,
       code: null,
-      args: {},
-      argsTmp: '',
+      args: [],
+      argsTmp: [],
 
       result: null,
       runStatus: 'nothing',
@@ -137,8 +160,16 @@ export default {
 
     this.fetchFunctionByID(this.$route.params.fid).then(response => {
       if ('userdata' in response.data && response.data.userdata !== '') {
-        this.args = JSON.parse(response.data.userdata)
-        this.argsTmp = response.data.userdata
+        let tmp = JSON.parse(response.data.userdata)
+        for (let key in tmp) {
+          let data = { name: key, value: tmp[key] }
+          let value = tmp[key]
+          if (typeof data.value === 'object') {
+            data.value = JSON.stringify(value)
+          }
+
+          this.args.push(data)
+        }
       }
       return this.fetchFunctionCode()
     }).then(response => {
@@ -184,8 +215,13 @@ export default {
     testFunctionCode () {
       this.loading = true
 
+      let args = {}
+      this.args.forEach(item => {
+        args[item.name] = item.value.toString()
+      })
+
       api.functions.one(this.$route.params.fid).run({
-        args: this.args,
+        args: args,
         src: {
           type: 'code',
           code: btoa(this.code)
@@ -272,9 +308,31 @@ export default {
       })
     },
 
+    openInputDialog () {
+      this.argsTmp = [ ...this.args ]
+      this.inputDialogVisible = true
+    },
+
     saveArgs () {
-      this.args = JSON.parse(this.argsTmp)
+      this.args = [ ...this.argsTmp ]
       this.inputDialogVisible = false
+    },
+
+    removeArg (k) {
+      delete this.argsTmp[k]
+
+      let newArgs = []
+      for (let i in this.argsTmp) {
+        if (this.argsTmp[i] !== undefined) {
+          newArgs.push(this.argsTmp[i])
+        }
+      }
+
+      this.argsTmp = [ ...newArgs ]
+    },
+
+    addArgsParam () {
+      this.argsTmp.push({ name: '', value: '' })
     }
   }
 }
