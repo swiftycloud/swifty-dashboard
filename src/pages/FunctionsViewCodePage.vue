@@ -47,7 +47,8 @@ Contact: info@swifty.cloud
         <div class="custom-form-item">
           <label for="result">
             Output
-            <a href="#" @click.prevent="openInputDialog" class="change-input-action">Change Input</a>
+            <a href="#" @click.prevent="openBodyDialog" class="change-input-action">Change Body</a>
+            <a href="#" @click.prevent="openArgsDialog" class="change-input-action">Change Query Params</a>
           </label>
           <codemirror id="result" :value="result" :options="cmLogsOptions"></codemirror>
         </div>
@@ -62,10 +63,10 @@ Contact: info@swifty.cloud
     </el-row>
 
     <el-dialog
-      title="Please add your code and run it here"
-      :visible.sync="inputDialogVisible"
+      title="Please add your query params and run it here"
+      :visible.sync="argsDialogVisible"
       class="input-dialog">
-      <el-form ref="form" label-position="top">
+      <el-form ref="form" label-position="top" v-if="argsTmp.length">
         <el-form-item label style="margin-bottom: 0">
           <el-col :span="9">
             <div style="text-align: center"><strong>Key</strong></div>
@@ -79,13 +80,13 @@ Contact: info@swifty.cloud
         </el-form-item>
         <el-form-item label v-for="arg, k in argsTmp" :key="k">
           <el-col :span="9">
-            <el-input :value="arg.name"></el-input>
+            <el-input v-model="arg.name"></el-input>
           </el-col>
           <el-col :span="1">
             <div style="text-align: center">=</div>
           </el-col>
           <el-col :span="9">
-            <el-input :value="arg.value"></el-input>
+            <el-input v-model="arg.value"></el-input>
           </el-col>
           <el-col :span="5" style="text-align: center">
             <el-button type="danger" plain @click="removeArg(k)">Remove</el-button>
@@ -93,9 +94,24 @@ Contact: info@swifty.cloud
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
-        <el-button @click="inputDialogVisible = false">Cancel</el-button>
+        <el-button @click="argsDialogVisible = false">Cancel</el-button>
         <el-button type="primary" plain @click="addArgsParam">Add param</el-button>
         <el-button type="primary" @click="saveArgs">Save and close</el-button>
+      </span>
+    </el-dialog>
+
+    <el-dialog
+      title="Please add your query params and run it here"
+      :visible.sync="bodyDialogVisible"
+      class="input-dialog">
+      <el-form ref="form" label-position="top">
+        <el-form-item label="Input">
+          <codemirror :options="cmOptions" v-model="bodyTmp"></codemirror>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="bodyDialogVisible = false">Cancel</el-button>
+        <el-button type="primary" @click="saveBody">Save and close</el-button>
       </span>
     </el-dialog>
   </div>
@@ -118,6 +134,8 @@ export default {
       code: null,
       args: [],
       argsTmp: [],
+      body: '',
+      bodyTmp: '',
 
       result: null,
       runStatus: 'nothing',
@@ -126,7 +144,8 @@ export default {
       logs: '',
 
       loading: true,
-      inputDialogVisible: false,
+      argsDialogVisible: false,
+      bodyDialogVisible: false,
 
       cmOptions: {
         tabSize: 4,
@@ -160,15 +179,22 @@ export default {
 
     this.fetchFunctionByID(this.$route.params.fid).then(response => {
       if ('userdata' in response.data && response.data.userdata !== '') {
-        let tmp = JSON.parse(response.data.userdata)
-        for (let key in tmp) {
-          let data = { name: key, value: tmp[key] }
-          let value = tmp[key]
-          if (typeof data.value === 'object') {
-            data.value = JSON.stringify(value)
-          }
+        response.data.userdata = JSON.parse(response.data.userdata)
+        if ('args' in response.data.userdata) {
+          let tmp = response.data.userdata.args
+          for (let key in tmp) {
+            let data = { name: key, value: tmp[key] }
+            let value = tmp[key]
+            if (typeof data.value === 'object') {
+              data.value = JSON.stringify(value)
+            }
 
-          this.args.push(data)
+            this.args.push(data)
+          }
+        }
+
+        if ('body' in response.data.userdata) {
+          this.body = JSON.stringify(response.data.userdata.body)
         }
       }
       return this.fetchFunctionCode()
@@ -222,6 +248,7 @@ export default {
 
       api.functions.one(this.$route.params.fid).run({
         args: args,
+        body: this.body,
         src: {
           type: 'code',
           code: btoa(this.code)
@@ -262,10 +289,15 @@ export default {
           sync: this.sync
         }
       }).then(response => {
+        let args = {}
+        this.args.forEach(item => {
+          args[item.name] = item.value.toString()
+        })
+
         return this.updateFunction({
           fid: this.$route.params.fid,
           data: {
-            userdata: JSON.stringify(this.args)
+            userdata: '{"args": ' + JSON.stringify(args) + ', "body": ' + this.body + '}'
           }
         })
       }).then(response => {
@@ -308,14 +340,19 @@ export default {
       })
     },
 
-    openInputDialog () {
+    openArgsDialog () {
       this.argsTmp = [ ...this.args ]
-      this.inputDialogVisible = true
+      this.argsDialogVisible = true
+    },
+
+    openBodyDialog () {
+      this.bodyTmp = this.body.split('').join('')
+      this.bodyDialogVisible = true
     },
 
     saveArgs () {
       this.args = [ ...this.argsTmp ]
-      this.inputDialogVisible = false
+      this.argsDialogVisible = false
     },
 
     removeArg (k) {
@@ -333,6 +370,11 @@ export default {
 
     addArgsParam () {
       this.argsTmp.push({ name: '', value: '' })
+    },
+
+    saveBody () {
+      this.body = this.bodyTmp.split('').join('')
+      this.bodyDialogVisible = false
     }
   }
 }
@@ -386,6 +428,7 @@ export default {
 
     .change-input-action {
       float: right;
+      margin-left: 10px;
     }
   }
 }
