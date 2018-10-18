@@ -159,14 +159,16 @@ export default {
 
         return api.functions.one(this.$route.params.fid).accounts.get()
       }).then(response => {
-        response.data.forEach(item => {
-          this.mwareList.push({
-            id: item.id,
-            name: item.name,
-            type: 'account',
-            account_type: item.type
+        if (response.data) {
+          response.data.forEach(item => {
+            this.mwareList.push({
+              id: item.id,
+              name: item.name,
+              type: 'account',
+              account_type: item.type
+            })
           })
-        })
+        }
       })
     },
 
