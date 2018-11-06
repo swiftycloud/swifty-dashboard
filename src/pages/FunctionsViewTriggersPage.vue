@@ -482,7 +482,6 @@ export default {
 
           api.functions.one(this.currentFunctionId).triggers.create({
             name: this.forms.cron.name,
-            source: 'cron',
             cron: {
               tab: this.forms.cron.expression,
               args: args
@@ -518,7 +517,6 @@ export default {
 
           api.functions.one(this.currentFunctionId).triggers.create({
             name: this.forms.cron.name,
-            source: 'cron',
             cron: {
               tab: this.forms.cron.expression,
               args: args
@@ -546,7 +544,6 @@ export default {
           this.formLoading = true
           api.functions.one(this.currentFunctionId).triggers.create({
             name: this.forms.s3.bucket,
-            source: 's3',
             s3: {
               bucket: this.forms.s3.bucket,
               ops: this.forms.s3.events.join(','),
@@ -573,7 +570,6 @@ export default {
           this.formLoading = true
           api.functions.one(this.currentFunctionId).triggers.create({
             name: this.forms.s3.bucket,
-            source: 's3',
             s3: {
               bucket: this.forms.s3.bucket,
               ops: this.forms.s3.events.join(','),
