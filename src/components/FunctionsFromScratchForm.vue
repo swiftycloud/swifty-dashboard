@@ -52,7 +52,7 @@ export default {
       form: {
         project: this.$store.getters.currentProject,
         name: null,
-        sources: { code: '' },
+        sources: { code: 'bnVsbA==' },
         code: { lang: 'python' },
         event: { source: 'url' },
         userdata: ''
