@@ -455,7 +455,7 @@ export default {
     createUrlEventTrigger () {
       api.functions.one(this.currentFunctionId).triggers.create({
         name: 'REST API',
-        source: 'url'
+        url: 'auto'
       }).then(response => {
         this.fetchEventTriggers()
       }).catch(error => {
