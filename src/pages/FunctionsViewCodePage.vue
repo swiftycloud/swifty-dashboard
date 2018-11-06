@@ -178,10 +178,11 @@ export default {
     this.setFunctionActiveTab('code')
 
     this.fetchFunctionByID(this.$route.params.fid).then(response => {
-      if ('userdata' in response.data && response.data.userdata !== '') {
-        response.data.userdata = JSON.parse(response.data.userdata)
-        if ('args' in response.data.userdata) {
-          let tmp = response.data.userdata.args
+      try {
+        let userdata = JSON.parse(response.data.userdata)
+
+        if ('args' in userdata) {
+          let tmp = userdata.args
           for (let key in tmp) {
             let data = { name: key, value: tmp[key] }
             let value = tmp[key]
@@ -193,10 +194,15 @@ export default {
           }
         }
 
-        if ('body' in response.data.userdata) {
-          this.body = JSON.stringify(response.data.userdata.body)
+        if ('body' in userdata && typeof userdata.body === 'object') {
+          this.body = JSON.stringify(userdata.body)
+        } else if ('body' in userdata) {
+          this.body = userdata.body
         }
+      } catch (e) {
+        console.log(e)
       }
+
       return this.fetchFunctionCode()
     }).then(response => {
       this.loading = false
@@ -297,7 +303,7 @@ export default {
         return this.updateFunction({
           fid: this.$route.params.fid,
           data: {
-            userdata: '{"args": ' + JSON.stringify(args) + ', "body": ' + this.body + '}'
+            userdata: '{"args": ' + JSON.stringify(args) + ', "body": ' + JSON.stringify(this.body) + '}'
           }
         })
       }).then(response => {

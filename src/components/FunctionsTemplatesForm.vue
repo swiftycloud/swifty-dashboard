@@ -164,7 +164,7 @@ export default {
       form: {
         project: this.$store.getters.currentProject,
         name: null,
-        sources: { type: 'git', repo: null, sync: false },
+        sources: { repo: null, sync: false },
         code: { lang: null, env: [] },
         event: { source: 'url' },
         userdata: ''
