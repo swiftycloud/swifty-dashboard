@@ -8,9 +8,9 @@ Contact: info@swifty.cloud
 <template>
   <div class="page-content">
     <el-tabs v-model="activeTab">
-      <el-tab-pane label="Plan" name="plan">
+      <!-- <el-tab-pane label="Plan" name="plan">
         <settings-plan></settings-plan>
-      </el-tab-pane>
+      </el-tab-pane> -->
       <el-tab-pane label="Account" name="account">
         <settings-account></settings-account>
       </el-tab-pane>

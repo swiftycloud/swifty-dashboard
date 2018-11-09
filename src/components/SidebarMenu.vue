@@ -21,7 +21,7 @@ Contact: info@swifty.cloud
     <router-link :to="{ name: 'accounts' }" class="nav-link" active-class="active" exact><i class="fa el-icon-arrow-right"></i>Accounts</router-link>
     <router-link :to="{ name: 'stats.func' }" class="nav-link" active-class="active" exact><i class="fa el-icon-arrow-right"></i>Statistics</router-link>
     <div class="divider"></div> 
-    <router-link :to="{ name: 'settings', params: { tab: 'plan' } }" class="nav-link" active-class="active" exact><i class="fa el-icon-arrow-right"></i>Settings</router-link>
+    <router-link :to="{ name: 'settings', params: { tab: 'account' } }" class="nav-link" active-class="active" exact><i class="fa el-icon-arrow-right"></i>Settings</router-link>
 
     <span v-if="$store.getters.getUserInfo.roles.includes('swifty.admin')">
       <div class="divider"></div> 
