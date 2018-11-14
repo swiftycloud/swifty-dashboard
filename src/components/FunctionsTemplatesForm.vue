@@ -207,6 +207,12 @@ export default {
       attached: true
     }).get().then(repos => {
       this.repos = repos
+
+      this.repos.forEach(repo => {
+        if (repo.url === 'https://github.com/swiftycloud/swifty.demo') {
+          this.repoId = repo.id
+        }
+      })
     })
   },
 
