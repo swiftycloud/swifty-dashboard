@@ -74,7 +74,9 @@ Contact: info@swifty.cloud
             label="Created"
             sortable>
             <template slot-scope="scope">
-              {{ scope.row.created | moment('YYYY-MM-DD HH:mm:ss') }}
+              <span v-if="scope.row.created">
+                {{ scope.row.created | moment('YYYY-MM-DD HH:mm:ss') }}
+              </span>
             </template>
           </el-table-column>
         </el-table>
@@ -169,7 +171,13 @@ export default {
       this.loading = true
 
       return api.users.get().then(response => {
-        this.users = response.data
+        response.data.forEach(user => {
+          if (user.created) {
+            user.created = new Date(user.created)
+          }
+
+          this.users.push(user)
+        })
       }).finally(() => {
         this.loading = false
       })
