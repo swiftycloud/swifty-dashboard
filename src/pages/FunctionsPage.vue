@@ -18,7 +18,7 @@ Contact: info@swifty.cloud
            size="medium"
            plain
            @click="manageAuthDialogVisibility = true"
-           :disabled="this.multipleSelection.length === 0">
+           :disabled="this.selectedItems.length === 0">
           Manage authentication
           </el-button>
           <el-button
@@ -26,21 +26,21 @@ Contact: info@swifty.cloud
            size="medium"
            plain
            @click="enableSelected()"
-           :disabled="this.multipleSelection.length === 0">
+           :disabled="this.selectedItems.length === 0">
           Enable
           </el-button>
           <el-button
            size="medium"
            plain
-           @click="disableSelected()"
-           :disabled="this.multipleSelection.length === 0">
+           @click="disableSelected"
+           :disabled="this.selectedItems.length === 0">
             Disable
-          </el-button>
+          </el-button>          
           <el-button
             size="medium"
             plain
             @click="deleteSelected()"
-            :disabled="this.multipleSelection.length === 0">
+            :disabled="this.selectedItems.length === 0">
             Delete
           </el-button>
         </div>
@@ -53,68 +53,71 @@ Contact: info@swifty.cloud
       <el-button :plain="label != 'auth'" size="mini" @click="label = 'auth'" type="danger">Authentication</el-button>
     </div>
 
-    <div class="row" v-loading="functions.loading">
+    <div class="row">
       <div class="col">
         <el-table
           ref="multipleTable"
-          :data="functionsList"
+          :data="filtredTree"
           style="width: 100%"
-          @selection-change="handleSelectionChange"
-          :row-class-name="tableRowClassName">
+          :row-class-name="tableRowClassName"
+          @cell-click="clickHandler"
+          v-if="tree.length">
           <div slot="empty">
               <p>You don’t have any functions</p>
               <el-button type="primary" size="mini" round @click="$router.push({ name: 'functions.create' })">Create</el-button>
           </div>
           <el-table-column
-            type="selection"
+            type="selected"
             width="55">
-          </el-table-column>
-          <el-table-tree-column
-            prop="name"
-            label="Name"
-            sortable>
             <template slot-scope="scope">
-              <router-link :to="{ name: 'functions.view.code', params: { fid: scope.row.id } }" v-if="scope.row.state != 'deactivated'">
-                {{ scope.row.name }}
-              </router-link>
-              <span v-else>{{ scope.row.name }}</span>
-              <span v-if="scope.row.labels !== undefined" v-for="v in scope.row.labels" :key="v">
-                <el-tag size="medium" v-if="v === 'auth'" type="danger">Authentication</el-tag>
+              <input type="checkbox" v-model="selectedItems" :value="scope.row.id" @change="handleSelectionChange(scope.row)">
+            </template>
+          </el-table-column>
+          <el-table-tree-column 
+            file-icon="fa fa-file-o" 
+            folder-icon="fa fa-folder"
+            prop="name" label="Name" :indent-size="20"
+            show-overflow-tooltip>            
+            <template slot-scope="scope">
+              <span class="name folder" v-if="scope.row.child_num"><a href @click.prevent>{{ scope.row.name }}</a></span>
+              <span class="name" v-else>
+                <router-link :to="{ name: 'functions.view.code', params: { fid: scope.row.id } }">{{ scope.row.name }}</router-link>
               </span>
             </template>
           </el-table-tree-column>
-          <!--<el-table-column
-            property="labels">
-            <template slot-scope="scope">
-              <div style="text-align: right">
-                <span v-if="scope.row.labels !== undefined" v-for="v in scope.row.labels" :key="v">
-                  <el-tag v-if="v === 'auth'" type="danger">Authentication</el-tag>
-                </span>
-              </div>
-            </template>
-          </el-table-column>-->
           <el-table-column
-            property="state"
+            prop="labels"
+            label="Labels"
+            show-overflow-tooltip>
+            <template slot-scope="scope">
+              <span v-if="scope.row.labels !== undefined" v-for="v in scope.row.labels" :key="v">
+                <el-tag size="mini" v-if="v === 'auth'" type="danger">Authentication</el-tag>
+              </span>
+              <span v-if="scope.row.labels === undefined && !scope.row.child_num">
+                <el-tag size="mini" type="info">No labels</el-tag>
+              </span>
+            </template>
+          </el-table-column>
+          <el-table-column
+            prop="state"
             label="Status"
-            sortable
             show-overflow-tooltip>
           </el-table-column>
           <el-table-column
             label="Authentication"
-            sortable
             show-overflow-tooltip>
             <template slot-scope="scope">
-              <span v-if="'authctx' in scope.row"><i class="fa fa-lock" aria-hidden="true"></i></span>
-              <span v-else><i class="fa fa-unlock-alt" aria-hidden="true"></i></span>
+              <span v-if="!scope.row.child_num">
+                <span v-if="scope.row.authctx"><i class="fa fa-lock" aria-hidden="true"></i></span>
+                <span v-else><i class="fa fa-unlock-alt" aria-hidden="true"></i></span>
+              </span>
             </template>
           </el-table-column>
           <el-table-column
             prop="lastcall"
-            label="Last Run"
-            sortable>
-            <template slot-scope="scope">
+            label="Last Run">
+            <template slot-scope="scope" v-if="scope.row.stats && !scope.row.child_num">
               <el-tooltip
-                v-if="scope.row.stats !== null"
                 effect="dark"
                 :content="scope.row.stats[0].lastcall | moment('YYYY-MM-DD HH:mm:ss')"
                 placement="right">
@@ -163,19 +166,113 @@ Contact: info@swifty.cloud
 
 <script>
 import api from '@/api'
-
-import { FunctionList } from '@/models/functions'
 import { AuthServiceList } from '@/models/auth_services'
+
+function treeParse (tree, functions, expandedItems, parentKey, depthVal) {
+  let depth = depthVal || 0
+  let result = []
+
+  for (let k in tree) {
+    let value = tree[k]
+    let current = {
+      id: value.Path,
+      name: value.Name,
+      path: value.Path,
+      parent_id: parentKey,
+      depth: depth,
+      child_num: value.Kids.length,
+      children: [],
+      stats: false
+    }
+
+    if (current.child_num === 0) {
+      let func = functions.find(item => (item.name + '.') === current.path)
+
+      if (func !== undefined) {
+        current.id = func.id
+        current.state = func.state
+        current.stats = func.stats
+        current.authctx = !!func.authctx
+        current.labels = func.labels
+      }
+    } else {
+      current.expanded = expandedItems.includes(current.id)
+      current.children = treeParse(value.Kids, functions, expandedItems, current.id, depth + 1)
+    }
+
+    result.push(current)
+  }
+
+  return result.sort((a, b) => {
+    if (a.name > b.name) return 1
+    if (a.name < b.name) return -1
+    return 0
+  }).sort((a, b) => {
+    if (a.children.length > b.children.length) return -1
+    if (a.children.length < b.children.length) return 1
+    return 0
+  })
+}
+
+function selectChildren (selectedItems, children) {
+  children.forEach(item => {
+    selectedItems.push(item.id)
+    if (item.child_num) {
+      selectedItems = selectChildren(selectedItems, item.children)
+    }
+  })
+
+  return selectedItems
+}
+
+function unselectChildren (selectedItems, children) {
+  children.forEach(item => {
+    delete selectedItems[selectedItems.indexOf(item.id)]
+    if (item.child_num) {
+      selectedItems = unselectChildren(selectedItems, item.children)
+    }
+  })
+
+  return selectedItems
+}
+
+function setExpanded (id, tree, expanded) {
+  tree.forEach(item => {
+    if (item.child_num) {
+      if (item.id === id) {
+        item.expanded = expanded
+      }
+
+      setExpanded(id, item.children, expanded)
+    }
+  })
+}
+
+function getFunctionsId (selected, items, ids) {
+  items.forEach(item => {
+    if (selected.includes(item.id)) {
+      if (item.child_num === 0) {
+        ids.push(item.id)
+      }
+    }
+
+    if (item.child_num) {
+      ids = getFunctionsId(selected, item.children, ids)
+    }
+  })
+
+  return ids
+}
 
 export default {
   data () {
     return {
-      // objects
-      functions: new FunctionList(),
-      authServices: new AuthServiceList(),
+      items: [],
+      tree: [],
+      selectedItems: [],
+      expandedItems: [],
 
-      // manage
-      multipleSelection: [],
+      authServices: new AuthServiceList(),
       manageAuthDialogVisibility: false,
 
       // forms
@@ -190,63 +287,78 @@ export default {
         ]
       },
 
-      // filter by label
       label: 'all'
     }
   },
 
   created () {
-    this.$store.dispatch('setPageTitle', 'Functions')
-
-    this.functions.fetch()
+    this.fetchItems()
     this.authServices.fetch()
   },
 
   computed: {
-    functionsList () {
+    filtredTree () {
       if (this.label === 'all') {
-        return this.functions.models
-      } else if (this.label === 'none') {
-        return this.functions.filter(item => item.labels === undefined).models
-      } else if (this.label === 'auth') {
-        return this.functions.filter(item => {
-          if (item.labels !== undefined && item.labels.length && item.labels.indexOf('auth') !== -1) {
-            return true
-          } else {
-            return false
+        return this.tree
+      } else {
+        return this.items.filter(item => {
+          if (this.label === 'none') {
+            return item.labels === undefined || item.labels.length === 0
           }
-        }).models
+
+          return item.labels && item.labels.length && item.labels.includes(this.label)
+        })
       }
     }
   },
 
   methods: {
     tableRowClassName ({ row, rowIndex }) {
-      if (row.state === 'deactivated') {
-        return 'deactivated-func'
-      }
-      return ''
+      return row.state === 'deactivated' ? 'deactivated-func' : ''
     },
 
-    // table selection
-    toggleSelection (rows) {
-      if (rows) {
-        rows.forEach(row => {
-          this.$refs.multipleTable.toggleRowSelection(row)
-        })
-      } else {
-        this.$refs.multipleTable.clearSelection()
+    handleSelectionChange (val) {
+      if (val.child_num) {
+        if (!this.selectedItems.includes(val.id)) {
+          this.selectedItems = unselectChildren(this.selectedItems, val.children)
+        } else {
+          this.selectedItems = selectChildren(this.selectedItems, val.children)
+        }
       }
     },
-    handleSelectionChange (val) {
-      this.multipleSelection = val
+
+    fetchItems () {
+      return api.functions.find('tree', { leafs: true }).then(response => {
+        let tree = response.data.Kids
+
+        api.functions.get({ details: true }).then(response => {
+          this.items = response.data
+          this.tree = []
+
+          this.$nextTick(() => {
+            this.tree = treeParse(tree, response.data, this.expandedItems)
+          })
+        })
+      })
+    },
+
+    clickHandler (row, column, cell, event) {
+      if (column.property === 'name' && row.child_num) {
+        if (this.expandedItems.includes(row.id)) {
+          delete this.expandedItems.indexOf(row.id)
+          setExpanded(row.id, this.tree, false)
+        } else {
+          this.expandedItems.push(row.id)
+          setExpanded(row.id, this.tree, true)
+        }
+      }
     },
 
     /*
      * Enable & Disable functions
      */
     enableSelected () {
-      if (this.multipleSelection.length === 0) {
+      if (this.selectedItems.length === 0) {
         return false
       }
       this.$confirm('Selected function will be enabled', 'Warning', {
@@ -256,14 +368,18 @@ export default {
       }).then(() => {
         this.loading = true
 
+        let selectedFunctions = getFunctionsId(this.selectedItems, this.tree, [])
+
         var promises = []
-        this.multipleSelection.forEach(item => {
-          promises.push(item.activate())
+        selectedFunctions.forEach(id => {
+          promises.push(api.functions.update(id, {
+            state: 'ready'
+          }))
         })
 
         return Promise.all(promises)
       }).then(() => {
-        return this.functions.fetch()
+        return this.fetchItems()
       }).catch(error => {
         this.$notify.error({
           title: 'Error',
@@ -275,7 +391,7 @@ export default {
     },
 
     disableSelected () {
-      if (this.multipleSelection.length === 0) {
+      if (this.selectedItems.length === 0) {
         return false
       }
 
@@ -285,17 +401,19 @@ export default {
         type: 'warning'
       }).then(() => {
         this.loading = true
+        let selectedFunctions = getFunctionsId(this.selectedItems, this.tree, [])
 
         var promises = []
-        this.multipleSelection.forEach(item => {
-          promises.push(item.deactivate())
+        selectedFunctions.forEach(id => {
+          promises.push(api.functions.update(id, {
+            state: 'deactivated'
+          }))
         })
 
         return Promise.all(promises)
       }).then(() => {
-        return this.functions.fetch()
+        return this.fetchItems()
       }).catch(error => {
-        console.log(error)
         this.$notify.error({
           title: 'Error',
           message: error.response.data.message
@@ -309,7 +427,7 @@ export default {
      * Delete functions
      */
     deleteSelected () {
-      if (this.multipleSelection.length === 0) {
+      if (this.selectedItems.length === 0) {
         return false
       }
 
@@ -319,17 +437,21 @@ export default {
         type: 'warning'
       }).then(() => {
         this.loading = true
+        let selectedFunctions = getFunctionsId(this.selectedItems, this.tree, [])
 
         var promises = []
-        this.multipleSelection.forEach(item => {
-          promises.push(this.$store.dispatch('deleteFunctionByID', item.id))
+        selectedFunctions.forEach(id => {
+          promises.push(this.$store.dispatch('deleteFunctionByID', id))
         })
 
         return Promise.all(promises)
       }).then(() => {
-        return this.functions.fetch()
-      }).catch(() => {
-        // ..
+        return this.fetchItems()
+      }).catch(error => {
+        this.$notify.error({
+          title: 'Error',
+          message: error.response.data.message
+        })
       }).finally(() => {
         this.loading = false
       })
@@ -339,7 +461,7 @@ export default {
      * Enable & Disable authentication
      */
     enableAuthentication () {
-      if (this.multipleSelection.length === 0) {
+      if (this.selectedItems.length === 0) {
         this.$notify.error({
           title: 'Error',
           message: 'No function selected'
@@ -365,21 +487,22 @@ export default {
               }
             })
 
+            let selectedFunctions = getFunctionsId(this.selectedItems, this.tree, [])
+
             var promises = []
-            this.multipleSelection.forEach(item => {
-              if ('labels' in item && item.labels.indexOf('auth') !== -1) {
+            selectedFunctions.forEach(id => {
+              let func = this.items.find(item => item.id === id)
+              if ('labels' in func && func.labels.indexOf('auth') !== -1) {
                 return false
               }
 
-              promises.push(
-                item.updateAuthCtx(mwareName)
-              )
+              promises.push(api.functions.one(id).authctx.update(null, JSON.stringify(mwareName)))
             })
 
             return Promise.all(promises)
           }).then(() => {
             this.manageAuthDialogVisibility = false
-            return this.functions.fetch()
+            return this.fetchItems()
           }).catch(() => {
             // ..
           }).finally(() => {
@@ -390,7 +513,7 @@ export default {
     },
 
     disableAuthentication () {
-      if (this.multipleSelection.length === 0) {
+      if (this.selectedItems.length === 0) {
         return false
       }
 
@@ -401,21 +524,22 @@ export default {
       }).then(() => {
         this.loading = true
 
+        let selectedFunctions = getFunctionsId(this.selectedItems, this.tree, [])
+
         var promises = []
-        this.multipleSelection.forEach(item => {
-          if ('labels' in item && item.labels.indexOf('auth') !== -1) {
+        selectedFunctions.forEach(id => {
+          let func = this.items.find(item => item.id === id)
+          if ('labels' in func && func.labels.indexOf('auth') !== -1) {
             return false
           }
 
-          promises.push(
-            item.updateAuthCtx('')
-          )
+          promises.push(api.functions.one(id).authctx.update(null, JSON.stringify('')))
         })
 
         return Promise.all(promises)
       }).then(() => {
         this.manageAuthDialogVisibility = false
-        return this.functions.fetch()
+        return this.fetchItems()
       }).catch(() => {
         // ..
       }).finally(() => {
@@ -426,18 +550,22 @@ export default {
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
+.fa.fa-file-o {
+  padding-left: 14px;
+}
+
 .deactivated-func td,
-.deactivated-func td a {
+.deactivated-func td a,
+.fa.fa-unlock-alt {
   color: #c3c3c3;
 }
 
-.input-info {
-  margin-left: 10px;
-  color: rgba(0, 0, 0, 0.54);
+.name {
+  padding-left: 10px;
 
-  .fa-stack {
-    height: 30px;
+  &.folder {
+    cursor: pointer;
   }
 }
 

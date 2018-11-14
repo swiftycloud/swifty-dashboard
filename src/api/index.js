@@ -20,7 +20,7 @@ var resource = (path, ac = {}, ax = axios) => {
   }
   const resource = {
     get: params => http.get(path, { params }),
-    find: id => http.get(path + '/' + id),
+    find: (id, params) => http.get(path + '/' + id, { params }),
     create: data => http.post(path, data),
     update: (id, data) => http.put(path + (id !== null ? '/' + id : ''), data),
     delete: id => http.delete(path + '/' + id)
