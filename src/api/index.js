@@ -297,7 +297,7 @@ export default {
 
       this.aws.instance = new AWS.S3({
         credentials: this.aws.credentials,
-        endpoint: (config.API_S3_SSL_ENABLED ? 'https://' : 'http://') + response.data.endpoint,
+        endpoint: response.data.endpoint,
         apiVersion: '2006-03-01',
         s3ForcePathStyle: true
       })
@@ -337,7 +337,7 @@ export default {
 
       this.cloudwatch.instance = new AWS.CloudWatch({
         credentials: this.cloudwatch.credentials,
-        endpoint: (config.API_S3_SSL_ENABLED ? 'https://' : 'http://') + response.data.endpoint,
+        endpoint: response.data.endpoint,
         apiVersion: '2010-08-01'
       })
 
