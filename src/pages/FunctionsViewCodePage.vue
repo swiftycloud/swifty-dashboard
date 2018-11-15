@@ -200,7 +200,7 @@ export default {
           this.body = userdata.body
         }
       } catch (e) {
-        console.log(e)
+        // ..
       }
 
       return this.fetchFunctionCode()
