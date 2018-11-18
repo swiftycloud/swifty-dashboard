@@ -11,8 +11,8 @@ Contact: info@swifty.cloud
 
     <actions-block>
       <el-button type="primary" size="medium" @click="userCreateDialog = true">Create</el-button>
-      <el-button type="primary" size="medium">Plan</el-button>
-      <el-button type="primary" size="medium" @click="deleteSelected" :disabled="multipleSelection.length === 0">Delete</el-button>
+      <el-button type="primary" size="medium" @click="openPlanDialog" :disabled="!multipleSelection.length">Plan</el-button>
+      <el-button type="primary" size="medium" @click="deleteSelected" :disabled="!multipleSelection.length">Delete</el-button>
     </actions-block>
 
     <div class="row">
@@ -49,15 +49,18 @@ Contact: info@swifty.cloud
                 </el-button>
                 <el-dropdown-menu slot="dropdown" class="user-menu">
                   <el-dropdown-item @click.native="openChangePasswordDialog(scope.row)">Change Password</el-dropdown-item>
-                  <el-dropdown-item>Change Plan</el-dropdown-item>
+                  <el-dropdown-item @click.native="changePlan(scope.row)">Change Plan</el-dropdown-item>
                 </el-dropdown-menu>
               </el-dropdown>
             </template>
           </el-table-column>
           <el-table-column
-            prop="status"
+            prop="enabled"
             label="Status"
             sortable>
+            <template slot-scope="scope">
+              <span v-if="scope.row.enabled">Active</span>
+            </template>
           </el-table-column>
           <el-table-column
             prop="plan"
@@ -120,6 +123,22 @@ Contact: info@swifty.cloud
         <el-button type="primary" @click="createUser">Create</el-button>
       </span>
     </el-dialog>
+
+    <el-dialog
+      title="Change plan"
+      :visible.sync="planDialogVisibility">
+      <el-form label-width="120px" @submit.native.prevent="changePassword">
+        <el-form-item label="New plan">
+          <el-select v-model="planForm.planid">
+            <el-option v-for="plan in plans" :value="plan.id" :key="plan.id"></el-option>
+          </el-select>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="closePlanDialog">Cancel</el-button>
+        <el-button type="primary" @click="updatePlan" :loading="planUpdating">Update</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -157,7 +176,14 @@ export default {
       passwordUpdating: false,
       changePasswordDialog: false,
 
-      multipleSelection: []
+      multipleSelection: [],
+
+      planDialogVisibility: false,
+      plans: [],
+      planForm: {
+        planid: 'default'
+      },
+      planUpdating: false
     }
   },
 
@@ -268,6 +294,44 @@ export default {
             })
           })
         }
+      })
+    },
+
+    openPlanDialog () {
+      this.planForm.planid = 'default'
+
+      api.plans.get().then(response => {
+        this.plans = response.data
+      })
+
+      this.planDialogVisibility = true
+    },
+
+    closePlanDialog () {
+      this.planDialogVisibility = false
+    },
+
+    changePlan (row) {
+      this.multipleSelection = []
+      this.multipleSelection.push(row)
+      this.openPlanDialog()
+    },
+
+    updatePlan () {
+      this.planUpdating = true
+
+      var promises = []
+      this.multipleSelection.forEach(user => {
+        promises.push(api.users.update(user.id, {
+          planid: this.planForm.planid
+        }))
+      })
+
+      Promise.all(promises).then(response => {
+        this.fetchUsers()
+      }).finally(() => {
+        this.planUpdating = false
+        this.closePlanDialog()
       })
     }
   }
