@@ -87,6 +87,8 @@ export default {
     }
   }),
 
+  plans: resource(config.API_ADMD_ENDPOINT + '/plans'),
+
   requestApiToken () {
     return axios.post(config.API_ADMD_ENDPOINT + '/login', {
       username: config.API_USERNAME,
