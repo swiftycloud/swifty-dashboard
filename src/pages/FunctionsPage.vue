@@ -60,8 +60,7 @@ Contact: info@swifty.cloud
           :data="filtredTree"
           style="width: 100%"
           :row-class-name="tableRowClassName"
-          @cell-click="clickHandler"
-          v-if="tree.length">
+          @cell-click="clickHandler">
           <div slot="empty">
               <p>You don’t have any functions</p>
               <el-button type="primary" size="mini" round @click="$router.push({ name: 'functions.create' })">Create</el-button>
