@@ -176,7 +176,6 @@ Contact: info@swifty.cloud
 
 <script>
 import FileSaver from 'file-saver'
-import config from '@/api'
 
 export default {
   data () {
@@ -259,10 +258,9 @@ export default {
           project: this.$store.getters.currentProject,
           lifetime: 1
         }).then(response => {
-          this.form.link = (config.API_S3_SSL_ENABLED ? 'https://' : 'http://') +
-            this.$route.params.name + '.' +
-            response.data.accid + '.' +
-            response.data.endpoint.split(':')[0]
+          this.form.link = response.data.endpoint.split(':')[0] +
+            '://' + this.$route.params.name + '.' +
+            response.data.accid + '.' + response.data.endpoint.split('://')[1].split(':')[0]
 
           this.loading = false
           this.httpServerSettingsVisible = true
