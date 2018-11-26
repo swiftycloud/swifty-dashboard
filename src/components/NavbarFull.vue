@@ -9,7 +9,10 @@ Contact: info@swifty.cloud
   <nav class="navbar">
     <div class="navbar-brand-block" :class="{ 'sidebar-showed' : !$store.state.sidebar.hidden }">
       <a href="#" class="sidebar-shower" @click.prevent="showSidebar"><i class="fa el-icon-menu"></i></a>
-      <a href="/" class="navbar-brand">swifty.</a>
+      <a href="/" class="navbar-brand">
+        <img src="/static/logo.svg" v-if="!$store.getters.checkHiddenStatus">
+        <img src="/static/logo-white.svg" v-if="$store.getters.checkHiddenStatus">
+      </a>
       <a href="#" class="sidebar-hidder" @click.prevent="hideSidebar"><i class="fa el-icon-arrow-left"></i></a>
     </div>
 

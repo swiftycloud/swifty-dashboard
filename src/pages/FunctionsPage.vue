@@ -291,6 +291,7 @@ export default {
   },
 
   created () {
+    this.$store.dispatch('setPageTitle', 'Functions')
     this.fetchItems()
     this.authServices.fetch()
   },

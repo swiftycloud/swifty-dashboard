@@ -11,7 +11,9 @@ Contact: info@swifty.cloud
       <div class="app-loading" v-if="appLoadingState">
         <div class="app-loading-content">
           <i class="fa fa-cog fa-spin"></i>
-          <p class="brand">swifty.</p>
+          <p class="brand">
+            <img src="/static/logo.svg">
+          </p>
         </div>
       </div>
     </transition>
@@ -37,7 +39,7 @@ Contact: info@swifty.cloud
               <a href="mailto:info@swifty.cloud">Contact Us</a>
             </el-col>
             <el-col :span="2" style="text-align: right">
-              0.51
+              v1.0
             </el-col>
           </el-row>
         </el-footer>

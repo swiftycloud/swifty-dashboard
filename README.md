@@ -10,6 +10,10 @@ vi swifty.config.json
 cp nginx.conf.example nginx.conf
 vi nginx.conf
 
+# copy default or your logo
+cp static/logo.svg.example static/logo.svg
+cp static/logo-white.svg.example static/logo-white.svg
+
 # create volumes for certbot (if doesn't exists)
 docker volume create certs
 docker volume create certs-data

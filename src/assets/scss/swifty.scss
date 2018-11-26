@@ -91,6 +91,11 @@ hr {
       font-size: 24px;
       font-weight: bold;
       letter-spacing: 2px;
+
+      img {
+        height: 29px;
+        margin: 18px 0;
+      }
     }
   }
 }
@@ -146,6 +151,11 @@ hr {
       font-size: 24px;
       font-weight: bold;
       letter-spacing: 1px;
+
+      img {
+        height: 29px;
+        margin: 18px 0;
+      }
     }
 
     &.sidebar-showed {
