@@ -258,8 +258,8 @@ export default {
           project: this.$store.getters.currentProject,
           lifetime: 1
         }).then(response => {
-          this.form.link = response.data.endpoint.split(':')[0] +
-            '://' + this.$route.params.name + '.' +
+          this.form.link = 'http://' +
+            this.$route.params.name + '.' +
             response.data.accid + '.' + response.data.endpoint.split('://')[1].split(':')[0]
 
           this.loading = false
