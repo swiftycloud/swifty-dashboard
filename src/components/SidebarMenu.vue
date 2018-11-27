@@ -12,7 +12,7 @@ Contact: info@swifty.cloud
     <div class="divider"></div>
     <!--<a href="#/functions" class="nav-link"><i class="fa fa-square"></i> <span>Functions</span>-->
     <router-link to="/storage" class="nav-link" active-class="active" exact><i class="fa el-icon-arrow-right"></i>Object Storage</router-link>
-    <router-link to="/mariadb" class="nav-link" active-class="active" exact><i class="fa el-icon-arrow-right"></i>Maria Database</router-link>
+    <!-- <router-link to="/mariadb" class="nav-link" active-class="active" exact><i class="fa el-icon-arrow-right"></i>Maria Database</router-link> -->
     <!--<a href="#" class="nav-link"><i class="fa fa-square"></i> <span>PostgreSQL</span>-->
     <router-link to="/mongodb" class="nav-link" active-class="active" exact><i class="fa el-icon-arrow-right"></i>Mongo Database</router-link>
     <router-link to="/auth" class="nav-link" active-class="active" exact><i class="fa el-icon-arrow-right"></i>Authentication Service</router-link>
