@@ -3,5 +3,6 @@
   "API_ADMD_ENDPOINT": "",
   "API_USERNAME": "",
   "API_PASSWORD": "",
-  "SWY_CONNECTOR_URL": ""
+  "SWY_CONNECTOR_URL": "",
+  "SWY_HIDDEN_SECTIONS": []
 }
