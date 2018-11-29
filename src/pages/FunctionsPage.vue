@@ -103,6 +103,16 @@ Contact: info@swifty.cloud
             show-overflow-tooltip>
           </el-table-column>
           <el-table-column
+            prop="lang"
+            label="Language"
+            show-overflow-tooltip>
+            <template slot-scope="scope">
+              <span v-if="!scope.row.child_num">
+                {{ scope.row.lang }}
+              </span>
+            </template>
+          </el-table-column>
+          <el-table-column
             label="Authentication"
             show-overflow-tooltip>
             <template slot-scope="scope">
@@ -189,6 +199,7 @@ function treeParse (tree, functions, expandedItems, parentKey, depthVal) {
 
       if (func !== undefined) {
         current.id = func.id
+        current.lang = func.code.lang
         current.state = func.state
         current.stats = func.stats
         current.authctx = !!func.authctx
