@@ -37,7 +37,7 @@ Contact: info@swifty.cloud
         </el-alert>
 
         <div class="custom-form-item">
-          <label for="code">Code <span v-if="sync">(stop syncronization to edit code here)</span></label>
+          <label for="code">Code <span v-if="sync">(stop syncronization to edit code here)</span> <span v-if="lang">/ {{ lang }}</span></label>
           <pre class="review-code" v-if="sync">{{ code }}</pre>
           <codemirror id="code" v-model="code" :value="code" :options="cmOptions" v-else></codemirror>
         </div>
@@ -136,6 +136,7 @@ export default {
       argsTmp: [],
       body: '',
       bodyTmp: '',
+      lang: null,
 
       result: null,
       runStatus: 'nothing',
@@ -199,6 +200,12 @@ export default {
         } else if ('body' in userdata) {
           this.body = userdata.body
         }
+      } catch (e) {
+        // ..
+      }
+
+      try {
+        this.lang = response.data.code.lang.charAt(0).toUpperCase() + response.data.code.lang.substr(1)
       } catch (e) {
         // ..
       }
