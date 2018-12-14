@@ -120,7 +120,7 @@ Contact: info@swifty.cloud
 <script>
 import api from '@/api'
 import { mapActions } from 'vuex'
-import { Base64 } from 'js-base64';
+import { Base64 } from 'js-base64'
 
 import { codemirror } from 'vue-codemirror'
 import 'codemirror/lib/codemirror.css'
