@@ -120,6 +120,7 @@ Contact: info@swifty.cloud
 <script>
 import api from '@/api'
 import { mapActions } from 'vuex'
+import { Base64 } from 'js-base64';
 
 import { codemirror } from 'vue-codemirror'
 import 'codemirror/lib/codemirror.css'
@@ -240,7 +241,7 @@ export default {
     fetchFunctionCode () {
       return this.fetchFunctionSourcesByID(this.$route.params.fid).then(response => {
         if ('code' in response.data && response.data.code !== '') {
-          this.code = atob(response.data.code)
+          this.code = Base64.decode(response.data.code)
           this.sync = response.data.sync
         }
       })
@@ -264,7 +265,7 @@ export default {
         body: this.body,
         src: {
           type: 'code',
-          code: btoa(this.code)
+          code: Base64.encode(this.code)
         }
       }).then(response => {
         // show logs
@@ -298,7 +299,7 @@ export default {
         fid: this.$route.params.fid,
         data: {
           type: 'code',
-          code: btoa(this.code),
+          code: Base64.encode(this.code),
           sync: this.sync
         }
       }).then(response => {
@@ -337,7 +338,7 @@ export default {
           fid: this.$route.params.fid,
           data: {
             type: 'code',
-            code: btoa(this.code),
+            code: Base64.encode(this.code),
             sync: false
           }
         })
