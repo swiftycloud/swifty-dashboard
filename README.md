@@ -42,6 +42,11 @@ npm run build
 npm run build --report
 ```
 
+## Push to GitLab Registry
+docker login registry.gitlab.com
+docker build -t registry.gitlab.com/swiftyteam/swifty-dashboard-v2 -f nginx.dockerfile .
+docker push registry.gitlab.com/swiftyteam/swifty-dashboard-v2
+
 # Swifty Dashboard
 
 © SwiftyCloud OU, 2018
