@@ -461,8 +461,9 @@ export default {
         filename: filename,
         prefix: this.prefix !== undefined ? this.prefix : ''
       }).then(response => {
+        console.log(response)
         var file = new File([response.Body], filename, { type: response.ContentType })
-        FileSaver.saveAs(file)
+        FileSaver.saveAs(file, filename, { autoBOM: false })
       })
     },
 
