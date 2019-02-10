@@ -13,6 +13,7 @@ Contact: info@swifty.cloud
       <el-button type="primary" size="medium" @click="userCreateDialog = true">Create</el-button>
       <el-button type="primary" size="medium" @click="openPlanDialog" :disabled="!multipleSelection.length">Plan</el-button>
       <el-button type="primary" size="medium" @click="deleteSelected" :disabled="!multipleSelection.length">Delete</el-button>
+      <el-button size="medium" @click="downloadCSV" icon="el-icon-download">Download CSV</el-button>
     </actions-block>
 
     <div class="row">
@@ -336,6 +337,20 @@ export default {
       }).finally(() => {
         this.planUpdating = false
         this.closePlanDialog()
+      })
+    },
+
+    downloadCSV () {
+      api.users.get({ as: 'csv' }).then(response => {
+        let downloadLink = document.createElement('a')
+        let blob = new Blob(['\ufeff', response.data])
+        let url = URL.createObjectURL(blob)
+
+        downloadLink.href = url
+        downloadLink.download = 'users.csv'
+        document.body.appendChild(downloadLink)
+        downloadLink.click()
+        document.body.removeChild(downloadLink)
       })
     }
   }
