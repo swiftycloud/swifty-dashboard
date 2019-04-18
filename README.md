@@ -1,5 +1,8 @@
 # Swifty Dashboard
 
+SWifty Dashboard provides UI for Swifty serverless platform.
+Swifty backend is available here https://github.com/swiftycloud/swifty
+
 ## Docker Setup
 ``` bash
 # configure an API client
