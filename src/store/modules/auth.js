@@ -176,7 +176,12 @@ export default {
       setCookie('_expires', '', { expires: -1, domain: getCookie('_domain') })
       localStorage.clear()
       commit(RESET_AUTH_DATA)
-      window.location.href = config.SWY_CONNECTOR_URL + '/signin'
+
+      if (config.LOCALSIGN) {
+        window.location.href = '/sign'
+      } else {
+        window.location.href = config.SWY_CONNECTOR_URL + '/signin'
+      }
     },
 
     saveAuthToken ({ commit }, { token, expires }) {

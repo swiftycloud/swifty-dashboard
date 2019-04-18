@@ -353,6 +353,12 @@ hr {
       padding: 10px 40px;
     }
   }
+
+  &.localsign {
+    .el-card__body .el-tabs__nav .el-tabs__item {
+      width: 50%;
+    }
+  }
 }
 
 /** SIGN IN/OUT FORMS **/

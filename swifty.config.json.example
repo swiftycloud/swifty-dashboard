@@ -4,5 +4,6 @@
   "API_USERNAME": "",
   "API_PASSWORD": "",
   "SWY_CONNECTOR_URL": "",
-  "SWY_HIDDEN_SECTIONS": []
+  "SWY_HIDDEN_SECTIONS": [],
+  "LOCALSIGN": false
 }

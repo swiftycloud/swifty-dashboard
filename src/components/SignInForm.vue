@@ -26,7 +26,7 @@ Contact: info@swifty.cloud
       <li><el-button type="primary" @click="submitForm('signInForm')">Sign In</el-button></li>
     </ul>
 
-    <ul class="sign-in-links">
+    <ul class="sign-in-links" v-if="!localsign">
       <li><small><a :href="remember_link">Don’t remember your password?</a></small></li>
       <li><a :href="sign_up_link">Don’t have an account? Sign Up!</a></li>
     </ul>
@@ -56,6 +56,12 @@ export default {
           { required: true, message: 'Please enter your password', trigger: 'blur' }
         ]
       }
+    }
+  },
+
+  computed: {
+    localsign () {
+      return config.LOCALSIGN
     }
   },
 
