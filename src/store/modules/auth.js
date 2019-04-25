@@ -155,18 +155,23 @@ export default {
     },
 
     userSignUp ({ dispatch }, { email, password, name, router }) {
+      var token = null
+
       return api.requestApiToken().then(response => {
-        return api.userCreate(email, password, name, response.headers['x-subject-token'])
+        token = response.headers['x-subject-token']
+        return api.userCreate(email, password, name, token)
       }).then(response => {
         if (response.status === 201) {
-          return dispatch('userSignIn', {
-            email: email,
-            password: password,
-            Router: router
-          })
+          return api.userConfirm(response.data.id, token)
         } else {
           return Promise.reject(new Error('Sign up was failed'))
         }
+      }).then(response => {        
+        return dispatch('userSignIn', {
+          email: email,
+          password: password,
+          Router: router
+        })
       })
     },
 

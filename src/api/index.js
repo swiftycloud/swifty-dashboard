@@ -106,6 +106,14 @@ export default {
     })
   },
 
+  userConfirm (id, token) {
+    return axios.put(config.API_ADMD_ENDPOINT + '/users/' + id, {
+      enabled: true
+    }, {
+      headers: { 'X-Auth-Token': token }
+    })
+  },
+
   userLogin (id, password) {
     return axios.post(config.API_ADMD_ENDPOINT + '/login', {
       username: id, password: password
