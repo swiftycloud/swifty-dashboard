@@ -44,6 +44,10 @@ npm run build
 # build for production and view the bundle analyzer report
 npm run build --report
 ```
+# Contact
+mailto: vp@swifty.cloud
+
+[Join slack](https://join.slack.com/t/swiftycloud/shared_invite/enQtNDk1Nzk5NTQ1OTIzLWVhNWY3ZDZmNmQ1YTBlZGNlN2IzMmNhYmEzNTNkOGU2MzdmZWE3YTBiMjVjYWI5Y2FhMTUwMWUyOTNkZGE5OTM)
 
 # Swifty Dashboard
 
