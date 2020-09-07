@@ -166,7 +166,7 @@ export default {
         } else {
           return Promise.reject(new Error('Sign up was failed'))
         }
-      }).then(response => {        
+      }).then(response => {
         return dispatch('userSignIn', {
           email: email,
           password: password,
