@@ -51,4 +51,4 @@ mailto: vp@swifty.cloud
 
 # Swifty Dashboard
 
-С) Vladimir Porokhov, 2021
+(С) Vladimir Porokhov, 2021
